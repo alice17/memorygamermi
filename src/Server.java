@@ -10,9 +10,10 @@ import java.rmi.registry.LocateRegistry;
 import java.util.LinkedList;
 import java.util.List;
 
+
 public class Server extends UnicastRemoteObject implements ServerInterface {
     LinkedList<Player> playerList = new LinkedList<Player>();      // lista di giocatori
-    int nPlayers = 0;        // numero di giocatori totali
+    int nPlayers = 0;                                              // numero di giocatori totali
 
 
     public static void main(String[] args) {
@@ -34,8 +35,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             System.out.println("Server err: " + e.getMessage());
             e.printStackTrace();
         }
-
-        // raccoglie client e crea oggetti Player
 
         // inizia il gioco
     }

@@ -2,9 +2,11 @@
  * Created by alice on 02/02/17.
  */
 
+import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.Naming;
+import static java.lang.Thread.sleep;
 
 public class Client {
 
@@ -16,8 +18,9 @@ public class Client {
         try{
             System.out.println("Looking up server...");
 
-            ServerInterface srv = (ServerInterface) Naming.lookup("rmi://127.0.0.1:1099/Server");
-            System.out.println("Server found.");
+            String url = "rmi://127.0.0.1:1099/Server";
+            ServerInterface srv = (ServerInterface) Naming.lookup(url);
+            System.out.println("Server found at address " + url);
 
             // add client to player list
             myId = srv.newPlayer("username");
