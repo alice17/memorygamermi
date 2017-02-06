@@ -8,13 +8,13 @@ import java.rmi.server.UnicastRemoteObject;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.util.LinkedList;
-import java.util.List;
+
+import static java.lang.Thread.sleep;
 
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
     LinkedList<Player> playerList = new LinkedList<Player>();      // lista di giocatori
-    int nPlayers = 0;                                              // numero di giocatori totali
-
+    int registeredPlayers = 0;                                // numero di giocatori totali
 
     public static void main(String[] args) {
 
@@ -36,7 +36,53 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             e.printStackTrace();
         }
 
-        // inizia il gioco
+
+        // creo oggetto Game e lo inserisco nell'RMI registry
+        try {
+            Game igame = new Game();
+            igame.setGotPlayers(false);
+
+            Registry registry = LocateRegistry.createRegistry(1098);
+            registry.bind("game", igame);
+            GameInterface game = (GameInterface) registry.lookup("game");
+
+            int sec = 10000;
+            System.out.println("Wait for " + sec + " ms");
+
+            synchronized (game){
+                sleep(sec);
+
+                game.notifyAll();
+            }
+            System.out.println("Wait ended.");
+
+            game.setGotPlayers(true);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        // run the wait thread
+        //WaitThread wt = new WaitThread();
+        //new Thread(wt).start();
+
+        /*
+        int sec = 60000;
+        System.out.println("Wait for " + sec + " ms");
+
+        try {
+            sleep(sec);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Wait ended.");
+
+        igame.setGotPlayers(true);
+        //notifyAll();
+        */
+
+        // setto variabili gioco
+
+        // distribuisco lista di Player
     }
 
     public Server() throws RemoteException {}
@@ -44,13 +90,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public int newPlayer(String user){
         /* Aggiunge un giocatore alla lista di giocatori e ne ritorna l'id */
 
-        nPlayers+=1;
-        Player pl = new Player(user, nPlayers-1);
+        registeredPlayers+=1;
+        Player pl = new Player(user, registeredPlayers-1);
         playerList.add( pl );
 
         System.out.println("New player: " + pl.getUsername());
 
-        return nPlayers - 1;
+        return registeredPlayers - 1;
     }
-
 }
