@@ -13,11 +13,15 @@ import static java.lang.Thread.sleep;
 
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
-    LinkedList<Player> playerList = new LinkedList<Player>();      // lista di giocatori
-    int registeredPlayers = 0;                                // numero di giocatori totali
+    public LinkedList<Player> playerList = new LinkedList<Player>();      // lista di giocatori
+    private int registeredPlayers = 0;                                // numero di giocatori totali registrati
+    public static boolean gotPlayers = false;
+    public Object lock = new Object();
 
     public static void main(String[] args) {
 
+
+        /* setting up connection */
         System.out.println("Launching server...");
 
         try {
@@ -37,29 +41,36 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
 
 
+        /* wait for sec mseconds for the players' registration */
+
         // creo oggetto Game e lo inserisco nell'RMI registry
+
         try {
+            GameInterface igame = new Game();
+            GameInterface igamestub = (GameInterface) UnicastRemoteObject.exportObject(igame ,0);
+
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind("game", igamestub);
+
+            igamestub.waitServer();
+
+            /*
             Game igame = new Game();
             igame.setGotPlayers(false);
+
 
             Registry registry = LocateRegistry.createRegistry(1098);
             registry.bind("game", igame);
             GameInterface game = (GameInterface) registry.lookup("game");
+            System.out.println(System.identityHashCode(igame));
+            game.waitServer();
+            */
 
-            int sec = 10000;
-            System.out.println("Wait for " + sec + " ms");
-
-            synchronized (game){
-                sleep(sec);
-
-                game.notifyAll();
-            }
-            System.out.println("Wait ended.");
-
-            game.setGotPlayers(true);
+            //game.setGotPlayers(true);
         }catch(Exception e){
             e.printStackTrace();
         }
+
 
         // run the wait thread
         //WaitThread wt = new WaitThread();

@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 
 public interface GameInterface extends Remote {
     void setnPlayers(int nPlayers) throws RemoteException;
-    public boolean isGotPlayers() throws RemoteException;
-    public void setGotPlayers(boolean gotPlayers) throws RemoteException;
+    boolean isGotPlayers() throws RemoteException;
+    void waitServer() throws RemoteException;
+    void waitClient() throws RemoteException;
 }

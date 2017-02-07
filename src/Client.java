@@ -15,6 +15,8 @@ public class Client {
     public static void main(String[] args) {
         int myId;
 
+
+        /* establish connection with server */
         try{
             System.out.println("Looking up server...");
 
@@ -29,27 +31,19 @@ public class Client {
             e.printStackTrace();
         }
 
+        /* wait for other players */
         try{
-            //GameInterface game = (GameInterface) Naming.lookup("game");
-            Registry registry = LocateRegistry.getRegistry(1098);
+            Registry registry = LocateRegistry.getRegistry(1099);
             GameInterface game = (GameInterface) registry.lookup("game");
 
             System.out.println("Game found at server.");
-
-            // wait for the game to start
             System.out.println("Waiting for other players...");
 
-            synchronized (game){
-                try {
-                    game.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
+            game.waitClient();
             System.out.println("Wait ended. Let's start the game!");
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }
