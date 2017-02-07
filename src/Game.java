@@ -10,17 +10,18 @@ public class Game implements GameInterface {
     public boolean gotPlayers;      // abbiamo giocatori per iniziare?
     public int currentPlayer;       // id del giocatore di questo turno
     public boolean isGameEnded;
+    final Object lock = new Object();
 
     public Game() throws RemoteException {}
 
     public void waitServer(){
-        synchronized (this){
+        synchronized (lock){
             try {
                 int sec = 10000;
                 System.out.println("Wait for " + sec + " ms");
                 sleep(sec);
                 System.out.println("Wait ended");
-                this.notifyAll();
+                notify();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -29,9 +30,9 @@ public class Game implements GameInterface {
     }
 
     public void waitClient(){
-        synchronized (this){
+        synchronized (lock){
             try {
-                this.wait();
+                wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
