@@ -1,6 +1,8 @@
 # memorygamermi
 ###### Distributed memory game
 
+
+
 For compiling the sources:
 ```
 javac -d ../out *.java
