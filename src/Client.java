@@ -18,7 +18,6 @@ public class Client {
     public static void main(String[] args) {
         int myId;
 
-
         /* establish connection with server */
         try{
             System.out.println("Looking up server...");
@@ -48,12 +47,13 @@ public class Client {
             e.printStackTrace();
         }
 
-
         // ask players' list from server
         try {
             playerList = srv.getPlayerList();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+        // start game
     }
 }

@@ -13,7 +13,7 @@ import static java.lang.Thread.sleep;
 
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
-    public LinkedList<Player> playerList = new LinkedList<>();      // lista di giocatori
+    public static LinkedList<Player> playerList = new LinkedList<>();      // lista di giocatori
     private static int registeredPlayers;                                    // numero di giocatori totali registrati
     //public static boolean gotPlayers = false;
     public final Object lock = new Object();
@@ -38,9 +38,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             e.printStackTrace();
         }
 
+        /* create first Player (server) with id 0*/
+        playerList.add( new Player("server", 0) );
+        registeredPlayers+=1;
+
         /* wait for sec mseconds for the players' registration */
 
-        // creo oggetto Game e lo inserisco nell'RMI registry
+        // creo oggetto Game e registro lo stub nell'RMI registry
         try {
             GameInterface game = new Game();
             GameInterface gamestub = (GameInterface) UnicastRemoteObject.exportObject(game ,0);
@@ -54,6 +58,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }catch(Exception e){
             e.printStackTrace();
         }
+
+
+        // start game
 
     }
 
