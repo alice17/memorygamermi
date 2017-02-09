@@ -7,8 +7,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.Naming;
+import java.util.LinkedList;
 
 public class Client {
+    private static LinkedList<Player> playerList = new LinkedList<>();
+    private static ServerInterface srv;
 
     private Client() {}
 
@@ -21,7 +24,7 @@ public class Client {
             System.out.println("Looking up server...");
 
             String url = "rmi://127.0.0.1:1099/Server";
-            ServerInterface srv = (ServerInterface) Naming.lookup(url);
+            srv = (ServerInterface) Naming.lookup(url);
             System.out.println("Server found at address " + url);
 
             // add client to Server's player list
@@ -33,7 +36,7 @@ public class Client {
 
         /* wait for other players */
         try{
-            Registry registry = LocateRegistry.getRegistry(1099);
+            Registry registry = LocateRegistry.getRegistry();
             GameInterface game = (GameInterface) registry.lookup("game");
 
             System.out.println("Game found at server.");
@@ -45,5 +48,12 @@ public class Client {
             e.printStackTrace();
         }
 
+
+        // ask players' list from server
+        try {
+            playerList = srv.getPlayerList();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

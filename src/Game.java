@@ -6,16 +6,16 @@ import static java.lang.Thread.sleep;
  * Created by alice on 06/02/17.
  */
 public class Game implements GameInterface {
-    public int nPlayers;            // num di giocatori
-    public boolean gotPlayers;      // abbiamo giocatori per iniziare?
-    public int currentPlayer;       // id del giocatore di questo turno
-    public boolean isGameEnded;
-    final Object lock = new Object();
+    public int nPlayers;                        // num di giocatori totali (aggiornato)
+    public boolean gotPlayers;                  // abbiamo giocatori per iniziare? (forse da togliere)
+    public int currentPlayer;                   // id del giocatore di questo turno
+    public boolean isGameEnded = false;
+    public final Object lock = new Object();
 
     public Game() throws RemoteException {}
 
-    public void waitServer(){
-        synchronized (lock){
+    synchronized public void waitServer(){
+        //synchronized (lock){
             try {
                 int sec = 10000;
                 System.out.println("Wait for " + sec + " ms");
@@ -25,18 +25,17 @@ public class Game implements GameInterface {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-        }
+        //}
     }
 
-    public void waitClient(){
-        synchronized (lock){
+    synchronized public void waitClient(){
+        //synchronized (lock){
             try {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        //}
     }
 
     public int getnPlayers() {
