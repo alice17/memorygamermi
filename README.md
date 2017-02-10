@@ -15,7 +15,7 @@ On Linux:
 $ rmiregistry &
 ```
 
-For running the server, where $(PROJECT_DIR) must be replaced with the path of the project's directory:
+For running the server, where `$(PROJECT_DIR)` must be replaced with the path of the project's directory:
 
 ```
 $ java -classpath $(PROJECT_DIR)/out/ -Djava.rmi.server.codebase=$(PROJECT_DIR)/out/ -Djava.security.policy=file:$(PROJECT_DIR)/src/server.policy Server
