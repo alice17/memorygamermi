@@ -1,6 +1,5 @@
-/**
- * Created by alice on 06/02/17.
- */
+package src;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

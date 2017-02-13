@@ -5,23 +5,39 @@
 
 For compiling the sources move to the `src` folder and enter this command from the command line:
 ```
-$ javac -d ../out *.java
+$ javac *.java
 ```
 
-Before running the compiled files make sure to have started the RMI registry service in the `out` folder:
+Before running the compiled files make sure to have started the RMI registry service in the out folder:
 
 On Linux:
 ```
-$ rmiregistry &
+$ rmiregistry  2000 &
+
+Ho settato 2000 perchè la 1099 che è quella di default è già utilizzata dal server.da sistemare.
 ```
 
-For running the server, where `$(PROJECT_DIR)` must be replaced with the path of the project's directory:
+For running the server:
+
+Launch command inside /src directory
 
 ```
-$ java -classpath $(PROJECT_DIR)/out/ -Djava.rmi.server.codebase=$(PROJECT_DIR)/out/ -Djava.security.policy=file:$(PROJECT_DIR)/src/server.policy Server
+$ java -classpath $(PROJECT_DIR) -Djava.rmi.server.codebase=$(PROJECT_DIR)/src/ src.Server seconds
+
+example:
+
+$ java -classpath /User/memorygamermi/ -Djava.rmi.server.codebase=file:/User/memorygamermi/src/ src.Server 100
+
 ```
 
-For running the client: 
+For running the client:
+
+Launch command inside /src directory 
 ```
-$ java -classpath $(PROJECT_DIR)/out/ Client
+$ java -classpath $(PROJECT_DIR)/ src.Client Username
+
+example:
+
+$ java -classpath /User/memorygamermi/  src.Client Andrea
+
 ```

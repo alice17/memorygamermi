@@ -1,10 +1,10 @@
+package src;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import static java.lang.Thread.sleep;
 
-/**
- * Created by alice on 06/02/17.
- */
+
 public class Game implements GameInterface {
     public int nPlayers;                        // num di giocatori totali (aggiornato)
     public boolean gotPlayers;                  // abbiamo giocatori per iniziare? (forse da togliere)

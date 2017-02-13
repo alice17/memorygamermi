@@ -1,16 +1,30 @@
-/**
- * Created by alice on 02/02/17.
- */
-public class Player {
-    public String username;
-    public Integer id;
-    public Integer points;
 
-    public Player(String user, Integer id){
-        this.points = 0;
+package src;
+
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+
+
+public class Player extends Node {
+    private String username;
+    private int points;
+    
+
+
+    public Player(String user, String host, int port)
+            throws UnknownHostException {
+        this(user,InetAddress.getByName(host),port);
+    } 
+
+    public Player(String user,InetAddress inetAddr, int port){
+        super(inetAddr, port);
         this.username = user;
-        this.id = id;
     }
 
-    public String getUsername(){ return this.username; }
+    public String getUsername(){ return username; }
+    public int getPoints() { return points; }
+    public void setPoints(int points) { this.points = points; }
+
 }
