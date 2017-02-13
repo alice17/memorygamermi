@@ -23,8 +23,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
   		partecipants = new IPartecipant[playersMaxNo];
 	}
 
-  	public synchronized boolean subscribeAccepted(IPartecipant partecipant,
-  			Player player) throws RemoteException {
+  	public synchronized boolean subscribeAccepted(IPartecipant partecipant, Player player) throws RemoteException {
   		if (playersNo < playersMaxNo &&  openSubscribe) {
   			System.out.println("New player --> " + player.getUsername());
   			partecipants[playersNo] = partecipant;

@@ -22,7 +22,7 @@ For running the server:
 Launch command inside /src directory
 
 ```
-$ java -classpath $(PROJECT_DIR) -Djava.rmi.server.codebase=$(PROJECT_DIR)/src/ src.Server seconds
+$ java -classpath $(PROJECT_DIR) -Djava.rmi.server.codebase=file:$(PROJECT_DIR)/src/ src.Server seconds
 
 example:
 
