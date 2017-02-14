@@ -16,13 +16,12 @@ import java.util.Arrays;
 
 public class Client {
 
-    private static LinkedList<Player> playerList = new LinkedList<>();
     public static final int PORT = 1099;
     private static Game game;
     private static Player[] players;
     private static int nodeId;
     private static Link link;
-    
+    private static playersNo;
 
     public static void main(String[] args) {
 
@@ -55,10 +54,10 @@ public class Client {
         /* establish connection with server */
         try{
             partecipant = new Partecipant();
-            System.out.println("Looking up subscribe...");
+            System.out.println("Looking up subscribe service...");
             String url = "rmi://" + server +":" + PORT + "/Subscribe";
             SubscribeInterface subscribe = (SubscribeInterface) Naming.lookup(url);
-            System.out.println("Subscribe found at address " + url);
+            System.out.println("Subscribe service found at address " + url);
 
             result = subscribe.subscribeAccepted(partecipant, me);
         } catch (MalformedURLException e) {
@@ -73,9 +72,10 @@ public class Client {
         }
         
         if (result) {
+        // subscribe accepted
 			System.out.println("You have been added to player list.");
 			players = partecipant.getPlayers();
-			int playersNo = players.length;
+			playersNo = players.length;
 
 			if( playersNo > 1 ){
 				for (int i=0; i < playersNo;i++){
@@ -95,7 +95,7 @@ public class Client {
 				System.out.println("Not enough players to start the game. :(");
 				System.exit(0);
 			}
-        }
-        
+        }   
     }
+    
 }

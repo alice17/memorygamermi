@@ -66,7 +66,7 @@ public class Server {
 		        Player[] players = s.getPlayers();
 		        
 		        if (s.getPlayersNo() > 0) {
-		            System.out.println("Players list: ");
+		            System.out.println("Players: ");
 		            for (int i = 0; i< s.getPlayersNo(); i++) {
 		                Player p = players[i];
 		                System.out.println("Player " + (i + 1) + " " 
