@@ -16,8 +16,6 @@ public class Node implements Serializable, Comparable<Node> {
 	//private int addr;
 	private int id;
 
-
-
 	public Node(String host, int port) throws UnknownHostException {
 		this(InetAddress.getByName(host), port);
 	}

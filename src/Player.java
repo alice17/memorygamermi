@@ -11,10 +11,7 @@ public class Player extends Node {
     private String username;
     private int points;
     
-
-
-    public Player(String user, String host, int port)
-            throws UnknownHostException {
+    public Player(String user, String host, int port) throws UnknownHostException {
         this(user,InetAddress.getByName(host),port);
     } 
 

@@ -10,14 +10,12 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 
 	private Player[] players;
 	private boolean gotPartecipants = false;
-
-
+	
 	
 	public Partecipant() throws RemoteException {}
 
-
 	public synchronized void configure(Player[] players) throws RemoteException {
-		this.players =players;
+		this.players = players;
 		gotPartecipants = true;
 		notifyAll();
 		System.out.println("Partecipants list has been received.");

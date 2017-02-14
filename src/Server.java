@@ -13,11 +13,10 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 
 
-
-
 public class Server {
 
     public static final int PORT = 1099;
+    
     
     public static void main(String[] args) {
 
@@ -67,7 +66,7 @@ public class Server {
 		        Player[] players = s.getPlayers();
 		        
 		        if (s.getPlayersNo() > 0) {
-		            System.out.println("Players list -->");
+		            System.out.println("Players list: ");
 		            for (int i = 0; i< s.getPlayersNo(); i++) {
 		                Player p = players[i];
 		                System.out.println("Player " + (i + 1) + " " 

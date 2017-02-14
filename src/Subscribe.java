@@ -29,6 +29,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
   			partecipants[playersNo] = partecipant;
   			players[playersNo] = player;
   			playersNo++;
+  			
   			if (playersNo==playersMaxNo) {
   				openSubscribe=false;
   				replyClients();
@@ -58,8 +59,6 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 	}
 
 	public synchronized int getPlayersNo() {
-
-
 		if (openSubscribe)
 			try {
 				wait();
@@ -74,9 +73,11 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 		System.arraycopy(players, 0, realPlayers, 0, playersNo);
 		players = realPlayers;
 
+		// configure partecipants
 		for (int i=0 ;i<playersNo;i++) {
-			final IPartecipant p= partecipants[i];
+			final IPartecipant p = partecipants[i];
 			final int j=i;
+		
 			Thread t = new Thread() {
 				public void run() {
 					try {
