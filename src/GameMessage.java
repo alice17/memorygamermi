@@ -10,7 +10,6 @@ public class GameMessage extends Message implements Cloneable {
 	private String test;
 
 	public GameMessage(int origId, int id,String test) {
-
 		super(origId);
 		this.id = id;
 		this.test = test;

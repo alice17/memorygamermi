@@ -20,13 +20,11 @@ import java.util.concurrent.TimeUnit;
 public class Client {
 
     public static final int PORT = 1099;
-    //private static Game game;
+    private static Game game;
     private static Player[] players;
     private static int nodeId;
     private static Link link;
     private static int playersNo;
-    private static boolean gameOver;
-    private static int currentPlayer;
     private static MessageBroadcast messageBroadcast;
     private static MessageFactory mmaker;
     private static RouterFactory rmaker;
@@ -48,7 +46,8 @@ public class Client {
         String server = "localhost";
         int port = PORT;
         
-        if (args.length > 1) port = Integer.parseInt(args[1]);
+        if (args.length > 1) 
+        	port = Integer.parseInt(args[1]);
 
         /*if (System.getSecurityManager() == null)
             System.getSecurityManager(new RMISecurityManager());
@@ -111,6 +110,8 @@ public class Client {
 			playersNo = players.length;
 
 			if( playersNo > 1 ){
+				System.out.println("Players subscribed:");
+				
 				for (int i=0; i < playersNo;i++){
 					System.out.println(players[i].getUsername());
 				}
@@ -122,14 +123,14 @@ public class Client {
 				rmaker = new RouterFactory(link);
 				mmaker = new MessageFactory(nodeId);
 				messageBroadcast.configure(link,rmaker,mmaker);
+				
 				System.out.println("My id is " + nodeId + " and my name is " + players[nodeId].getUsername());
 				System.out.println("My left neighbour is " + players[link.getLeftId()].getUsername());
 				System.out.println("My right neighbour is " + players[link.getRightId()].getUsername()); 
 
-				//game = new Game(playersNo);
-				
-				currentPlayer = 0;
-				gameOver = false;
+				game = new Game(playersNo);
+
+				// start the game
 				gameStart();
 			}else{
 				System.out.println("Not enough players to start the game. :(");
@@ -142,7 +143,7 @@ public class Client {
         
         tryToMyturn();
 
-        while(!gameOver) { 
+        while(!game.isGameEnded()) { 
             try {
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
@@ -150,7 +151,7 @@ public class Client {
 
                 if(m != null) {
                     System.out.println("Processing message " + m);
-                    currentPlayer++;
+                    game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                     tryToMyturn();
                 } else {
                     System.out.println("Timeout");
@@ -163,13 +164,13 @@ public class Client {
     
     private static void tryToMyturn() {
 
-            while (currentPlayer == nodeId) {
+            while (game.getCurrentPlayer() == nodeId) {
 
                 System.out.println("I'm trying to send a test message to my right neighbour");
                 String test = "Origin nodeId message is " + nodeId;
-                currentPlayer++;
+                game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                 messageBroadcast.send(mmaker.newGameMessage(test));
-                System.out.println("Next Player is " + players[currentPlayer % players.length].getUsername());
+                System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
             }
 
     }
