@@ -13,15 +13,25 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
 
     public static final int PORT = 1099;
-    private static Game game;
+    //private static Game game;
     private static Player[] players;
     private static int nodeId;
     private static Link link;
-    private static playersNo;
+    private static int playersNo;
+    private static boolean gameOver;
+    private static int currentPlayer;
+    private static MessageBroadcast messageBroadcast;
+    private static MessageFactory mmaker;
+    private static RouterFactory rmaker;
+    private static BlockingQueue<GameMessage> buffer;
+    private static int[] processedMsg;
 
     public static void main(String[] args) {
 
@@ -38,8 +48,7 @@ public class Client {
         String server = "localhost";
         int port = PORT;
         
-        if (args.length > 1)
-            port = Integer.parseInt(args[1]);
+        if (args.length > 1) port = Integer.parseInt(args[1]);
 
         /*if (System.getSecurityManager() == null)
             System.getSecurityManager(new RMISecurityManager());
@@ -47,6 +56,30 @@ public class Client {
             System.out.println("Security Manager not starts.");*/
 
         Player me = new Player(playerName, localHost, port);
+        
+        messageBroadcast = null;
+        buffer = new LinkedBlockingQueue<GameMessage>();
+
+
+        try {
+	        LocateRegistry.createRegistry(port);
+        /*
+        	try{
+            	LocateRegistry.createRegistry(port);
+            } catch (RemoteException ee) {
+            	LocateRegistry.getRegistry(port);
+            }
+        */
+            messageBroadcast = new MessageBroadcast (buffer);
+            String serviceURL = "rmi://" + localHost.getCanonicalHostName() + ":" + port + "/Broadcast";
+            System.out.println("Registering message broadcast service at " + serviceURL);
+            Naming.rebind(serviceURL,messageBroadcast); 
+        } catch (RemoteException rE) {
+            rE.printStackTrace();
+        } catch (MalformedURLException murlE) {
+            murlE.printStackTrace();
+        }
+
 
         Partecipant partecipant = null;
         boolean result = false;
@@ -84,18 +117,65 @@ public class Client {
 		      
 				link = new Link(me, players);
 				nodeId = link.getNodeId();
+				processedMsg = new int[players.length];
+				Arrays.fill(processedMsg, 0);
+				rmaker = new RouterFactory(link);
+				mmaker = new MessageFactory(nodeId);
+				messageBroadcast.configure(link,rmaker,mmaker);
 				System.out.println("My id is " + nodeId + " and my name is " + players[nodeId].getUsername());
 				System.out.println("My left neighbour is " + players[link.getLeftId()].getUsername());
 				System.out.println("My right neighbour is " + players[link.getRightId()].getUsername()); 
 
-				game = new Game(playersNo);
-
-				//gameStart();
+				//game = new Game(playersNo);
+				
+				currentPlayer = 0;
+				gameOver = false;
+				gameStart();
 			}else{
 				System.out.println("Not enough players to start the game. :(");
 				System.exit(0);
 			}
         }   
+    }
+ 
+	private static void gameStart() {
+        
+        tryToMyturn();
+
+        while(!gameOver) { 
+            try {
+                System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
+                GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
+                tryToMyturn();
+
+                if(m != null) {
+                    System.out.println("Processing message " + m);
+                    currentPlayer++;
+                    tryToMyturn();
+                } else {
+                    System.out.println("Timeout");
+                }
+            } catch (InterruptedException e) {}
+        
+        }
+       
+    }
+    
+    private static void tryToMyturn() {
+
+            while (currentPlayer == nodeId) {
+
+                System.out.println("I'm trying to send a test message to my right neighbour");
+                String test = "Origin nodeId message is " + nodeId;
+                currentPlayer++;
+                messageBroadcast.send(mmaker.newGameMessage(test));
+                System.out.println("Next Player is " + players[currentPlayer % players.length].getUsername());
+            }
+
+    }
+
+    private static long getWaitSeconds() {
+        return 10L + nodeId * 2;
     }
     
 }

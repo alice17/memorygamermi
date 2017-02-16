@@ -1,3 +1,5 @@
+
+
 package src;
 
 
@@ -17,6 +19,7 @@ public class Link {
 	private int leftId = 0;
 	private Node me;
 	private Lock lock = null;
+	private RemoteBroadcast rightNode = null;
 
 
 	public Link(Node me, Node[] nodes) {
@@ -55,5 +58,30 @@ public class Link {
 		return rightId;
 	}
 
+	public ServiceBulk getRight() {
+
+		rightNode = lookupNode(rightId);
+		return new ServiceBulk(rightNode,rightId);
+
+	}
+
+	private RemoteBroadcast lookupNode(int id)  {
+		RemoteBroadcast broadcast = null;
+		String url = "rmi://" + nodes[id].getInetAddress().getCanonicalHostName() + ":"
+					+ nodes[id].getPort() + "/Broadcast";
+		boolean success = false;
+		try {
+			System.out.println("looking up " + url);
+			broadcast = (RemoteBroadcast)Naming.lookup(url);
+			success = true;
+		} catch (MalformedURLException e) {
+			System.out.println("Malformed");
+		} catch (NotBoundException e) {
+			System.out.println("Notbound");
+		} catch (RemoteException e) {
+			System.out.println("Remote");
+		}
+		return broadcast;
+	}
 
 }

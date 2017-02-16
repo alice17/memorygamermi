@@ -6,7 +6,6 @@ package src;
 
 public class GameMessage extends Message implements Cloneable {
 
-
 	private int id;
 	private String test;
 
