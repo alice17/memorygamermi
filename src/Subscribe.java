@@ -14,7 +14,8 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 	private int playersMaxNo;
 	private int playersNo = 0;
 	private boolean openSubscribe = true;
-
+	private Deck deck;
+	private int nCards;
 
 	public Subscribe(int playersMaxNo) throws RemoteException {
 
@@ -24,6 +25,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 	}
 
   	public synchronized boolean subscribeAccepted(IPartecipant partecipant, Player player) throws RemoteException {
+  	// funzione chiamata dal client
   		if (playersNo < playersMaxNo &&  openSubscribe) {
   			System.out.println("New player --> " + player.getUsername());
   			partecipants[playersNo] = partecipant;
@@ -31,6 +33,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
   			playersNo++;
   			
   			if (playersNo==playersMaxNo) {
+  			// raggiunto il num max di partecipanti
   				openSubscribe=false;
   				replyClients();
   				notify();
@@ -72,9 +75,14 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 		final Player[] realPlayers = new Player[playersNo];
 		System.arraycopy(players, 0, realPlayers, 0, playersNo);
 		players = realPlayers;
+		
+		// generate Deck
+		nCards = 4 * playersNo;
+		deck = new Deck(nCards);
+		deck.generateCards();
 
-		// configure partecipants
-		for (int i=0 ;i<playersNo;i++) {
+		// configure participants
+		for (int i=0 ;i < playersNo;i++) {
 			final IPartecipant p = partecipants[i];
 			final int j=i;
 		
@@ -82,7 +90,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 				public void run() {
 					try {
 						System.out.println("Configuring partecipant " + realPlayers[j].getUsername());
-						p.configure(players);
+						p.configure(players, deck);
 						System.out.println("Configuring done.");
 					} catch (RemoteException re) {
 						re.printStackTrace();

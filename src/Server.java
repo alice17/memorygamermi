@@ -17,7 +17,6 @@ public class Server {
 
     public static final int PORT = 1099;
     
-    
     public static void main(String[] args) {
 
         final int seconds = Integer.parseInt(args[0]);

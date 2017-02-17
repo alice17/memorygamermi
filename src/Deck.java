@@ -1,9 +1,41 @@
+/* 	La classe Deck rappresenta il "tavolo" del gioco
+	L'array cards contiene gli indici delle carte mischiati ed è univoco ad ogni Client
+*/
+
 package src;
 
-public class Deck {
+import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.io.Serializable;
 
-	private Card[] cards;
+public class Deck implements Serializable{
+
+	private List<Card> cards;
 	private int nCards;				// number of total cards on the deck
 	private int remainedCards;
 
+
+	public Deck(int nCards){
+		//this.cards = cards;
+		this.nCards = nCards;
+		this.remainedCards = nCards;
+	}
+	
+	public void generateCards(){
+	// genera e mescola il mazzo di carte
+		int i;
+		cards = new ArrayList<Card>();
+		
+		for(i=0; i < (nCards/2) ; i++){
+			cards.add(new Card(i));
+			cards.add(new Card(i));
+		}
+		
+		Collections.shuffle(cards);
+	}
+	
+	public Card getCard(int id){ return cards.get(id); }
+	
+	public int getnCards(){ return nCards; }
 }

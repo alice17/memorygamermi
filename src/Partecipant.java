@@ -10,12 +10,15 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 
 	private Player[] players;
 	private boolean gotPartecipants = false;
+	private Deck deck;
 	
 	
 	public Partecipant() throws RemoteException {}
 
-	public synchronized void configure(Player[] players) throws RemoteException {
+	public synchronized void configure(Player[] players, Deck deck) throws RemoteException {
+	// chiamata da subscribe per configurare le variabili di partecipant
 		this.players = players;
+		this.deck = deck;
 		gotPartecipants = true;
 		notifyAll();
 		System.out.println("Partecipants list has been received.");
@@ -31,5 +34,9 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 				ie.printStackTrace();
 			}
 		return players;
+	}
+	
+	public Deck getDeck(){
+		return deck;
 	}
 }

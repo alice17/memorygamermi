@@ -30,6 +30,7 @@ public class Client {
     private static RouterFactory rmaker;
     private static BlockingQueue<GameMessage> buffer;
     private static int[] processedMsg;
+    private static Deck deck;
 
     public static void main(String[] args) {
 
@@ -108,6 +109,7 @@ public class Client {
 			System.out.println("You have been added to player list.");
 			players = partecipant.getPlayers();
 			playersNo = players.length;
+			deck = partecipant.getDeck();
 
 			if( playersNo > 1 ){
 				System.out.println("Players subscribed:");
@@ -115,6 +117,12 @@ public class Client {
 				for (int i=0; i < playersNo;i++){
 					System.out.println(players[i].getUsername());
 				}
+				
+				System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
+				
+				/* stampa valori del mazzo di carte 
+				for(int i=0; i < deck.getnCards(); i++){
+					System.out.println(deck.getCard(i).getCardId()); } */
 		      
 				link = new Link(me, players);
 				nodeId = link.getNodeId();
@@ -157,7 +165,7 @@ public class Client {
                     System.out.println("Timeout");
                 }
             } catch (InterruptedException e) {}
-        
+        	game.setGameEnded(true);
         }
        
     }
@@ -171,6 +179,12 @@ public class Client {
                 game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                 messageBroadcast.send(mmaker.newGameMessage(test));
                 System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
+                
+                // sceglie la prima carta
+                // manda il broadcast per la mossa
+                // sceglie la seconda carta
+                // determina se vince
+                // broadcast e turno successivo
             }
 
     }
