@@ -29,7 +29,7 @@ public class WindowRegistration {
             System.exit(0);
     }
 
-    private static void settingEventRegistration(JFrame fr, PaginaPrincipale pp, JTextField tf, JLabel lb){
+    private static void settingEventRegistration(JFrame fr, JTextField tf, JLabel lb){
         if(tf.getText() == null || tf.getText().isEmpty()){
 
             JOptionPane.showOptionDialog(null,
@@ -53,7 +53,6 @@ public class WindowRegistration {
         }
         else{
                 Client cl = new Client(tf.getText());
-                pp.createMainPage();
                 fr.setVisible(false);
 
 
@@ -114,7 +113,7 @@ public class WindowRegistration {
         btnRegistration.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                settingEventRegistration(pane,userEntry,responseLabel);
             }
         });
 
@@ -122,7 +121,7 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry,responseLabel);
                 }
             }
 
@@ -130,13 +129,13 @@ public class WindowRegistration {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                 }
-                settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                settingEventRegistration(pane,userEntry,responseLabel);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry,responseLabel);
                 }
             }
         });
@@ -146,13 +145,13 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry,responseLabel);
                 }
             }
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry,responseLabel);
                 }
 
             }
@@ -160,7 +159,7 @@ public class WindowRegistration {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,pgMemory,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry,responseLabel);
                 }
 
             }

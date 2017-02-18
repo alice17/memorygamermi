@@ -77,7 +77,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 		players = realPlayers;
 		
 		// generate Deck
-		nCards = 4 * playersNo;
+		nCards = 20;//4 * playersNo;
 		deck = new Deck(nCards);
 		deck.generateCards();
 

@@ -4,11 +4,12 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by salvatorealescio on 05/02/17.
  */
-public class CardGraphic extends JButton {
+public class CardGraphic extends JButton implements Serializable{
     private int id;
     private boolean matched = false;
 

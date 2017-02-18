@@ -18,20 +18,21 @@ public class Board extends JFrame {
     private Timer t;
     private Score myScore = new Score();
 
-    public Board() {
-        int pairs = 10;
+
+    public Board(Deck deck) {
+
+
         List<CardGraphic> cardLists = new ArrayList<CardGraphic>();
-        List<Integer> cardVals = new ArrayList<Integer>();
+        List<Integer> myDeck = deck.getDeck();
 
-
-        for (int i = 0; i < pairs; i++) {
+        /*for (int i = 0; i < pairs; i++) {
             cardVals.add(i);
             cardVals.add(i);
-        }
+        }*/
 
-        Collections.shuffle(cardVals);
+       /* Collections.shuffle(cardVals);*/
 
-        for (int val : cardVals) {
+        for (int val : myDeck) {
             final CardGraphic c = new CardGraphic();
             c.setId(val);
             c.addActionListener(new ActionListener() {

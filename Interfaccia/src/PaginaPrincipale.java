@@ -125,8 +125,8 @@ public class PaginaPrincipale {
     }
 
 
-    public static void createMainPage(){
-        Board frame = new Board();
+    public static void createMainPage(Deck deck){
+        Board frame = new Board(deck);
         createPaginaPrincipale(frame);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setSize(new Dimension(700,675));

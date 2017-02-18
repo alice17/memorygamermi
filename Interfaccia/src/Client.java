@@ -146,7 +146,7 @@ public class Client {
                 game = new Game(playersNo);
 
                 // start the game
-                gameStart();
+                gameStart(deck);
             }else{
                 System.out.println("Not enough players to start the game. :(");
                 System.exit(0);
@@ -154,7 +154,9 @@ public class Client {
         }
     }
 
-    private static void gameStart() {
+    private static void gameStart(Deck deck) {
+        PaginaPrincipale pp = new PaginaPrincipale();
+        pp.createMainPage(deck);
 
         tryToMyturn();
 
