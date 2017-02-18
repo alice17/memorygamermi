@@ -1,3 +1,4 @@
+package src;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -8,12 +9,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URI;
+import java.util.Random;
 
 
 public class WindowRegistration {
     private static boolean RIGHT_TO_LEFT = false;
     private static final int SIZE_OF_TEXTFIELD = 10;
-    private static final String IMG_PATH = "src/img/Memory.png";
+    public static  String IMG_PATH = "img/Memory.png";
 
     private static void setCloseWindow(final JFrame frame) {
         int input = JOptionPane.showOptionDialog(frame,
@@ -49,6 +52,7 @@ public class WindowRegistration {
 
         }
         else{
+                Client cl = new Client(tf.getText());
                 pp.createMainPage();
                 fr.setVisible(false);
 
@@ -79,7 +83,8 @@ public class WindowRegistration {
         JPanel panelImg = new JPanel();
 
         try{
-            BufferedImage imgLogo = ImageIO.read(new File(IMG_PATH));
+            BufferedImage imgLogo;
+            imgLogo = ImageIO.read(new File(IMG_PATH));
             ImageIcon icon = new ImageIcon(imgLogo);
             JLabel labelLogo = new JLabel(icon);
             panelImg.add(labelLogo,BorderLayout.CENTER);

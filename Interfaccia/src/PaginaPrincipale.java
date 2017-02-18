@@ -1,4 +1,4 @@
-
+package src;
 import javax.swing.*;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
@@ -35,11 +35,11 @@ public class PaginaPrincipale {
 
     private static void setRegoleControl(){
         JOptionPane.showOptionDialog(null,
-                "Memory, noto anche come coppie, è un popolare gioco di carte che richiede concentrazione e memoria.\n" +
-                        "Nel gioco, le carte sono inizialmente mescolate e disposte coperte sul tavolo. I giocatori, a turno,\n"+
-                        "scoprono due carte;  se queste formano una \"coppia\", vengono incassate dal giocatore di turno, che può scoprirne altre due;\n" +
-                        "altrimenti, vengono nuovamente coperte e rimesse nella loro posizione originale sul tavolo, e il turno passa al prossimo giocatore.\n"+
-                        "Vince il giocatore che riesce a scoprire più coppie.",
+                      "Memory, noto anche come coppie, è un popolare gioco di carte che richiede concentrazione e memoria.\n" +
+                         "Nel gioco, le carte sono inizialmente mescolate e disposte coperte sul tavolo. I giocatori, a turno,\n"+
+                         "scoprono due carte;  se queste formano una \"coppia\", vengono incassate dal giocatore di turno, che può scoprirne altre due;\n" +
+                         "altrimenti, vengono nuovamente coperte e rimesse nella loro posizione originale sul tavolo, e il turno passa al prossimo giocatore.\n"+
+                         "Vince il giocatore che riesce a scoprire più coppie.",
                 "Esci",
                 JOptionPane.CLOSED_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
@@ -86,7 +86,7 @@ public class PaginaPrincipale {
             @Override
             public void menuKeyPressed(MenuKeyEvent menuKeyEvent) {
                 if(menuKeyEvent.getKeyCode() == KeyEvent.VK_Q)
-                    setExitControl();
+                   setExitControl();
             }
 
             @Override
@@ -134,4 +134,3 @@ public class PaginaPrincipale {
     }
 
 }
-
