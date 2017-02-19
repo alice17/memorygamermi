@@ -11,9 +11,10 @@ import java.io.Serializable;
 
 public class Deck implements Serializable{
 
-	private List<Card> cards;
+	//private List<Card> cards;
 	private int nCards;				// number of total cards on the deck
 	private int remainedCards;
+	private List<Integer> cardVals;
 
 
 	public Deck(int nCards){
@@ -25,17 +26,21 @@ public class Deck implements Serializable{
 	public void generateCards(){
 	// genera e mescola il mazzo di carte
 		int i;
-		cards = new ArrayList<Card>();
+		cardVals = new ArrayList<Integer>();
 		
 		for(i=0; i < (nCards/2) ; i++){
-			cards.add(new Card(i));
-			cards.add(new Card(i));
+			cardVals.add(i);
+			cardVals.add(i);
 		}
 		
-		Collections.shuffle(cards);
+		 Collections.shuffle(cardVals);
+	}
+
+	public List<Integer> getDeck(){
+		return cardVals;
 	}
 	
-	public Card getCard(int id){ return cards.get(id); }
+	/*public Card getCard(int id){ return cards.get(id); }*/
 	
 	public int getnCards(){ return nCards; }
 }

@@ -14,7 +14,7 @@ On Linux:
 ```
 $ rmiregistry  2000 &
 
-Ho settato 2000 perchË la 1099 che Ë quella di default Ë gi‡ utilizzata dal server.da sistemare.
+Ho settato 2000 perch√® la 1099 che √® quella di default ed √® gi√† utilizzata dal server.da sistemare.
 ```
 
 For running the server:
@@ -32,12 +32,10 @@ $ java -classpath /User/memorygamermi/ -Djava.rmi.server.codebase=file:/User/mem
 
 For running the client:
 
-Launch command inside /src directory 
+Launch command inside /src directory
 ```
-$ java -classpath $(PROJECT_DIR)/ src.Client Username
+$ java -classpath $(PROJECT_DIR)/ src.WindowRegistration
 
-example:
 
-$ java -classpath /User/memorygamermi/  src.Client Andrea
 
 ```

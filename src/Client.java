@@ -4,7 +4,6 @@ package src;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -16,6 +15,8 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
+
 
 public class Client {
 
@@ -30,25 +31,31 @@ public class Client {
     private static RouterFactory rmaker;
     private static BlockingQueue<GameMessage> buffer;
     private static int[] processedMsg;
+    private static String playerName;
     private static Deck deck;
 
-    public static void main(String[] args) {
+    public Client(String username){
+         this.playerName = username;
+         inizializeGame();
+    }
+
+    private static void inizializeGame() {
 
         InetAddress localHost = null;
-        
+
         try{
             localHost = InetAddress.getLocalHost();
             System.out.println("Local host is " + localHost);
         } catch (UnknownHostException uh){
             System.exit(1);
         }
-        
-        String playerName = args[0];
+
+
         String server = "localhost";
-        int port = PORT;
-        
-        if (args.length > 1) 
-        	port = Integer.parseInt(args[1]);
+
+
+        Random random = new Random();
+        int port = random.nextInt(100)+2001;
 
         /*if (System.getSecurityManager() == null)
             System.getSecurityManager(new RMISecurityManager());
@@ -56,13 +63,13 @@ public class Client {
             System.out.println("Security Manager not starts.");*/
 
         Player me = new Player(playerName, localHost, port);
-        
+
         messageBroadcast = null;
         buffer = new LinkedBlockingQueue<GameMessage>();
 
 
         try {
-	        LocateRegistry.createRegistry(port);
+            LocateRegistry.createRegistry(port);
         /*
         	try{
             	LocateRegistry.createRegistry(port);
@@ -73,7 +80,7 @@ public class Client {
             messageBroadcast = new MessageBroadcast (buffer);
             String serviceURL = "rmi://" + localHost.getCanonicalHostName() + ":" + port + "/Broadcast";
             System.out.println("Registering message broadcast service at " + serviceURL);
-            Naming.rebind(serviceURL,messageBroadcast); 
+            Naming.rebind(serviceURL,messageBroadcast);
         } catch (RemoteException rE) {
             rE.printStackTrace();
         } catch (MalformedURLException murlE) {
@@ -103,55 +110,57 @@ public class Client {
             e.printStackTrace();
             System.exit(1);
         }
-        
-        if (result) {
-        // subscribe accepted
-			System.out.println("You have been added to player list.");
-			players = partecipant.getPlayers();
-			playersNo = players.length;
-			deck = partecipant.getDeck();
 
-			if( playersNo > 1 ){
-				System.out.println("Players subscribed:");
-				
-				for (int i=0; i < playersNo;i++){
-					System.out.println(players[i].getUsername());
-				}
-				
-				System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
-				
-				/* stampa valori del mazzo di carte 
+        if (result) {
+            // subscribe accepted
+            System.out.println("You have been added to player list.");
+            players = partecipant.getPlayers();
+            playersNo = players.length;
+            deck = partecipant.getDeck();
+
+            if( playersNo > 1 ){
+                System.out.println("Players subscribed:");
+
+                for (int i=0; i < playersNo;i++){
+                    System.out.println(players[i].getUsername());
+                }
+
+                System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
+
+				/* stampa valori del mazzo di carte
 				for(int i=0; i < deck.getnCards(); i++){
 					System.out.println(deck.getCard(i).getCardId()); } */
-		      
-				link = new Link(me, players);
-				nodeId = link.getNodeId();
-				processedMsg = new int[players.length];
-				Arrays.fill(processedMsg, 0);
-				rmaker = new RouterFactory(link);
-				mmaker = new MessageFactory(nodeId);
-				messageBroadcast.configure(link,rmaker,mmaker);
-				
-				System.out.println("My id is " + nodeId + " and my name is " + players[nodeId].getUsername());
-				System.out.println("My left neighbour is " + players[link.getLeftId()].getUsername());
-				System.out.println("My right neighbour is " + players[link.getRightId()].getUsername()); 
 
-				game = new Game(playersNo);
+                link = new Link(me, players);
+                nodeId = link.getNodeId();
+                processedMsg = new int[players.length];
+                Arrays.fill(processedMsg, 0);
+                rmaker = new RouterFactory(link);
+                mmaker = new MessageFactory(nodeId);
+                messageBroadcast.configure(link,rmaker,mmaker);
 
-				// start the game
-				gameStart();
-			}else{
-				System.out.println("Not enough players to start the game. :(");
-				System.exit(0);
-			}
-        }   
+                System.out.println("My id is " + nodeId + " and my name is " + players[nodeId].getUsername());
+                System.out.println("My left neighbour is " + players[link.getLeftId()].getUsername());
+                System.out.println("My right neighbour is " + players[link.getRightId()].getUsername());
+
+                game = new Game(playersNo);
+
+                // start the game
+                gameStart(deck);
+            }else{
+                System.out.println("Not enough players to start the game. :(");
+                System.exit(0);
+            }
+        }
     }
- 
-	private static void gameStart() {
-        
+
+    private static void gameStart(Deck deck) {
+        PaginaPrincipale pp = new PaginaPrincipale();
+        pp.createMainPage(deck);
+
         tryToMyturn();
 
-        while(!game.isGameEnded()) { 
+        while(!game.isGameEnded()) {
             try {
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
@@ -165,32 +174,32 @@ public class Client {
                     System.out.println("Timeout");
                 }
             } catch (InterruptedException e) {}
-        	game.setGameEnded(true);
+            game.setGameEnded(true);
         }
-       
+
     }
-    
+
     private static void tryToMyturn() {
 
-            while (game.getCurrentPlayer() == nodeId) {
+        while (game.getCurrentPlayer() == nodeId) {
 
-                System.out.println("I'm trying to send a test message to my right neighbour");
-                String test = "Origin nodeId message is " + nodeId;
-                game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-                messageBroadcast.send(mmaker.newGameMessage(test));
-                System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
-                
-                // sceglie la prima carta
-                // manda il broadcast per la mossa
-                // sceglie la seconda carta
-                // determina se vince
-                // broadcast e turno successivo
-            }
+            System.out.println("I'm trying to send a test message to my right neighbour");
+            String test = "Origin nodeId message is " + nodeId;
+            game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+            messageBroadcast.send(mmaker.newGameMessage(test));
+            System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
+
+            // sceglie la prima carta
+            // manda il broadcast per la mossa
+            // sceglie la seconda carta
+            // determina se vince
+            // broadcast e turno successivo
+        }
 
     }
 
     private static long getWaitSeconds() {
         return 10L + nodeId * 2;
     }
-    
+
 }
