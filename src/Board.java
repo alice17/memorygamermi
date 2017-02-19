@@ -31,10 +31,11 @@ public class Board extends JFrame {
         }*/
 
        /* Collections.shuffle(cardVals);*/
-
+        int i = 0;
         for (int val : myDeck) {
             final CardGraphic c = new CardGraphic();
-            c.setId(val);
+            c.setValue(val); // aggiungo il valore della carta
+            c.setId(i); // aggiungo la posizione della carta
             c.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -43,6 +44,7 @@ public class Board extends JFrame {
                 }
             });
             cardLists.add(c);
+            i++; // incremento la posizione della carta
         }
 
         this.cards = cardLists;
@@ -69,6 +71,7 @@ public class Board extends JFrame {
                 c1 = selectedCard;
                 c1.removeImage();
                 c1.setImage();
+                System.out.println(c1.getId());
                 //c1.setText(String.valueOf(c1.getId()));
             }
             if(c1 != null && c1 != selectedCard && c2 == null){
@@ -76,13 +79,14 @@ public class Board extends JFrame {
                 c2.removeImage();
                 //c2.setText(String.valueOf(c2.getId()));
                 c2.setImage();
+                System.out.println(c2.getId());
                 t.start();
             }
 
         }
 
         public void checkCards(){
-            if(c1.getId() == c2.getId()){
+            if(c1.getValue() == c2.getValue()){
                 c1.setEnabled(false);
                 c2.setEnabled(false);
                 c1.setMatched(true);

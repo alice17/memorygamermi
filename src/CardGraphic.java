@@ -10,7 +10,9 @@ import java.io.Serializable;
  * Created by salvatorealescio on 05/02/17.
  */
 public class CardGraphic extends JButton implements Serializable{
+    private int value;
     private int id;
+
     private boolean matched = false;
 
     public void setImageLogo() {
@@ -30,13 +32,17 @@ public class CardGraphic extends JButton implements Serializable{
 
     public void setImage(){
         try{
-            BufferedImage imgVal = ImageIO.read(new File("img/card_icon/"+String.valueOf(this.getId())+".png"));
+            BufferedImage imgVal = ImageIO.read(new File("img/card_icon/"+String.valueOf(this.getValue())+".png"));
             this.setIcon(new ImageIcon(imgVal));
         }catch (IOException ex){
             ex.printStackTrace();
         }
     }
 
+
+    public void setValue(int value){
+        this.value = value;
+    }
 
     public void setId(int id){
         this.id = id;
@@ -45,6 +51,8 @@ public class CardGraphic extends JButton implements Serializable{
     public int getId(){
         return this.id;
     }
+
+    public int getValue(){ return this.value; }
 
     public void setMatched(boolean matched){
         this.matched = matched;

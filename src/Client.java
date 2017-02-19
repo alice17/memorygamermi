@@ -174,7 +174,7 @@ public class Client {
                     System.out.println("Timeout");
                 }
             } catch (InterruptedException e) {}
-            game.setGameEnded(true);
+           game.setGameEnded(true);
         }
 
     }
