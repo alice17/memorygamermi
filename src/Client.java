@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.Random;
 
 
+
 public class Client {
 
     public static final int PORT = 1099;
@@ -155,8 +156,7 @@ public class Client {
     }
 
     private static void gameStart(Deck deck) {
-        PaginaPrincipale pp = new PaginaPrincipale();
-        pp.createMainPage(deck);
+        Board pp = new Board(deck);
 
         tryToMyturn();
 
