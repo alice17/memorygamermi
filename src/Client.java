@@ -156,12 +156,13 @@ public class Client {
     }
 
     private static void gameStart(Deck deck) {
-        Board pp = new Board(deck);
+        Board board = new Board(deck);
 
         tryToMyturn();
 
         while(!game.isGameEnded()) {
             try {
+                board.lockBoard();
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
                 tryToMyturn();
