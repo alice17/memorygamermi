@@ -195,7 +195,7 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
                 c1.setEnabled(false); 
                 c2.setEnabled(false); 
                 c1.setMatched(true); 
-                c2.setMatched(true); /
+                c2.setMatched(true); 
                 myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
 
                 if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
