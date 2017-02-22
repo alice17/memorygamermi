@@ -15,15 +15,15 @@ import java.util.Collections;
 public class Board extends JFrame { //l'estensione a JFrame mi permette di creare direttamente una finestra grafica
     private List<CardGraphic> cards; // è la lista di carta che verrà rappresentata nella board
     private CardGraphic selectedCard; // è un oggetto tmp che mi tiene memorizzato la prima carta quando devo ricercare la seconda
-    private CardGraphic c1; // primo oggetto carta che mi serve il confronto
-    private CardGraphic c2; // secondo oggetto carta che mi serve il confronto
+    private CardGraphic c1; 
+    private CardGraphic c2; 
     private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
     private Score myScore = new Score(); // è l'oggetto che mi tiene aggiornato lo score del player
 
 
     public Board(Deck deck) {
         /*----creo la struttura della board------*/
-        setTitle("Memory"); //setto il titolo della finestra (quello il alto centrale)
+        setTitle("Memory"); 
 
         //gestisco l'evento alla chiusura della finstra board (simbolo in alto a sinistra)
         addWindowListener(new WindowAdapter() {
@@ -148,20 +148,21 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
         /*--- posiziono le carte nella board----*/
         Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
+        
         for (CardGraphic c : cards) { 	// posiziono le carte (per ID crescenti) all'interno della grid
-            c.setImageLogo(); 			// in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
-            pane.add(c); // inserisco le card all'interno della gridlayout
+            c.setImageLogo(); 			
+            pane.add(c); 
         }
 
         /*
         * visualizzo la finestra grafica inserendo tutti i parametri che mi servono
         */
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // questo metodo setta l'impostazione di default alla chiusura della finestra. impostando la flag DO_NOTHING_ON_CLOSE, non si aggiuge nessun comportamento di default, ma lo gestiamo noi con il metodo setExitControl
-        setSize(new Dimension(700,675)); // setta la dimensione della finestra (possiamo anche cambiarla)
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
+        setSize(new Dimension(700,675)); 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); // queste due righe mi permettono di centrare la finestra rispetto allao schermo in modo assoluto
         setLocation(dim.width/2-getSize().width/2, dim.height/2-getSize().height/2);
         setVisible(true); // ovviamente rendo visibile la finestra
-    } //---- Fine del costruttore
+    } 
 
 
     /*
@@ -170,16 +171,16 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
     */
         public void doTurn(){
             if(c1 == null  && c2 == null){ // se nessuna delle carte è scoperta
-                c1 = selectedCard; // imposto la prima carta scoperta come quella selezionata
-                c1.removeImage(); // rimuovo l'immagine del logo
-                c1.setImage(); // imposto l'immagine riferita alla carta
+                c1 = selectedCard; 
+                c1.removeImage(); 
+                c1.setImage(); 
                 System.out.println(c1.getId()); // TEMPORANEO: stampo l' ID della carta
 
             }
             if(c1 != null && c1 != selectedCard && c2 == null){ // se viene selezionata la seconda carta
-                c2 = selectedCard; // imposto la seconda carta come quella selezionata
-                c2.removeImage(); // rimuovo il logo
-                c2.setImage(); // imposto l'immagine riferita alla carta
+                c2 = selectedCard; 
+                c2.removeImage(); 
+                c2.setImage(); 
                 System.out.println(c2.getId()); // TEMPORANEO: stampo l' ID della carta
                 t.start(); // faccio avviare il timer per la visualizzazione della carta
             }
@@ -190,28 +191,27 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
         * checkCard() è il metodo che controlla il match delle carte
         */
         public void checkCards(){
-            if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
-                c1.setEnabled(false); // disattivo il prima carta
-                c2.setEnabled(false); // disattivo l seconda carta
-                c1.setMatched(true); //  dico che la prima carta è stata matchata
-                c2.setMatched(true); //  dico, di conseguenza che la seconda carta è matchata
+            if(c1.getValue() == c2.getValue()){ 
+                c1.setEnabled(false); 
+                c2.setEnabled(false); 
+                c1.setMatched(true); 
+                c2.setMatched(true); /
                 myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
 
                 if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
-                    JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti"); // in questo caso eseguo un message dialog (alert) con il punteggio effettuato
-
+                    JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti");
                 }
             }
             else{ // nel caso in cui il matching non ha esito positivo
-                c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
-                c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
-                c1.setImageLogo(); // reimposto l'immagine del logo
-                c2.setImageLogo(); // reimposto l'immagine del logo
+                c1.setText(""); 
+                c2.setText(""); 
+                c1.setImageLogo(); 
+                c2.setImageLogo(); 
             }
-            c1 = null; // svuoto il primo oggetto carta
-            c2 = null; // svuoto il secondo oggetto carta
+            c1 = null; 
+            c2 = null; 
 
-        } //--- fine chechCards()
+        } 
 
         /*
          * isGameWon() è un metodo che verifica se il gioco è realmente finito (sicuramente migliorabile in modo distribuito).
