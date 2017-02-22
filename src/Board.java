@@ -148,8 +148,8 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
         /*--- posiziono le carte nella board----*/
         Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
-        for (CardGraphic c : cards) { // posiziono le carte (per ID crescenti) all'interno della grid
-            c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
+        for (CardGraphic c : cards) { 	// posiziono le carte (per ID crescenti) all'interno della grid
+            c.setImageLogo(); 			// in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
             pane.add(c); // inserisco le card all'interno della gridlayout
         }
 
@@ -184,7 +184,7 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
                 t.start(); // faccio avviare il timer per la visualizzazione della carta
             }
 
-        } //---- fine doTurn()
+        }
 
         /*
         * checkCard() è il metodo che controlla il match delle carte
@@ -224,7 +224,7 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
                 }
             }
             return true;
-        } // --- fine isGameWon()
+        } 
 
     /* ----metodi per la gestione dell'intefaccia-------*/
     private static void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert

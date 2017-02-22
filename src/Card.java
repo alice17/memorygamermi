@@ -1,6 +1,5 @@
 /* 	Classe Card:
 	rappresenta una carta sul tavolo (Deck)
-
 */
 
 
