@@ -67,14 +67,14 @@ public class WindowRegistration {
         }
         else{
             // nel caso in cui è tutto ok, allora lancio il client e gli passo la stringa
-            //Thread t = new Thread() {
-        	//	public void run() {
+            Thread t = new Thread() {
+        		public void run() {
                 	Client cl = new Client(tf.getText());
                 	fr.setVisible(false);
-			//	}
-			//};
+				}
+			};
 			
-			//t.start();
+			t.start();
 
         }
 
@@ -125,7 +125,7 @@ public class WindowRegistration {
         final JTextField userEntry = new JTextField(); // creo la textfield per l'immissione del nome della persona che si registra
         userEntry.setColumns(SIZE_OF_TEXTFIELD); // imposto la grandezza della textfield
 
-        JButton btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
+        final JButton btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
 
 
         // gestisco ora l'evento legato al button di registrazione al click
@@ -133,14 +133,17 @@ public class WindowRegistration {
             @Override
             public void actionPerformed(ActionEvent e) {
                 settingEventRegistration(pane,userEntry);
+                btnRegistration.setEnabled(false);
             }
         });
+        
         //gestisco l'evento legato al button ma premendo invio
         btnRegistration.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
                 }
             }
 
@@ -149,12 +152,14 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                 }
                 	settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
                 }
             }
         });
@@ -165,12 +170,14 @@ public class WindowRegistration {
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
                 }
             }
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
                 }
 
             }
@@ -179,6 +186,7 @@ public class WindowRegistration {
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
                 }
 
             }
