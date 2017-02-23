@@ -23,7 +23,6 @@ public class WindowRegistration {
     private static final int SIZE_OF_TEXTFIELD = 10; // variabile che mi gestisce la lunghezza textfield
     public static  String IMG_PATH = "img/Memory.png"; // stringa per path del logo
 
-
     /*
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
     */
@@ -42,7 +41,7 @@ public class WindowRegistration {
     /*
      * settingEventRegistration è un metodo che gestisce l'evento dell'immissione del nome nel textfied
      */
-    private static void settingEventRegistration(JFrame fr, JTextField tf){
+    private static void settingEventRegistration(final JFrame fr, final JTextField tf){
         if(tf.getText() == null || tf.getText().isEmpty()){
             //gestisco il caso in cui non aggiungo nessun nome
             JOptionPane.showOptionDialog(null,
@@ -67,10 +66,15 @@ public class WindowRegistration {
 
         }
         else{
-            // nel caso un cui è tutto ok, allora lancio il client e gli passo la stringa
-                Client cl = new Client(tf.getText());
-                fr.setVisible(false);
-
+            // nel caso in cui è tutto ok, allora lancio il client e gli passo la stringa
+            //Thread t = new Thread() {
+        	//	public void run() {
+                	Client cl = new Client(tf.getText());
+                	fr.setVisible(false);
+			//	}
+			//};
+			
+			//t.start();
 
         }
 
@@ -144,7 +148,7 @@ public class WindowRegistration {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                 }
-                settingEventRegistration(pane,userEntry);
+                	settingEventRegistration(pane,userEntry);
             }
 
             @Override
