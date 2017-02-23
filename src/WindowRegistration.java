@@ -42,7 +42,7 @@ public class WindowRegistration {
     /*
      * settingEventRegistration è un metodo che gestisce l'evento dell'immissione del nome nel textfied
      */
-    private static void settingEventRegistration(JFrame fr, JTextField tf, JLabel lb){
+    private static void settingEventRegistration(JFrame fr, JTextField tf){
         if(tf.getText() == null || tf.getText().isEmpty()){
             //gestisco il caso in cui non aggiungo nessun nome
             JOptionPane.showOptionDialog(null,
@@ -128,7 +128,7 @@ public class WindowRegistration {
         btnRegistration.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                settingEventRegistration(pane,userEntry,responseLabel);
+                settingEventRegistration(pane,userEntry);
             }
         });
         //gestisco l'evento legato al button ma premendo invio
@@ -136,7 +136,7 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry);
                 }
             }
 
@@ -144,13 +144,13 @@ public class WindowRegistration {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                 }
-                settingEventRegistration(pane,userEntry,responseLabel);
+                settingEventRegistration(pane,userEntry);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry);
                 }
             }
         });
@@ -160,13 +160,13 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry);
                 }
             }
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry);
                 }
 
             }
@@ -174,7 +174,7 @@ public class WindowRegistration {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry,responseLabel);
+                    settingEventRegistration(pane,userEntry);
                 }
 
             }
