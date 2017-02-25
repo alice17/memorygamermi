@@ -12,10 +12,9 @@ Before running the compiled files make sure to have started the RMI registry ser
 
 On Linux:
 ```
-$ rmiregistry  2000 &
-
-Ho settato 2000 perchè la 1099 che è quella di default ed è già utilizzata dal server.da sistemare.
+$ rmiregistry &
 ```
+
 
 For running the server:
 
@@ -27,15 +26,14 @@ $ java -classpath $(PROJECT_DIR) -Djava.rmi.server.codebase=file:$(PROJECT_DIR)/
 example:
 
 $ java -classpath /User/memorygamermi/ -Djava.rmi.server.codebase=file:/User/memorygamermi/src/ src.Server 100
-
 ```
+
+
 
 For running the client:
 
 Launch command inside /src directory
+
 ```
 $ java -classpath $(PROJECT_DIR)/ src.WindowRegistration
-
-
-
 ```
