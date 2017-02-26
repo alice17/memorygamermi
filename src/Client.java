@@ -16,31 +16,43 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 
 public class Client {
 
-    public static final int PORT = 1099;
-    private static Game game;
-    private static Player[] players;
-    private static int nodeId;
-    private static Link link;
-    private static int playersNo;
-    private static MessageBroadcast messageBroadcast;
-    private static MessageFactory mmaker;
-    private static RouterFactory rmaker;
-    private static BlockingQueue<GameMessage> buffer;
-    private static int[] processedMsg;
-    private static String playerName;
-    private static Deck deck;
+    public   final int PORT = 1099;
+    private  Game game;
+    private  Player[] players;
+    private  int nodeId;
+    private  Link link;
+    private  int playersNo;
+    private  MessageBroadcast messageBroadcast;
+    private  MessageFactory mmaker;
+    private  RouterFactory rmaker;
+    private  BlockingQueue<GameMessage> buffer;
+    private  int[] processedMsg;
+    private  String playerName;
+    private  Deck deck;
+    private  boolean result;
+    private  Partecipant partecipant;
+    private  List<String> namePlayers;
+    private  Player me;
+
+    /*
+    * Per una corretta interazione per i feedback in WindowRegistration,
+    * ho spacchettato il client in più metodi, in modo tale che gli avvisi
+    * più importanti venissero gestiti dalla classe WindowRegistration*/
 
     public Client(String username){
          this.playerName = username;
-         inizializeGame();
-    }
 
-    private static void inizializeGame() {
+    }
+    // tale metodo setta le connessioni e in nome del client
+    public boolean setClientGame() {
 
         InetAddress localHost = null;
 
@@ -63,7 +75,7 @@ public class Client {
         else
             System.out.println("Security Manager not starts.");*/
 
-        Player me = new Player(playerName, localHost, port);
+         me = new Player(playerName, localHost, port);
 
         messageBroadcast = null;
         buffer = new LinkedBlockingQueue<GameMessage>();
@@ -89,8 +101,8 @@ public class Client {
         }
 
 
-        Partecipant partecipant = null;
-        boolean result = false;
+        partecipant = null;
+        result = false;
 
         /* establish connection with server */
         try{
@@ -111,22 +123,30 @@ public class Client {
             e.printStackTrace();
             System.exit(1);
         }
+        return result;
+      }
 
-        if (result) {
-            // subscribe accepted
-            System.out.println("You have been added to player list.");
+    // tale metodo gestisce il numero di partecipanti al gioco
+      public int getNumberOfClient(){
             players = partecipant.getPlayers();
             playersNo = players.length;
             deck = partecipant.getDeck();
 
-            if( playersNo > 1 ){
-                System.out.println("Players subscribed:");
+            return playersNo;
 
-                for (int i=0; i < playersNo;i++){
-                    System.out.println(players[i].getUsername());
-                }
 
-                System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
+      }
+        // tale metodo inizializza il gioco
+      public void inizializeGame(){
+            //if( playersNo > 1 ){
+              //  dialog.setVisible(false); // chiudo l'info di attesa
+                //System.out.println("Players subscribed:");
+
+              /*  for (int i=0; i < playersNo;i++){
+                    namePlayers.add(players[i].getUsername());
+                }*/
+
+                //System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
 
 				/* stampa valori del mazzo di carte
 				for(int i=0; i < deck.getnCards(); i++){
@@ -148,21 +168,19 @@ public class Client {
 
                 // start the game
                 gameStart(deck);
-            }else{
-                System.out.println("Not enough players to start the game. :(");
-                System.exit(0);
-            }
-        }
-    }
 
-    private static void gameStart(Deck deck) {
+        }
+
+
+
+    private void gameStart(Deck deck) {
         Board board = new Board(deck);
 
         tryToMyturn();
 
         while(!game.isGameEnded()) {
             try {
-                board.lockBoard();
+                //board.lockBoard();
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
                 tryToMyturn();
@@ -180,7 +198,7 @@ public class Client {
 
     }
 
-    private static void tryToMyturn() {
+    private void tryToMyturn() {
 
         while (game.getCurrentPlayer() == nodeId) {
 
@@ -196,11 +214,14 @@ public class Client {
             // determina se vince
             // broadcast e turno successivo
         }
-
     }
 
-    private static long getWaitSeconds() {
+    private long getWaitSeconds() {
         return 10L + nodeId * 2;
     }
 
+
+    public List<String> PlayerForUI(){
+      return namePlayers;
+    }
 }

@@ -21,7 +21,10 @@ import java.util.Random;
 public class WindowRegistration {
     private static boolean RIGHT_TO_LEFT = false; //variabile che mi setta l'orientamento del posizione degli elementi nella finestra
     private static final int SIZE_OF_TEXTFIELD = 10; // variabile che mi gestisce la lunghezza textfield
-    public static  String IMG_PATH = "img/Memory.png"; // stringa per path del logo
+    public  static String IMG_PATH = "img/Memory.png"; // stringa per path del logo
+    private static JLabel feedback; // label per il feedback di registrazione
+    private static JLabel waiting; // label per il waiting degli altri partecipanti
+
 
     /*
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
@@ -68,13 +71,45 @@ public class WindowRegistration {
         else{
             // nel caso in cui è tutto ok, allora lancio il client e gli passo la stringa
             Thread t = new Thread() {
-        		public void run() {
-                	Client cl = new Client(tf.getText());
-                	fr.setVisible(false);
-				}
-			};
-			
-			t.start();
+                public void run() {
+                    Client cl = new Client(tf.getText());
+                    boolean result = cl.setClientGame(); //setto i parametri del client
+                    if(result){ // se tutto è andato OK
+                        feedback.setText("Sei stato iscritto al gioco");
+                        waiting.setText("Sto aspettando gli altri giocatori");
+                        if(cl.getNumberOfClient() > 1){ // se il numero di partecipante è maggiore di uno allora inizio il gioco
+                            fr.setVisible(false);
+                            cl.inizializeGame();
+                        }else{ // altrimenti se non trova nessun giocatore
+                            int exit = JOptionPane.showConfirmDialog(null,
+                                    "Non abbiamo trovato altri giocatori.Vuoi uscire?" ,
+                                    "Sorry",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            if (exit == JOptionPane.YES_OPTION)
+                                System.exit(0);
+                            else{
+                                feedback.setText("Non abbiamo trovato altri giocatori!!!");
+                                waiting.setText("Chiudi il programma");
+                            }
+
+                        }
+                    }else{ // caso in cui non è avvenuta l'iscrizione
+                        int input = JOptionPane.showOptionDialog(null, // la root è il frame
+                                "Iscrizione al gioco non avvenuta",
+                                "Sorry",
+                                JOptionPane.YES_OPTION, // tipo di button dell' alert
+                                JOptionPane.INFORMATION_MESSAGE, // tipo di alert
+                                null,null,null);
+                        if(input == JOptionPane.YES_OPTION)
+                            System.exit(0);
+
+                    }
+
+                }
+            };
+
+            t.start();
 
         }
 
@@ -142,7 +177,7 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                 }
             }
@@ -151,7 +186,7 @@ public class WindowRegistration {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                 }
-                	settingEventRegistration(pane,userEntry);
+                	//settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
             }
 
@@ -169,14 +204,14 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                 }
             }
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                 }
 
@@ -194,7 +229,9 @@ public class WindowRegistration {
 
 
         });
-
+        feedback = new JLabel();
+        waiting = new JLabel();
+        loadingLabel = new JLabel();
         // creo ora il raggruppamento degli oggetti userlabel, textfield ed il button di registrazione
         GroupLayout groupRegistration = new GroupLayout(panelRegistration); // vado a passargli il root dove creare il GroupLayout
         groupRegistration.setAutoCreateGaps(true); // setto il spazio fra gli oggetti
@@ -205,12 +242,18 @@ public class WindowRegistration {
                 .addComponent(userLabel) // aggiungo la label
                 .addComponent(userEntry) // aggiungo la textfield
                 .addComponent(btnRegistration) // aggiungo il button
+                .addComponent(loadingLabel)
+                .addComponent(feedback)
+                .addComponent(waiting)
         );
         //setto gli oggetti con l'orientamento verticaole
         groupRegistration.setVerticalGroup(groupRegistration.createSequentialGroup()
                 .addComponent(userLabel) // aggiungo la label
                 .addComponent(userEntry) // aggiungo la textfield
                 .addComponent(btnRegistration) //aggiungo il button
+                .addComponent(loadingLabel)
+                .addComponent(feedback)
+                .addComponent(waiting)
         );
 
         // gestisco l'evento di chiusura della finestra
