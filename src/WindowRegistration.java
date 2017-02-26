@@ -24,7 +24,7 @@ public class WindowRegistration {
     public  static String IMG_PATH = "img/Memory.png"; // stringa per path del logo
     private static JLabel feedback; // label per il feedback di registrazione
     private static JLabel waiting; // label per il waiting degli altri partecipanti
-
+    private static JLabel loadingLabel;
 
     /*
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
@@ -179,6 +179,7 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
             }
 
@@ -188,6 +189,7 @@ public class WindowRegistration {
                 }
                 	//settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
             }
 
             @Override
@@ -195,6 +197,7 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
             }
         });
@@ -206,6 +209,7 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
             }
             @Override
@@ -213,6 +217,7 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
 
             }
@@ -222,6 +227,7 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
 
             }
