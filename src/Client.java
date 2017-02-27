@@ -123,19 +123,17 @@ public class Client {
             e.printStackTrace();
             System.exit(1);
         }
+        
+        
         return result;
       }
 
-    // tale metodo gestisce il numero di partecipanti al gioco
-      public int getNumberOfClient(){
+      public void configureDeckPlayers(){
             players = partecipant.getPlayers();
             playersNo = players.length;
             deck = partecipant.getDeck();
-
-            return playersNo;
-
-
       }
+      
         // tale metodo inizializza il gioco
       public void inizializeGame(){
             //if( playersNo > 1 ){
@@ -223,5 +221,9 @@ public class Client {
 
     public List<String> PlayerForUI(){
       return namePlayers;
+    }
+    
+    public int getPlayersNo(){
+    	return playersNo;
     }
 }

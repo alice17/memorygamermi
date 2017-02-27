@@ -77,7 +77,9 @@ public class WindowRegistration {
                     if(result){ // se tutto è andato OK
                         feedback.setText("Sei stato iscritto al gioco");
                         waiting.setText("Sto aspettando gli altri giocatori");
-                        if(cl.getNumberOfClient() > 1){ // se il numero di partecipante è maggiore di uno allora inizio il gioco
+                        cl.configureDeckPlayers();
+                        
+                        if(cl.getPlayersNo() > 1){ // se il numero di partecipante è maggiore di uno allora inizio il gioco
                             fr.setVisible(false);
                             cl.inizializeGame();
                         }else{ // altrimenti se non trova nessun giocatore
