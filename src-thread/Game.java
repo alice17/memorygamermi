@@ -29,13 +29,6 @@ public class Game {
     public boolean isGameEnded() { return isGameEnded; }
     public void setGameEnded(boolean gameEnded) { isGameEnded = gameEnded; }
 
-    /*public OnesMove myTurn(Board board) {
-        myMove = board.retrieveMove();
-        if (myMove.getPair() == false) {
-            currentPlayer++;
-        }
-        return myMove;
-    }*/
 
     public void update(GameMessage m) {
         setCurrentPlayer((getCurrentPlayer()+1) % nPlayers);

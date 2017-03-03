@@ -36,12 +36,15 @@ public class Client  {
     private int[] processedMsg;
     private String playerName;
     private Deck deck;
-    private Board board;
+    private final Board board;
     private OnesMove move;
     public boolean turn;
     public boolean enterSync = false;
 
-    public Client (String username,Board board){
+    public Client (String username,final Board board){
+
+         // La board viene passata per riferimento, incredibile ma vero.
+         // Ho cancellato circa 100 righe di codice per questo.
          this.board = board;
          this.playerName = username;
          this.turn = false;
@@ -122,6 +125,7 @@ public class Client  {
         }
 
         if (result) {
+
             // subscribe accepted
             System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
@@ -162,54 +166,48 @@ public class Client  {
 
     public synchronized void gameStart(Deck deck) {
 
-
+        //Inizio gioco
+        //Il thread looperà dentro a gameStart fino alla fine del gioco.
         tryToMyturn();
 
         while(!game.isGameEnded()) {
             try {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                }
-                turn = false;
-                System.out.println("Notify turn");
-                notifyAll();
-                try{
-                    System.out.println("Wait Notify()");
-                    wait();
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                }
+                //Eseguo quando non è il mio turno,sto in ascolto di messagi sul buffer. 
+                
                 boolean repeat = true;
-                while (repeat) {
-                    System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
-                    GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
-                    if(m != null) {
-                        repeat = false;
-                        System.out.println("Processing message " + m);
-                        mmaker.incMessageCounter();
-                        System.out.println("Message counter factory " + mmaker.getMessageCounter());
-                        move = m.getMove();
-                        processedMsg[m.getOrig()] = m.getId();
-                        /*if(m.getPair() == false) {
-                            game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-                        }*/
-                        game.update(m);
-                        System.out.println("The next player is " + game.getCurrentPlayer());
-                        notifyAll();
-                        try{
-                            System.out.println("Wait control");
-                            wait();
-                        } catch (InterruptedException ie) {
-                            ie.printStackTrace();
-                        }
-                        tryToMyturn();
-                    
-                    } else {
-                        System.out.println("Timeout");
+                System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
+                GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
+                if(m != null) {
+
+                    System.out.println("Processing message " + m);
+                    //Incremento messageCounter
+                    // Per ora ho creato due messagecounter, uno in Messagefactory(questo) e uno in MessageBroadcast.
+                    // Sincronizzati alla grezza.
+                    // In Uno vecchio usa un oggetto condiviso tra il client e l'interfaccia remota
+                    // più o meno come la callback usando i lock, sarebbe utilissimo.mistero.Da provare.
+                    mmaker.incMessageCounter();
+                    System.out.println("Message counter factory " + mmaker.getMessageCounter());
+                    // recupero la mossa dal messaggio che mi è arrivato
+                    move = m.getMove();
+                    //Questo array tiene conto dell'ultimo messaggio processato per ogni nodo
+                    //Per ora non serve a niente, sarò utile coi crash per vedere qual'è il nodo
+                    // con la vista dei messaggi spediti più recente.
+                    processedMsg[m.getOrig()] = m.getId();
+                    // Per ora nel gioco se becchi una coppia gioca quello dopo, domani lo implemento.
+                    /*if(m.getPair() == false) {
+                        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+                    }*/
+                    // Incremento l'id del giocatore attuale.
+                    game.update(m);
+                    //Passo alla board la mossa per aggiornare la ui.
+                    board.updateInterface(move);
+                    System.out.println("The next player is " + game.getCurrentPlayer());
+                    //Provo a vedere se è il mio turno.
+                    // Tramite game.update ho aggiornato il giocatore attuale.
+                    tryToMyturn();
+                } else {
+                     System.out.println("Timeout");
                     }
-                }
                 //game.setGameEnded(true);
             } catch (InterruptedException e) {}
         }
@@ -219,16 +217,13 @@ public class Client  {
 
         while (game.getCurrentPlayer() == nodeId) {
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-            }
+            //Quando è il mio turno sblocco la board e rimango in attesa della mossa
+            //Direi che questo wait() sia quasi obbligatorio se lo vogliamo strutturare così.
+            //L oggetto Client si blocca un attimo ma la classe remota RMI MessageBroadcast può ancora
+            // ricevere messaggi, appena il client si riattiva può ritornare in ascolto sul buffer per vedere
+            // se ci sono messaggi.Se ce ne sono va ad aggiornare l interfaccia locale.
 
-            turn = true;
-            notifyAll();
-            
-
+            board.unlockBoard();
             System.out.println("I'm trying to do a move");
             try{
                 System.out.println("Wait move");
@@ -236,8 +231,16 @@ public class Client  {
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }
+            //Quando viene notificata la mossa viene ribloccata la board.
+            board.lockBoard();
+            //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
             game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+            // Aumento il message counter, questo bisognerebbe cambiarlo per usare un 
+            // oggetto condiviso tra la classe client e il MessageBroadcast per tenere
+            // sincronizzati i messaggi che arrivano e quelli che vengono spediti.
             messageBroadcast.incMessageCounter();
+
+            //spedisco il messaggio sulla classe remota del mio vicino destro tramite RMI.
             messageBroadcast.send(mmaker.newGameMessage(move));
             System.out.println("Message counter factory " + mmaker.getMessageCounter());
             System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
@@ -260,37 +263,16 @@ public class Client  {
         }
         return deck;
     }
+
+    //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
+    //che la deve impachettare in un messaggio da spedire.
     public synchronized void notifyMove(OnesMove move) {
             this.move = move;
             System.out.println("Notify move");
             notifyAll();
 
     }
-    public synchronized boolean awaitTurnClient() {
-            try {
-                System.out.println("Start wait turn");
-                wait();
-                System.out.println("End turn wait");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        return turn;
-    }
-    public synchronized OnesMove awaitUpdate() {
-        
-        
-        try {
-                System.out.println("Wait message update");
-                wait();
-                System.out.println("End message update");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        return move;
-    }
-    public synchronized void wakeUpClient() {
-        notifyAll();
-    }
+    
     public synchronized boolean isGameEnded() {
         return game.isGameEnded();
     }

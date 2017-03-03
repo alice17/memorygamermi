@@ -185,6 +185,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     } //---- Fine del costruttore
 
 
+        //Thread Client, durerà fino alla fine della partita.
         public void doClientThread() {
             Thread t2 = new Thread() {
                 public synchronized void run() {
@@ -193,41 +194,13 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             };
             t2.start();
         }
-        public void doSyncThread() {
-            t3 = new Thread() {
-                    public synchronized void run() {
-                        while(!cl.isGameEnded()) { 
-                            turn = cl.awaitTurnClient();
-                            if (turn == true) {
-                                unlockBoard();
-                                try {
-                                    synchronized(syncObject)
-                                    {
-                                        System.out.println("Wait board");
-                                        syncObject.wait();
-                                        System.out.println("End wait board");
-                                    }
-                                    //wait();
-                                } catch (InterruptedException ie) {
-                                    ie.printStackTrace();
-                                }
-                            } else {
-                                cl.wakeUpClient();
-                                move = cl.awaitUpdate();
-                                //cl.wakeUpClient();
-                                updateInterface();
-                            }
-                        }
-                    }
-                    public synchronized void notifyThread() {
-                        notifyAll();
-                    }
-            };
-            t3.start();
-        }
-        public synchronized void updateInterface() {
 
-            //unclockBoard();
+        // Metodo utilizzato per aggiornare la ui.Il metodo viene chiamato
+        // dal client quando riceve nuovi messaggi.
+        // Si potrebbe creare un metodo unico con checkCard()
+        public synchronized void updateInterface(OnesMove move) {
+
+            this.move = move;
             System.out.println("Update interface");
             System.out.println(move.getCard1Index());
             System.out.println(move.getCard2Index());
@@ -237,6 +210,9 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             c1.setImage();
             c2.removeImage();
             c2.setImage();
+
+            // Utilizzato per rallentare l'animazione
+            //Si potrebbe mettere un timer ?
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException ie) {
@@ -255,7 +231,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             }
             c1 = null;
             c2 = null;
-            cl.wakeUpClient();
 
         }
 
@@ -308,14 +283,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             move = new OnesMove(c1.getId(),c2.getId());
             cl.notifyMove(move);
             lockBoard();
-            
-            //t3.notifyThread(); //Notify thread.
-            synchronized(syncObject) {
-                syncObject.notify();
-            } 
-            cl.notifyMove(move);
-            lockBoard();
-            //notifyAll();
             c1 = null; // svuoto il primo oggetto carta
             c2 = null; // svuoto il secondo oggetto carta
 

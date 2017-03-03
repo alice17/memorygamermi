@@ -72,15 +72,17 @@ public class WindowRegistration {
         }
         else{
             // nel caso un cui è tutto ok, allora lancio il client e gli passo la stringa
+            //appena confermato l'username la finestra windowregistration scompare con fr.setVisible()
+            // si può anche cambiare.
+            //Come ultima cosa crea una board e avvia il thread doClientThread che durerà fino alla fine.
+            //Questo thread direi che lo possa chiamare direttamente la board anche senza bloccare la grafica.
+            //Non dovrebbe cambiare tanto, si può provare
             String userName = tf.getText();
             //cl = new Client(tf.getText());
             fr.setVisible(false);
-            //deck = cl.getDeck();
             board = new Board();
             board.init(userName);
-            board.doSyncThread();
             board.doClientThread();
-            //board.doSyncThread();
         }
     }
 
