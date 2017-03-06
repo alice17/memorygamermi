@@ -172,7 +172,7 @@ public class Client  {
 
         while(!game.isGameEnded()) {
             try {
-                //Eseguo quando non è il mio turno,sto in ascolto di messagi sul buffer. 
+                //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
                 
                 boolean repeat = true;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
@@ -207,7 +207,7 @@ public class Client  {
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
-                    }
+                }
                 //game.setGameEnded(true);
             } catch (InterruptedException e) {}
         }

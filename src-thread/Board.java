@@ -269,6 +269,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 pair = true;
                 myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
 
+
                 if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
                     JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti"); // in questo caso eseguo un message dialog (alert) con il punteggio effettuato
 
@@ -349,7 +350,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     /*----metodo che sblocca le carte----*/
     public synchronized void unlockBoard(){
         for (CardGraphic c : cards) {
-            c.setEnabled(true); // abilita tutti i bottoni delle carte
+            if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
             //System.out.println("enables");
         }
     }

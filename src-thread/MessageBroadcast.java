@@ -56,7 +56,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 			Router router = rmaker.newRouter(msg);
 			router.run();
 		} else {
-			System.out.println("message discarded");
+			System.out.println("Message discarded. " + msg.toString());
 		}	
 	}
 
@@ -71,19 +71,27 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 						try {
 							buffer.put(msg);
 							System.out.println("msg put into the queue");
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException e) {
+							System.out.println("Error! Can't put message in the queue.");
+						}
+
 						msgCounterLock.lock();
+
 						try {
 							messageCounter++;
 						} finally {
 							msgCounterLock.unlock();
 						}
+
 						System.out.println("Message counter -> " + messageCounter);
 						while(pendingMessage.containsKey(messageCounter + 1)) {
 							GameMessage pendMessage = pendingMessage.remove(messageCounter + 1);
 							try {
 								buffer.put(pendMessage);
-							} catch (InterruptedException e) {}
+							} catch (InterruptedException e) {
+								System.out.println("error!");
+							}
+
 							msgCounterLock.lock();
 							try {
 								messageCounter++;
