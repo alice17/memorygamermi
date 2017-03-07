@@ -351,9 +351,9 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     /*----metodo che sblocca le carte----*/
     public void unlockBoard(){
-    	System.out.println("Unlock board in board.");
+    	//System.out.println("Unlock board in board.");
         for (CardGraphic c : cards) {
-        	System.out.println("Unlock " + c.getId());
+        	//System.out.println("Unlock " + c.getId());
             if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
             //System.out.println("enables");
         }
