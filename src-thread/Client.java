@@ -223,6 +223,7 @@ public class Client  {
             // ricevere messaggi, appena il client si riattiva può ritornare in ascolto sul buffer per vedere
             // se ci sono messaggi.Se ce ne sono va ad aggiornare l interfaccia locale.
 
+            System.out.println("Unlock board.");
             board.unlockBoard();
             System.out.println("I'm trying to do a move");
             try{
@@ -252,6 +253,7 @@ public class Client  {
     private long getWaitSeconds() {
         return 10L + nodeId * 2;
     }
+
     public synchronized Deck getDeck() {
         if (deck == null){
             try {
@@ -265,7 +267,7 @@ public class Client  {
     }
 
     //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
-    //che la deve impachettare in un messaggio da spedire.
+    //che la deve impacchettare in un messaggio da spedire.
     public synchronized void notifyMove(OnesMove move) {
             this.move = move;
             System.out.println("Notify move");

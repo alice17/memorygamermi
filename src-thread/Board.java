@@ -341,15 +341,19 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 null,null,null);
 
     }
+
     /*----metodo che blocca le carte----*/
-    public synchronized void lockBoard(){
+    public void lockBoard(){
         for (CardGraphic c : cards) {
             c.setEnabled(false); // disabilita tutti bottoni delle carte
         }
     }
+
     /*----metodo che sblocca le carte----*/
-    public synchronized void unlockBoard(){
+    public void unlockBoard(){
+    	System.out.println("Unlock board in board.");
         for (CardGraphic c : cards) {
+        	System.out.println("Unlock " + c.getId());
             if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
             //System.out.println("enables");
         }
