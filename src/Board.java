@@ -19,11 +19,19 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
     private CardGraphic c2; 
     private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
     private Score myScore = new Score(); // è l'oggetto che mi tiene aggiornato lo score del player
+    private Player mePlayer;
 
 
-    public Board(Deck deck) {
+    public Board(Deck deck,Player me, Player[] players) {
+        this.mePlayer = me;
         /*----creo la struttura della board------*/
-        setTitle("Memory"); 
+        setTitle("Memory");
+        Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
+        boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
+        JPanel pane = new JPanel(); // creo il panel per la grid
+        final ScoringBoard scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
+        scoring.buildGridForScore();
+        boardLayout.add(scoring, BorderLayout.LINE_START); // posiziono la scoring board nel layout
 
         //gestisco l'evento alla chiusura della finstra board (simbolo in alto a sinistra)
         addWindowListener(new WindowAdapter() {
@@ -139,26 +147,28 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
         t = new Timer(750, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                checkCards(); // questa è la funzione che controlla il matching delle carte
+                checkCards(scoring, mePlayer); // questa è la funzione che controlla il matching delle carte
             }
         });
 
         t.setRepeats(false); // con questo metodo non si vuole far ripetere il timer (di default è settato a true)
 
-        /*--- posiziono le carte nella board----*/
-        Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
+        /*--- setto il layout della board----*/
+
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
-        
         for (CardGraphic c : cards) { 	// posiziono le carte (per ID crescenti) all'interno della grid
             c.setImageLogo(); 			
             pane.add(c); 
         }
+        boardLayout.add(pane,BorderLayout.LINE_END); // posiziono il panel nel Layout
+
 
         /*
         * visualizzo la finestra grafica inserendo tutti i parametri che mi servono
         */
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
-        setSize(new Dimension(700,675)); 
+        setSize(new Dimension(700,675));
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // massimizza la finestra
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); // queste due righe mi permettono di centrare la finestra rispetto allao schermo in modo assoluto
         setLocation(dim.width/2-getSize().width/2, dim.height/2-getSize().height/2);
         setVisible(true); // ovviamente rendo visibile la finestra
@@ -190,13 +200,16 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
         /*
         * checkCard() è il metodo che controlla il match delle carte
         */
-        public void checkCards(){
+        public void checkCards(ScoringBoard sc,Player me){
             if(c1.getValue() == c2.getValue()){ 
                 c1.setEnabled(false); 
                 c2.setEnabled(false); 
                 c1.setMatched(true); 
                 c2.setMatched(true); 
-                myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
+                myScore.updateScore();// vado ad eseguire l'update dello score riferito al player
+                me.setPoints(myScore.getScore());
+                //sc.setPlayerScore(me.getPoints());
+                //sc.updateScore();
 
                 if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
                     JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti");
