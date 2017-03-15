@@ -13,6 +13,8 @@ public class Game {
     private int nPlayers;                        // num di giocatori totali (aggiornato)
     private int currentPlayer;                   // id del giocatore di questo turno
     private boolean isGameEnded;
+    private Deck boardDeck;
+    private OnesMove myMove;
 
     public Game(int nPlayers) {
     	this.nPlayers = nPlayers;
@@ -26,4 +28,9 @@ public class Game {
     public void setCurrentPlayer(int currentPlayer) { this.currentPlayer = currentPlayer; }
     public boolean isGameEnded() { return isGameEnded; }
     public void setGameEnded(boolean gameEnded) { isGameEnded = gameEnded; }
+
+
+    public void update(GameMessage m) {
+        setCurrentPlayer((getCurrentPlayer()+1) % nPlayers);
+    }
 }

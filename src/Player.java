@@ -18,10 +18,12 @@ public class Player extends Node {
     public Player(String user,InetAddress inetAddr, int port){
         super(inetAddr, port);
         this.username = user;
+        this.points = 0;
     }
 
     public String getUsername(){ return username; }
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
+    public void incPoints() {points++; }
 
 }

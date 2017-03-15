@@ -21,16 +21,49 @@ import java.util.Random;
 public class WindowRegistration {
     private static boolean RIGHT_TO_LEFT = false; //variabile che mi setta l'orientamento del posizione degli elementi nella finestra
     private static final int SIZE_OF_TEXTFIELD = 10; // variabile che mi gestisce la lunghezza textfield
-    public  static String IMG_PATH = "img/Memory.png"; // stringa per path del logo
-    private static JLabel feedback; // label per il feedback di registrazione
-    private static JLabel waiting; // label per il waiting degli altri partecipanti
-    private static JLabel loadingLabel;
+    public static  String IMG_PATH = "img/Memory.png"; // stringa per path del logo
+    public static Board board;
+    public static Deck deck;
+    public static boolean awaitTurn;
+    public static JLabel waiting;
+    public static JLabel feedback;
+    public static JFrame frame;
+    public static JButton btnRegistration;
+
 
     /*
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
     */
+    public WindowRegistration() {
 
-    private static void setCloseWindow(final JFrame frame) {
+
+
+        try {
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        //Schedule a job for the event dispatch thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
+
+    }
+
+    private  void setCloseWindow(final JFrame frame) {
         int input = JOptionPane.showOptionDialog(frame, // la root è il frame
                 "Sicuro di voler uscire del gioco?",
                 "Esci",
@@ -44,7 +77,7 @@ public class WindowRegistration {
     /*
      * settingEventRegistration è un metodo che gestisce l'evento dell'immissione del nome nel textfied
      */
-    private static void settingEventRegistration(final JFrame fr, final JTextField tf){
+    private synchronized void settingEventRegistration(final JFrame fr, JTextField tf){
         if(tf.getText() == null || tf.getText().isEmpty()){
             //gestisco il caso in cui non aggiungo nessun nome
             JOptionPane.showOptionDialog(null,
@@ -69,59 +102,26 @@ public class WindowRegistration {
 
         }
         else{
-            // nel caso in cui è tutto ok, allora lancio il client e gli passo la stringa
-            Thread t = new Thread() {
-                public void run() {
-                    Client cl = new Client(tf.getText());
-                    boolean result = cl.setClientGame(); //setto i parametri del client
-                    if(result){ // se tutto è andato OK
-                        feedback.setText("Sei stato iscritto al gioco");
-                        waiting.setText("Sto aspettando gli altri giocatori");
-                        cl.configureDeckPlayers();
-                        
-                        if(cl.getPlayersNo() > 1){ // se il numero di partecipante è maggiore di uno allora inizio il gioco
-                            fr.setVisible(false);
-                            cl.inizializeGame();
-                        }else{ // altrimenti se non trova nessun giocatore
-                            int exit = JOptionPane.showConfirmDialog(null,
-                                    "Non abbiamo trovato altri giocatori.Vuoi uscire?" ,
-                                    "Sorry",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.INFORMATION_MESSAGE);
-                            if (exit == JOptionPane.YES_OPTION)
-                                System.exit(0);
-                            else{
-                                feedback.setText("Non abbiamo trovato altri giocatori!!!");
-                                waiting.setText("Chiudi il programma");
-                            }
 
-                        }
-                    }else{ // caso in cui non è avvenuta l'iscrizione
-                        int input = JOptionPane.showOptionDialog(null, // la root è il frame
-                                "Iscrizione al gioco non avvenuta",
-                                "Sorry",
-                                JOptionPane.YES_OPTION, // tipo di button dell' alert
-                                JOptionPane.INFORMATION_MESSAGE, // tipo di alert
-                                null,null,null);
-                        if(input == JOptionPane.YES_OPTION)
-                            System.exit(0);
-
-                    }
-
-                }
-            };
-
-            t.start();
-
+            // nel caso un cui è tutto ok, allora lancio il client e gli passo la stringa
+            //appena confermato l'username la finestra windowregistration scompare con fr.setVisible()
+            // si può anche cambiare.
+            //Come ultima cosa crea una board e avvia il thread doClientThread che durerà fino alla fine.
+            //Questo thread direi che lo possa chiamare direttamente la board anche senza bloccare la grafica.
+            //Non dovrebbe cambiare tanto, si può provare
+            String userName = tf.getText();
+            //fr.setVisible(false);
+            board = new Board(this);
+            board.init(userName);
+            //board.doClientThread();
         }
-
     }
 
     /*
      * addComponentsToPane è un metodo che crea la borad layout per inserire tutti gli oggetti
      */
 
-    public static void addComponentsToPane(final JFrame pane) {
+    public void addComponentsToPane(final JFrame pane) {
 
 
         if (!(pane.getLayout() instanceof BorderLayout)) { // controllo se il frame è in modalità bordarLayout
@@ -162,18 +162,27 @@ public class WindowRegistration {
         final JTextField userEntry = new JTextField(); // creo la textfield per l'immissione del nome della persona che si registra
         userEntry.setColumns(SIZE_OF_TEXTFIELD); // imposto la grandezza della textfield
 
-        final JButton btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
+        btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
 
+        feedback = new JLabel();
+        waiting = new JLabel();
 
         // gestisco ora l'evento legato al button di registrazione al click
         btnRegistration.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                settingEventRegistration(pane,userEntry);
-                btnRegistration.setEnabled(false);
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        settingEventRegistration(pane,userEntry);
+                        btnRegistration.setEnabled(false);  
+                    }     
+                });
+                t.start();
             }
         });
-        
+
         //gestisco l'evento legato al button ma premendo invio
         btnRegistration.addKeyListener(new KeyListener() {
             @Override
@@ -188,10 +197,10 @@ public class WindowRegistration {
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                }
-                	//settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                     userEntry.setEditable(false);
+                }
             }
 
             @Override
@@ -199,7 +208,7 @@ public class WindowRegistration {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
-                    userEntry.setEditable(false);
+                    userEntry.setEditable(false);    
                 }
             }
         });
@@ -227,19 +236,20 @@ public class WindowRegistration {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
-                    btnRegistration.setEnabled(false);
-                    userEntry.setEditable(false);
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            settingEventRegistration(pane,userEntry);
+                            btnRegistration.setEnabled(false);
+                            userEntry.setEditable(false);  
+                        }     
+                    });
+                    t.start();
                 }
 
             }
-
-
-
         });
-        feedback = new JLabel();
-        waiting = new JLabel();
-        loadingLabel = new JLabel();
+
         // creo ora il raggruppamento degli oggetti userlabel, textfield ed il button di registrazione
         GroupLayout groupRegistration = new GroupLayout(panelRegistration); // vado a passargli il root dove creare il GroupLayout
         groupRegistration.setAutoCreateGaps(true); // setto il spazio fra gli oggetti
@@ -250,7 +260,6 @@ public class WindowRegistration {
                 .addComponent(userLabel) // aggiungo la label
                 .addComponent(userEntry) // aggiungo la textfield
                 .addComponent(btnRegistration) // aggiungo il button
-                .addComponent(loadingLabel)
                 .addComponent(feedback)
                 .addComponent(waiting)
         );
@@ -259,7 +268,6 @@ public class WindowRegistration {
                 .addComponent(userLabel) // aggiungo la label
                 .addComponent(userEntry) // aggiungo la textfield
                 .addComponent(btnRegistration) //aggiungo il button
-                .addComponent(loadingLabel)
                 .addComponent(feedback)
                 .addComponent(waiting)
         );
@@ -275,8 +283,6 @@ public class WindowRegistration {
 
         panelRegistration.setBorder(new EmptyBorder(50,50,0,50)); // setto i bordi del panel della registrazione
         pane.add(panelRegistration, BorderLayout.CENTER); // posizione il panel al centro
-
-
     }
 
     /**
@@ -284,10 +290,12 @@ public class WindowRegistration {
      * this method should be invoked from the
      * event dispatch thread.
      */
-    private static void createAndShowGUI() {
+    private void createAndShowGUI() {
 
         //Create and set up the window.
-        JFrame frame = new JFrame("Registrazione - Memory");
+        //JFrame frame = new JFrame("Registrazione - Memory");
+        //this.fr = frame;
+        frame = new JFrame("Registrazione - Memory");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         //Set up the content pane.
         addComponentsToPane(frame);
@@ -302,8 +310,49 @@ public class WindowRegistration {
         frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
     }
 
-    public static void main(String[] args) {
-        /* Use an appropriate Look and Feel */
+    public void notifySubscribe() {
+        feedback.setText("Sei stato iscritto al gioco");
+        waiting.setText("Sto aspettando gli altri giocatori");
+    }
+
+    public static void notifyErrorSubscribe() {
+        int input = JOptionPane.showOptionDialog(null, // la root è il frame
+                                "Iscrizione al gioco non avvenuta",
+                                "Sorry",
+                                JOptionPane.YES_OPTION, // tipo di button dell' alert
+                                JOptionPane.INFORMATION_MESSAGE, // tipo di alert
+                                null,null,null);
+                        if(input == JOptionPane.YES_OPTION)
+                            System.exit(0);
+
+    }
+    public static void notifyGameStart() {
+        feedback.setText("");
+        waiting.setText("Inizio Partita...");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        }
+        frame.setVisible(false);
+    }
+
+    public static void notifyErrorGameStart() {
+        int exit = JOptionPane.showConfirmDialog(null,
+                                    "Non abbiamo trovato altri giocatori.Vuoi uscire?" ,
+                                    "Sorry",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            if (exit == JOptionPane.YES_OPTION)
+                                System.exit(0);
+                            else{
+                                feedback.setText("Non abbiamo trovato altri giocatori!!!");
+                                waiting.setText("Chiudi il programma");
+                            }
+    }
+
+    /*public static void main(String[] args) {
+        
         try {
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -316,7 +365,7 @@ public class WindowRegistration {
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-        /* Turn off metal's use bold fonts */
+        
         UIManager.put("swing.boldMetal", Boolean.FALSE);
 
         //Schedule a job for the event dispatch thread:
@@ -326,5 +375,6 @@ public class WindowRegistration {
                 createAndShowGUI();
             }
         });
-    }
+    }*/  
+
 }

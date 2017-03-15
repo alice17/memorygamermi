@@ -36,7 +36,7 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 		return players;
 	}
 	
-	public Deck getDeck(){
+	public synchronized Deck getDeck(){
 		return deck;
 	}
 }

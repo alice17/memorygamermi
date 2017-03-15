@@ -7,31 +7,41 @@ import javax.swing.event.MenuKeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.lang.Thread;
 
 /**
  * La classe Board permette di istanziare la board con le carte per eseguire il gioco del memory
  */
 
-public class Board extends JFrame { //l'estensione a JFrame mi permette di creare direttamente una finestra grafica
+public class Board extends JFrame {//l'estensione a JFrame mi permette di creare direttamente una finestra grafica
     private List<CardGraphic> cards; // è la lista di carta che verrà rappresentata nella board
     private CardGraphic selectedCard; // è un oggetto tmp che mi tiene memorizzato la prima carta quando devo ricercare la seconda
-    private CardGraphic c1; 
-    private CardGraphic c2; 
+    private CardGraphic c1; // primo oggetto carta che mi serve il confronto
+    private CardGraphic c2; // secondo oggetto carta che mi serve il confronto
     private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
-    private Score myScore = new Score(); // è l'oggetto che mi tiene aggiornato lo score del player
-    private Player mePlayer;
+    private boolean checkCards = false;
+    private boolean pair = false;
+    private List<CardGraphic> cardLists;
+    private boolean retrievePairs;
+    public static Client cl;
+    private Deck deck;
+    private Player[] players;
+    private OnesMove move;
+    private boolean turn;
+    private final WindowRegistration initialWindow;
+    private static ScoringBoard scoring;
 
 
-    public Board(Deck deck,Player me, Player[] players) {
-        this.mePlayer = me;
-        /*----creo la struttura della board------*/
-        setTitle("Memory");
-        Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
-        boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
-        JPanel pane = new JPanel(); // creo il panel per la grid
-        final ScoringBoard scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
-        scoring.buildGridForScore();
-        boardLayout.add(scoring, BorderLayout.LINE_START); // posiziono la scoring board nel layout
+    private static JLabel waiting;
+    private static JLabel feedback;
+
+    public Board(final WindowRegistration initialWindow) {
+        this.initialWindow = initialWindow;
+    }
+
+    public void init(String userName) {
+
+        this.turn = false;
 
         //gestisco l'evento alla chiusura della finstra board (simbolo in alto a sinistra)
         addWindowListener(new WindowAdapter() {
@@ -84,6 +94,7 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
                     setExitControl();
 
             }
+
         });
 
 
@@ -119,7 +130,22 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
 
 
         /*------popolo la board-------*/
-        List<CardGraphic> cardLists = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
+        initialWindow.notifySubscribe();
+        cl = new Client(userName,this,initialWindow);
+        deck = cl.getDeck();
+        players = cl.getPlayers();
+
+
+        setTitle("Memory"); //setto il titolo della finestra (quello il alto centrale)
+        Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
+        boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
+        JPanel pane = new JPanel(); // creo il panel per la grid
+        scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
+        scoring.buildGridForScore();
+        boardLayout.add(scoring, BorderLayout.LINE_START);
+
+
+        cardLists = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
         List<Integer> myDeck = deck.getDeck(); // istanzio un lista per recuperare i valori delle carte dalla classe  Deck
 
         int i = 0; // questo variabile contatore mi permette di aggiugere gli ID univoci alla carte
@@ -147,84 +173,145 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
         t = new Timer(750, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                checkCards(scoring, mePlayer); // questa è la funzione che controlla il matching delle carte
+                checkCards(); // questa è la funzione che controlla il matching delle carte
             }
         });
 
-        t.setRepeats(false); // con questo metodo non si vuole far ripetere il timer (di default è settato a true)
+        t.setRepeats(false);
 
-        /*--- setto il layout della board----*/
-
+        /*--- posiziono le carte nella board----*/
+        //Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
-        for (CardGraphic c : cards) { 	// posiziono le carte (per ID crescenti) all'interno della grid
-            c.setImageLogo(); 			
-            pane.add(c); 
+        for (CardGraphic c : cards) { // posiziono le carte (per ID crescenti) all'interno della grid
+            c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
+            pane.add(c); // inserisco le card all'interno della gridlayout
         }
-        boardLayout.add(pane,BorderLayout.LINE_END); // posiziono il panel nel Layout
-
+        boardLayout.add(pane,BorderLayout.LINE_END);
 
         /*
         * visualizzo la finestra grafica inserendo tutti i parametri che mi servono
         */
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
-        setSize(new Dimension(700,675));
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // massimizza la finestra
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // questo metodo setta l'impostazione di default alla chiusura della finestra. impostando la flag DO_NOTHING_ON_CLOSE, non si aggiuge nessun comportamento di default, ma lo gestiamo noi con il metodo setExitControl
+        setSize(new Dimension(700,675)); // setta la dimensione della finestra (possiamo anche cambiarla)
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); // queste due righe mi permettono di centrare la finestra rispetto allao schermo in modo assoluto
         setLocation(dim.width/2-getSize().width/2, dim.height/2-getSize().height/2);
         setVisible(true); // ovviamente rendo visibile la finestra
-    } 
 
+        lockBoard();
+        doClientThread();
+    } //---- Fine del costruttore
+
+
+        //Thread Client, durerà fino alla fine della partita.
+        public void doClientThread() {
+            Thread t2 = new Thread() {
+                public synchronized void run() {
+                    cl.gameStart(deck);
+                }
+            };
+            t2.start();
+        }
+
+        // Metodo utilizzato per aggiornare la ui.Il metodo viene chiamato
+        // dal client quando riceve nuovi messaggi.
+        // Si potrebbe creare un metodo unico con checkCard()
+        public synchronized void updateInterface(OnesMove move) {
+
+            this.move = move;
+            System.out.println("Update interface");
+            System.out.println(move.getCard1Index());
+            System.out.println(move.getCard2Index());
+            c1 = cards.get(move.getCard1Index());
+            c2 = cards.get(move.getCard2Index());
+            c1.removeImage();
+            c1.setImage();
+            c2.removeImage();
+            c2.setImage();
+
+            // Utilizzato per rallentare l'animazione
+            //Si potrebbe mettere un timer ?
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+            if(c1.getValue() == c2.getValue()) {
+                c1.setEnabled(false);
+                c2.setEnabled(false);
+                c1.setMatched(true);
+                c2.setMatched(true);
+
+                if(this.isGameWon()){ 
+                    JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+
+                }
+            } else {
+                c1.setText(""); 
+                c2.setText(""); 
+                c1.setImageLogo(); 
+                c2.setImageLogo();
+            }
+            c1 = null;
+            c2 = null;
+
+        }
 
     /*
     * doTurn() è il metodo che mi permette di scoprire le carte infatti ha due condizioni: una per scoprire la prima carta, una per scoprire
     * la seconda carta
     */
-        public void doTurn(){
+        public synchronized void doTurn(){
             if(c1 == null  && c2 == null){ // se nessuna delle carte è scoperta
-                c1 = selectedCard; 
-                c1.removeImage(); 
-                c1.setImage(); 
-                System.out.println(c1.getId()); // TEMPORANEO: stampo l' ID della carta
+                c1 = selectedCard; // imposto la prima carta scoperta come quella selezionata
+                c1.removeImage(); // rimuovo l'immagine del logo
+                c1.setImage(); // imposto l'immagine riferita alla carta
+                //System.out.println(c1.getId()); // TEMPORANEO: stampo l' ID della carta
 
             }
             if(c1 != null && c1 != selectedCard && c2 == null){ // se viene selezionata la seconda carta
-                c2 = selectedCard; 
-                c2.removeImage(); 
-                c2.setImage(); 
-                System.out.println(c2.getId()); // TEMPORANEO: stampo l' ID della carta
+                c2 = selectedCard; // imposto la seconda carta come quella selezionata
+                c2.removeImage(); // rimuovo il logo
+                c2.setImage(); // imposto l'immagine riferita alla carta
+                //System.out.println(c2.getId()); // TEMPORANEO: stampo l' ID della carta
                 t.start(); // faccio avviare il timer per la visualizzazione della carta
             }
+        } //---- fine doTurn()
+        
 
-        }
 
         /*
         * checkCard() è il metodo che controlla il match delle carte
         */
-        public void checkCards(ScoringBoard sc,Player me){
-            if(c1.getValue() == c2.getValue()){ 
-                c1.setEnabled(false); 
-                c2.setEnabled(false); 
-                c1.setMatched(true); 
-                c2.setMatched(true); 
-                myScore.updateScore();// vado ad eseguire l'update dello score riferito al player
-                me.setPoints(myScore.getScore());
-                //sc.setPlayerScore(me.getPoints());
-                //sc.updateScore();
+        public synchronized void checkCards(){
+            if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
+                c1.setEnabled(false); // disattivo il prima carta
+                c2.setEnabled(false); // disattivo l seconda carta
+                c1.setMatched(true); //  dico che la prima carta è stata matchata
+                c2.setMatched(true); //  dico, di conseguenza che la seconda carta è matchata
+                pair = true;
+                //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
+                
 
-                if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
-                    JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti");
+                if(this.isGameWon()){ 
+                    JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+
                 }
             }
             else{ // nel caso in cui il matching non ha esito positivo
-                c1.setText(""); 
-                c2.setText(""); 
-                c1.setImageLogo(); 
-                c2.setImageLogo(); 
+                c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
+                c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
+                c1.setImageLogo(); // reimposto l'immagine del logo
+                c2.setImageLogo(); // reimposto l'immagine del logo
             }
-            c1 = null; 
-            c2 = null; 
+            move = new OnesMove(c1.getId(),c2.getId(),pair);
+            pair = false;
+            cl.notifyMove(move);
+            lockBoard();
+            c1 = null; // svuoto il primo oggetto carta
+            c2 = null; // svuoto il secondo oggetto carta
 
-        } 
+        } //--- fine chechCards()
 
         /*
          * isGameWon() è un metodo che verifica se il gioco è realmente finito (sicuramente migliorabile in modo distribuito).
@@ -237,7 +324,7 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
                 }
             }
             return true;
-        } 
+        } // --- fine isGameWon()
 
     /* ----metodi per la gestione dell'intefaccia-------*/
     private static void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert
@@ -278,20 +365,25 @@ public class Board extends JFrame { //l'estensione a JFrame mi permette di crear
                 null,null,null);
 
     }
+
     /*----metodo che blocca le carte----*/
     public void lockBoard(){
         for (CardGraphic c : cards) {
             c.setEnabled(false); // disabilita tutti bottoni delle carte
         }
     }
+
     /*----metodo che sblocca le carte----*/
     public void unlockBoard(){
         for (CardGraphic c : cards) {
-            c.setEnabled(true); // abilita tutti i bottoni delle carte
+            if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
         }
     }
 
-
+    public void incPointPlayer(int nodeId,int score) {
+        scoring.setPlayerScore(nodeId,score);
+       
+    }
 
 }
 

@@ -35,5 +35,5 @@ For running the client:
 Launch command inside /src directory
 
 ```
-$ java -classpath $(PROJECT_DIR)/ src.WindowRegistration
+$ java -classpath $(PROJECT_DIR)/ src.MainP
 ```

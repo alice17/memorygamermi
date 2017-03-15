@@ -30,6 +30,7 @@ public class Router extends AbstractRouter {
 		cloneMsg.setFrom(link.getNodeId());
 
 		try {
+			System.out.println("Forward");
 			to.messageBroadcast.forward(cloneMsg);
 		} catch (RemoteException rE) {
 			rE.printStackTrace();

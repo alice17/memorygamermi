@@ -16,43 +16,46 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.Random;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 
+public class Client  {
 
-public class Client {
+    public final int PORT = 1099;
+    private Game game;
+    private Player[] players;
+    private Player me;
+    private int nodeId;
+    private Link link;
+    private int playersNo;
+    private MessageBroadcast messageBroadcast;
+    private MessageFactory mmaker;
+    private RouterFactory rmaker;
+    private BlockingQueue<GameMessage> buffer;
+    private int[] processedMsg;
+    private String playerName;
+    private Deck deck;
+    private final Board board;
+    private OnesMove move;
+    public boolean turn;
+    public boolean enterSync = false;
+    private final WindowRegistration initialWindow;
 
-    public   final int PORT = 1099;
-    private  Game game;
-    private  Player[] players;
-    private  int nodeId;
-    private  Link link;
-    private  int playersNo;
-    private  MessageBroadcast messageBroadcast;
-    private  MessageFactory mmaker;
-    private  RouterFactory rmaker;
-    private  BlockingQueue<GameMessage> buffer;
-    private  int[] processedMsg;
-    private  String playerName;
-    private  Deck deck;
-    private  boolean result;
-    private  Partecipant partecipant;
-    private  List<String> namePlayers;
-    private  Player me;
+    public Client (String username,final Board board,final WindowRegistration initialWindow){
 
-    /*
-    * Per una corretta interazione per i feedback in WindowRegistration,
-    * ho spacchettato il client in più metodi, in modo tale che gli avvisi
-    * più importanti venissero gestiti dalla classe WindowRegistration*/
-
-    public Client(String username){
+         // La board viene passata per riferimento, incredibile ma vero.
+         // Ho cancellato circa 100 righe di codice per questo.
+         this.board = board;
          this.playerName = username;
+         this.turn = false;
+         this.initialWindow = initialWindow;
+         inizializeGame();
 
     }
-    // tale metodo setta le connessioni e in nome del client
-    public boolean setClientGame() {
+
+    private void inizializeGame() {
 
         InetAddress localHost = null;
 
@@ -75,7 +78,7 @@ public class Client {
         else
             System.out.println("Security Manager not starts.");*/
 
-         me = new Player(playerName, localHost, port);
+        me = new Player(playerName, localHost, port);
 
         messageBroadcast = null;
         buffer = new LinkedBlockingQueue<GameMessage>();
@@ -101,8 +104,8 @@ public class Client {
         }
 
 
-        partecipant = null;
-        result = false;
+        Partecipant partecipant = null;
+        boolean result = false;
 
         /* establish connection with server */
         try{
@@ -111,6 +114,7 @@ public class Client {
             String url = "rmi://" + server +":" + PORT + "/Subscribe";
             SubscribeInterface subscribe = (SubscribeInterface) Naming.lookup(url);
             System.out.println("Subscribe service found at address " + url);
+
 
             result = subscribe.subscribeAccepted(partecipant, me);
         } catch (MalformedURLException e) {
@@ -123,39 +127,35 @@ public class Client {
             e.printStackTrace();
             System.exit(1);
         }
-        
-        
-        return result;
-      }
 
-      public void configureDeckPlayers(){
+        if (result) {
+
+            // subscribe accepted
+            initialWindow.notifySubscribe();
+            System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
             playersNo = players.length;
             deck = partecipant.getDeck();
-      }
-      
-        // tale metodo inizializza il gioco
-      public void inizializeGame(){
-            //if( playersNo > 1 ){
-              //  dialog.setVisible(false); // chiudo l'info di attesa
-                //System.out.println("Players subscribed:");
+            System.out.println("Deck acquired");
 
-              /*  for (int i=0; i < playersNo;i++){
-                    namePlayers.add(players[i].getUsername());
-                }*/
+            if( playersNo > 1 ){
 
-                //System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
+                initialWindow.notifyGameStart();
+                System.out.println("Players subscribed:");
 
-				/* stampa valori del mazzo di carte
-				for(int i=0; i < deck.getnCards(); i++){
-					System.out.println(deck.getCard(i).getCardId()); } */
+                for (int i=0; i < playersNo;i++){
+                    System.out.println(players[i].getUsername());
+                }
+
+                System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
+
 
                 link = new Link(me, players);
                 nodeId = link.getNodeId();
                 processedMsg = new int[players.length];
                 Arrays.fill(processedMsg, 0);
                 rmaker = new RouterFactory(link);
-                mmaker = new MessageFactory(nodeId);
+                mmaker = new MessageFactory(nodeId,processedMsg);
                 messageBroadcast.configure(link,rmaker,mmaker);
 
                 System.out.println("My id is " + nodeId + " and my name is " + players[nodeId].getUsername());
@@ -164,66 +164,159 @@ public class Client {
 
                 game = new Game(playersNo);
 
-                // start the game
-                gameStart(deck);
-
+            }else{
+                initialWindow.notifyErrorGameStart();
+                System.out.println("Not enough players to start the game. :(");
+                System.exit(0);
+            }
+        } else {
+            initialWindow.notifyErrorSubscribe();
+            System.out.println("Game subscribe unsuccessful");
+            System.exit(0);
         }
+    }
 
+    public synchronized void gameStart(Deck deck) {
 
-
-    private void gameStart(Deck deck) {
-        Board board = new Board(deck);
-
+        //Inizio gioco
+        //Il thread looperà dentro a gameStart fino alla fine del gioco.
         tryToMyturn();
 
         while(!game.isGameEnded()) {
             try {
-                //board.lockBoard();
+                //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
+                
+                boolean repeat = true;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
-                tryToMyturn();
-
                 if(m != null) {
+
                     System.out.println("Processing message " + m);
-                    game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+                    //Incremento messageCounter
+                    // Per ora ho creato due messagecounter, uno in Messagefactory(questo) e uno in MessageBroadcast.
+                    // Sincronizzati alla grezza.
+                    // In Uno vecchio usa un oggetto condiviso tra il client e l'interfaccia remota
+                    // più o meno come la callback usando i lock, sarebbe utilissimo.mistero.Da provare.
+                    mmaker.incMessageCounter();
+                    System.out.println("Message counter factory " + mmaker.getMessageCounter());
+                    // recupero la mossa dal messaggio che mi è arrivato
+                    move = m.getMove();
+                    //Questo array tiene conto dell'ultimo messaggio processato per ogni nodo
+                    //Per ora non serve a niente, sarò utile coi crash per vedere qual'è il nodo
+                    // con la vista dei messaggi spediti più recente.
+                    processedMsg[m.getOrig()] = m.getId();
+                    // Per ora nel gioco se becchi una coppia gioca quello dopo, domani lo implemento.
+                    if(m.getPair() == false) {
+                        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+                    } else {
+                        players[m.getOrig()].incPoints();
+                        board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
+                    }
+                    // Incremento l'id del giocatore attuale.
+                    //game.update(m);
+                    //Passo alla board la mossa per aggiornare la ui.
+                    board.updateInterface(move);
+
+                    System.out.println("The next player is " + game.getCurrentPlayer());
+                    //Provo a vedere se è il mio turno.
+                    // Tramite game.update ho aggiornato il giocatore attuale.
                     tryToMyturn();
                 } else {
-                    System.out.println("Timeout");
+                     System.out.println("Timeout");
                 }
+                //game.setGameEnded(true);
             } catch (InterruptedException e) {}
-           game.setGameEnded(true);
         }
-
     }
 
-    private void tryToMyturn() {
+    private synchronized void tryToMyturn() {
 
         while (game.getCurrentPlayer() == nodeId) {
 
-            System.out.println("I'm trying to send a test message to my right neighbour");
-            String test = "Origin nodeId message is " + nodeId;
-            game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-            messageBroadcast.send(mmaker.newGameMessage(test));
+            //Quando è il mio turno sblocco la board e rimango in attesa della mossa
+            //Direi che questo wait() sia quasi obbligatorio se lo vogliamo strutturare così.
+            //L oggetto Client si blocca un attimo ma la classe remota RMI MessageBroadcast può ancora
+            // ricevere messaggi, appena il client si riattiva può ritornare in ascolto sul buffer per vedere
+            // se ci sono messaggi.Se ce ne sono va ad aggiornare l interfaccia locale.
+
+            System.out.println("Unlock board.");
+            board.unlockBoard();
+            System.out.println("I'm trying to do a move");
+            try{
+                System.out.println("Wait move");
+                wait();
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+            if (move.getPair() == false) {
+                //Quando viene notificata la mossa viene ribloccata la board.
+                //board.lockBoard();
+                //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
+                game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+            } else {
+                me.incPoints();
+                board.incPointPlayer(nodeId,me.getPoints());
+            }
+            board.lockBoard();
+            // Aumento il message counter, questo bisognerebbe cambiarlo per usare un 
+            // oggetto condiviso tra la classe client e il MessageBroadcast per tenere
+            // sincronizzati i messaggi che arrivano e quelli che vengono spediti.
+            messageBroadcast.incMessageCounter();
+
+            //spedisco il messaggio sulla classe remota del mio vicino destro tramite RMI.
+            messageBroadcast.send(mmaker.newGameMessage(move));
+            System.out.println("Message counter factory " + mmaker.getMessageCounter());
             System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
 
-            // sceglie la prima carta
-            // manda il broadcast per la mossa
-            // sceglie la seconda carta
-            // determina se vince
-            // broadcast e turno successivo
         }
+
     }
 
     private long getWaitSeconds() {
         return 10L + nodeId * 2;
     }
 
+    public synchronized Deck getDeck() {
+        if (deck == null){
+            try {
+            System.out.println("Waiting deck");
+            wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return deck;
+    }
 
-    public List<String> PlayerForUI(){
-      return namePlayers;
+    public synchronized Player[] getPlayers() {
+        if (players == null) {
+            try{
+                System.out.println("Waiting players");
+                wait();
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+        }
+        return players;
+    }
+
+    public Player getOwnPlayer() {
+        return me;
+    }
+    public int getOwnScore() {
+        return me.getPoints();
+    }
+
+    //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
+    //che la deve impacchettare in un messaggio da spedire.
+    public synchronized void notifyMove(OnesMove move) {
+            this.move = move;
+            System.out.println("Notify move");
+            notifyAll();
+
     }
     
-    public int getPlayersNo(){
-    	return playersNo;
+    public synchronized boolean isGameEnded() {
+        return game.isGameEnded();
     }
 }

@@ -1,5 +1,3 @@
-
-
 package src;
 
 
@@ -7,21 +5,21 @@ package src;
 public class GameMessage extends Message implements Cloneable {
 
 	private int id;
-	private String test;
+	private OnesMove move;
+	private int[] processedMessage;
 
-	public GameMessage(int origId, int id,String test) {
+	public GameMessage(int origId, int id,int[] processedMessage,OnesMove move) {
 		super(origId);
 		this.id = id;
-		this.test = test;
+		this.processedMessage = processedMessage;
+		this.move = move;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public String getTest() {
-		return test;
-	}
+	
 	/*public String getOrig() {
 		return super.getOrig(); 
 	}*/
@@ -32,10 +30,19 @@ public class GameMessage extends Message implements Cloneable {
 	}
 
 	public Object clone() {
-		GameMessage m = new GameMessage(getOrig(),id,test);
+		GameMessage m = new GameMessage(getOrig(),id,processedMessage.clone(),move);
 		m.setFrom(getFrom());
 		return m;
 	}
+
+	public boolean getPair() {
+		return this.move.getPair();
+	}
+
+	public OnesMove getMove() {
+		return this.move;
+	}
+
 
 
 
