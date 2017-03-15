@@ -54,8 +54,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         //creo la menubar
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu menuImpostazioni = new JMenu("Impostazioni"); // creo il primo menù delle impostazioni
-        JMenuItem esci = new JMenuItem("Esci", KeyEvent.VK_Q); // creo l'item di chiusura (VK_Q è il simbolo che mi permette di vedere la shortcut della chiusura)
+        JMenu menuImpostazioni = new JMenu("Settings"); // creo il primo menù delle impostazioni
+        JMenuItem esci = new JMenuItem("Exit", KeyEvent.VK_Q); // creo l'item di chiusura (VK_Q è il simbolo che mi permette di vedere la shortcut della chiusura)
         KeyStroke crtlQKeyStroke = KeyStroke.getKeyStroke("control Q"); // creo la shortcut CRTL-Q per la chiusura della finestra
         esci.setAccelerator(crtlQKeyStroke); //attacco l'evento all'oggetto item del menu impostazioni
         menuBar.add(menuImpostazioni); //aggiungo il menù impostazioni all'interno della menubar
@@ -108,8 +108,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
         //creo il secondo menu delle regole
         JMenu menuRegole = new JMenu("?"); // aggiungo il menù riguardante un minimo di documentazione
-        JMenuItem regole = new JMenuItem("Regole"); // creo l'item delle regole
-        JMenuItem about = new JMenuItem("about"); // creo l'item riguardante il nostro gruppo
+        JMenuItem regole = new JMenuItem("Rules"); // creo l'item delle regole
+        JMenuItem about = new JMenuItem("About"); // creo l'item riguardante il nostro gruppo
         // gestisco l'evento al click riguardante l'about
         about.addActionListener(new ActionListener() {
             @Override
@@ -329,8 +329,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     /* ----metodi per la gestione dell'intefaccia-------*/
     private static void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert
         int input = JOptionPane.showOptionDialog(null, // root che apre l'alert (in questo caso non c'è bisogno di specificarne uno)
-                "Sicuro di voler uscire del gioco?", // il messaggio
-                "Esci", // titolo della finestra alert
+                "Are you sure to exit from game?", // il messaggio
+                "Exit", // titolo della finestra alert
                 JOptionPane.YES_NO_OPTION, // tipo di bottoni dell'alert
                 JOptionPane.INFORMATION_MESSAGE, // tipo di messaggio
                 null,null,null); // altri parametri che non servono a nulla
@@ -343,10 +343,10 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     private static void setAboutControl(){ // mi visualizza l'alert per le info sull'about
         JOptionPane.showOptionDialog(null,
-                "Il gioco di memory è stato realizzato da: Salvatore Alescio,\n" +
-                        "Alice Valentini, Andrea Zuccarini. Per il progetto di \n" +
-                        "Sistemi Distribuiti",
-                "Esci",
+                "Memory Game was realized by: Salvatore Alescio,\n" +
+                        "Alice Valentini, Andrea Zuccarini. For \n" +
+                        "Distributed Systems' project.",
+                "Exit",
                 JOptionPane.CLOSED_OPTION, // il bottone è solo per il chiudi
                 JOptionPane.INFORMATION_MESSAGE, // tipo di messaggio
                 null,null,null);
@@ -359,7 +359,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                         "scoprono due carte;  se queste formano una \"coppia\", vengono incassate dal giocatore di turno, che può scoprirne altre due;\n" +
                         "altrimenti, vengono nuovamente coperte e rimesse nella loro posizione originale sul tavolo, e il turno passa al prossimo giocatore.\n"+
                         "Vince il giocatore che riesce a scoprire più coppie.",
-                "Esci",
+                "Exit",
                 JOptionPane.CLOSED_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
                 null,null,null);

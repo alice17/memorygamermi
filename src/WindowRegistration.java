@@ -65,8 +65,8 @@ public class WindowRegistration {
 
     private  void setCloseWindow(final JFrame frame) {
         int input = JOptionPane.showOptionDialog(frame, // la root è il frame
-                "Sicuro di voler uscire del gioco?",
-                "Esci",
+                "Are you sure to exit from game?",
+                "Exit",
                 JOptionPane.YES_NO_OPTION, // tipo di button dell' alert
                 JOptionPane.INFORMATION_MESSAGE, // tipo di alert
                 null,null,null);
@@ -81,8 +81,8 @@ public class WindowRegistration {
         if(tf.getText() == null || tf.getText().isEmpty()){
             //gestisco il caso in cui non aggiungo nessun nome
             JOptionPane.showOptionDialog(null,
-                    "Non hai inserito il nome utente!",
-                    "Esci",
+                    "You don't add a username!",
+                    "Exit",
                     JOptionPane.CLOSED_OPTION,
                     JOptionPane.ERROR_MESSAGE, // tipo di messaggio
                     null,null,null);
@@ -94,8 +94,8 @@ public class WindowRegistration {
 
         else if(tf.getText().contains(" ") ){
             JOptionPane.showOptionDialog(null,
-                    "Non inserire \"Spazi\" nello UserName",
-                    "Esci",
+                    "Not insert \"Blank Spaces\" in the Username",
+                    "Exit",
                     JOptionPane.CLOSED_OPTION,
                     JOptionPane.ERROR_MESSAGE, // tipo di messaggio errore
                     null,null,null);
@@ -162,7 +162,7 @@ public class WindowRegistration {
         final JTextField userEntry = new JTextField(); // creo la textfield per l'immissione del nome della persona che si registra
         userEntry.setColumns(SIZE_OF_TEXTFIELD); // imposto la grandezza della textfield
 
-        btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
+        btnRegistration = new JButton("Registration"); // creo la il button per avviare la registrazione
 
         feedback = new JLabel();
         waiting = new JLabel();
@@ -295,7 +295,7 @@ public class WindowRegistration {
         //Create and set up the window.
         //JFrame frame = new JFrame("Registrazione - Memory");
         //this.fr = frame;
-        frame = new JFrame("Registrazione - Memory");
+        frame = new JFrame("Registration - Memory");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         //Set up the content pane.
         addComponentsToPane(frame);
@@ -311,13 +311,13 @@ public class WindowRegistration {
     }
 
     public void notifySubscribe() {
-        feedback.setText("Sei stato iscritto al gioco");
-        waiting.setText("Sto aspettando gli altri giocatori");
+        feedback.setText("Registration Successful");
+        waiting.setText("I'm waiting other players to start the game.");
     }
 
     public static void notifyErrorSubscribe() {
         int input = JOptionPane.showOptionDialog(null, // la root è il frame
-                                "Iscrizione al gioco non avvenuta",
+                                "Registration not occured",
                                 "Sorry",
                                 JOptionPane.YES_OPTION, // tipo di button dell' alert
                                 JOptionPane.INFORMATION_MESSAGE, // tipo di alert
@@ -328,7 +328,7 @@ public class WindowRegistration {
     }
     public static void notifyGameStart() {
         feedback.setText("");
-        waiting.setText("Inizio Partita...");
+        waiting.setText("Game Start....");
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ie) {
@@ -339,42 +339,17 @@ public class WindowRegistration {
 
     public static void notifyErrorGameStart() {
         int exit = JOptionPane.showConfirmDialog(null,
-                                    "Non abbiamo trovato altri giocatori.Vuoi uscire?" ,
+                                    "We not found another players. Do you want to exit?" ,
                                     "Sorry",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.INFORMATION_MESSAGE);
                             if (exit == JOptionPane.YES_OPTION)
                                 System.exit(0);
                             else{
-                                feedback.setText("Non abbiamo trovato altri giocatori!!!");
-                                waiting.setText("Chiudi il programma");
+                                feedback.setText("We not found another players.");
+                                waiting.setText("Exit from the game.");
                             }
     }
 
-    /*public static void main(String[] args) {
-        
-        try {
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
-
-        //Schedule a job for the event dispatch thread:
-        //creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
-    }*/  
 
 }
