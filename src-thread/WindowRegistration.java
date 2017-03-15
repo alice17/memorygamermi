@@ -28,6 +28,7 @@ public class WindowRegistration {
     public static JLabel waiting;
     public static JLabel feedback;
     public static JFrame frame;
+    public static JButton btnRegistration;
 
 
     /*
@@ -161,7 +162,7 @@ public class WindowRegistration {
         final JTextField userEntry = new JTextField(); // creo la textfield per l'immissione del nome della persona che si registra
         userEntry.setColumns(SIZE_OF_TEXTFIELD); // imposto la grandezza della textfield
 
-        JButton btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
+        btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
 
         feedback = new JLabel();
         waiting = new JLabel();
