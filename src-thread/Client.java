@@ -26,6 +26,7 @@ public class Client  {
     public final int PORT = 1099;
     private Game game;
     private Player[] players;
+    private Player me;
     private int nodeId;
     private Link link;
     private int playersNo;
@@ -40,14 +41,16 @@ public class Client  {
     private OnesMove move;
     public boolean turn;
     public boolean enterSync = false;
+    private final WindowRegistration initialWindow;
 
-    public Client (String username,final Board board){
+    public Client (String username,final Board board,final WindowRegistration initialWindow){
 
          // La board viene passata per riferimento, incredibile ma vero.
          // Ho cancellato circa 100 righe di codice per questo.
          this.board = board;
          this.playerName = username;
          this.turn = false;
+         this.initialWindow = initialWindow;
          inizializeGame();
 
     }
@@ -75,7 +78,7 @@ public class Client  {
         else
             System.out.println("Security Manager not starts.");*/
 
-        Player me = new Player(playerName, localHost, port);
+        me = new Player(playerName, localHost, port);
 
         messageBroadcast = null;
         buffer = new LinkedBlockingQueue<GameMessage>();
@@ -112,6 +115,7 @@ public class Client  {
             SubscribeInterface subscribe = (SubscribeInterface) Naming.lookup(url);
             System.out.println("Subscribe service found at address " + url);
 
+
             result = subscribe.subscribeAccepted(partecipant, me);
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -127,6 +131,7 @@ public class Client  {
         if (result) {
 
             // subscribe accepted
+            initialWindow.notifySubscribe();
             System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
             playersNo = players.length;
@@ -134,6 +139,8 @@ public class Client  {
             System.out.println("Deck acquired");
 
             if( playersNo > 1 ){
+
+                initialWindow.notifyGameStart();
                 System.out.println("Players subscribed:");
 
                 for (int i=0; i < playersNo;i++){
@@ -158,9 +165,14 @@ public class Client  {
                 game = new Game(playersNo);
 
             }else{
+                initialWindow.notifyErrorGameStart();
                 System.out.println("Not enough players to start the game. :(");
                 System.exit(0);
             }
+        } else {
+            initialWindow.notifyErrorSubscribe();
+            System.out.println("Game subscribe unsuccessful");
+            System.exit(0);
         }
     }
 
@@ -264,6 +276,22 @@ public class Client  {
             }
         }
         return deck;
+    }
+
+    public synchronized Player[] getPlayers() {
+        if (players == null) {
+            try{
+                System.out.println("Waiting players");
+                wait();
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+        }
+        return players;
+    }
+
+    public Player getOwnPlayer() {
+        return me;
     }
 
     //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client

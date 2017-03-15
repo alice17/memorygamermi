@@ -26,20 +26,23 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private boolean retrievePairs;
     public static Client cl;
     private Deck deck;
+    private Player[] players;
+    private Player playerOwn;
     private OnesMove move;
-    private volatile boolean flag;
     private boolean turn;
-    private Thread t3;
-    public Object syncObject = new Object();
+    private final WindowRegistration initialWindow;
 
-    public Board() {}
+
+    private static JLabel waiting;
+    private static JLabel feedback;
+
+    public Board(final WindowRegistration initialWindow) {
+        this.initialWindow = initialWindow;
+    }
 
     public void init(String userName) {
 
         this.turn = false;
-
-        /*----creo la struttura della board------*/
-        setTitle("Memory"); //setto il titolo della finestra (quello il alto centrale)
 
         //gestisco l'evento alla chiusura della finstra board (simbolo in alto a sinistra)
         addWindowListener(new WindowAdapter() {
@@ -128,8 +131,22 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
 
         /*------popolo la board-------*/
-        cl = new Client(userName,this);
+        initialWindow.notifySubscribe();
+        cl = new Client(userName,this,initialWindow);
         deck = cl.getDeck();
+        players = cl.getPlayers();
+        playerOwn = cl.getOwnPlayer();
+
+
+        setTitle("Memory"); //setto il titolo della finestra (quello il alto centrale)
+        Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
+        boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
+        JPanel pane = new JPanel(); // creo il panel per la grid
+        final ScoringBoard scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
+        scoring.buildGridForScore();
+        boardLayout.add(scoring, BorderLayout.LINE_START);
+
+
         cardLists = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
         List<Integer> myDeck = deck.getDeck(); // istanzio un lista per recuperare i valori delle carte dalla classe  Deck
 
@@ -165,23 +182,26 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         t.setRepeats(false);
 
         /*--- posiziono le carte nella board----*/
-        Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
+        //Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
         for (CardGraphic c : cards) { // posiziono le carte (per ID crescenti) all'interno della grid
             c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
             pane.add(c); // inserisco le card all'interno della gridlayout
         }
+        boardLayout.add(pane,BorderLayout.LINE_END);
 
         /*
         * visualizzo la finestra grafica inserendo tutti i parametri che mi servono
         */
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // questo metodo setta l'impostazione di default alla chiusura della finestra. impostando la flag DO_NOTHING_ON_CLOSE, non si aggiuge nessun comportamento di default, ma lo gestiamo noi con il metodo setExitControl
         setSize(new Dimension(700,675)); // setta la dimensione della finestra (possiamo anche cambiarla)
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); // queste due righe mi permettono di centrare la finestra rispetto allao schermo in modo assoluto
         setLocation(dim.width/2-getSize().width/2, dim.height/2-getSize().height/2);
         setVisible(true); // ovviamente rendo visibile la finestra
 
         lockBoard();
+        doClientThread();
     } //---- Fine del costruttore
 
 
@@ -267,8 +287,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 c1.setMatched(true); //  dico che la prima carta è stata matchata
                 c2.setMatched(true); //  dico, di conseguenza che la seconda carta è matchata
                 pair = true;
-                myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
-
+                //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
+                
 
                 if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
                     JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti"); // in questo caso eseguo un message dialog (alert) con il punteggio effettuato
@@ -351,11 +371,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     /*----metodo che sblocca le carte----*/
     public void unlockBoard(){
-    	//System.out.println("Unlock board in board.");
         for (CardGraphic c : cards) {
-        	//System.out.println("Unlock " + c.getId());
             if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
-            //System.out.println("enables");
         }
     }
 

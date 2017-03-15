@@ -23,16 +23,46 @@ public class WindowRegistration {
     private static final int SIZE_OF_TEXTFIELD = 10; // variabile che mi gestisce la lunghezza textfield
     public static  String IMG_PATH = "img/Memory.png"; // stringa per path del logo
     public static Board board;
-    public static Client cl;
     public static Deck deck;
     public static boolean awaitTurn;
+    public static JLabel waiting;
+    public static JLabel feedback;
+    public static JFrame frame;
 
 
     /*
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
     */
+    public WindowRegistration() {
 
-    private static void setCloseWindow(final JFrame frame) {
+
+
+        try {
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        //Schedule a job for the event dispatch thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
+
+    }
+
+    private  void setCloseWindow(final JFrame frame) {
         int input = JOptionPane.showOptionDialog(frame, // la root è il frame
                 "Sicuro di voler uscire del gioco?",
                 "Esci",
@@ -46,7 +76,7 @@ public class WindowRegistration {
     /*
      * settingEventRegistration è un metodo che gestisce l'evento dell'immissione del nome nel textfied
      */
-    private static synchronized void settingEventRegistration(JFrame fr, JTextField tf){
+    private synchronized void settingEventRegistration(final JFrame fr, JTextField tf){
         if(tf.getText() == null || tf.getText().isEmpty()){
             //gestisco il caso in cui non aggiungo nessun nome
             JOptionPane.showOptionDialog(null,
@@ -71,6 +101,7 @@ public class WindowRegistration {
 
         }
         else{
+
             // nel caso un cui è tutto ok, allora lancio il client e gli passo la stringa
             //appena confermato l'username la finestra windowregistration scompare con fr.setVisible()
             // si può anche cambiare.
@@ -78,11 +109,10 @@ public class WindowRegistration {
             //Questo thread direi che lo possa chiamare direttamente la board anche senza bloccare la grafica.
             //Non dovrebbe cambiare tanto, si può provare
             String userName = tf.getText();
-            //cl = new Client(tf.getText());
-            fr.setVisible(false);
-            board = new Board();
+            //fr.setVisible(false);
+            board = new Board(this);
             board.init(userName);
-            board.doClientThread();
+            //board.doClientThread();
         }
     }
 
@@ -90,7 +120,7 @@ public class WindowRegistration {
      * addComponentsToPane è un metodo che crea la borad layout per inserire tutti gli oggetti
      */
 
-    public static void addComponentsToPane(final JFrame pane) {
+    public void addComponentsToPane(final JFrame pane) {
 
 
         if (!(pane.getLayout() instanceof BorderLayout)) { // controllo se il frame è in modalità bordarLayout
@@ -133,34 +163,51 @@ public class WindowRegistration {
 
         JButton btnRegistration = new JButton("Registrati"); // creo la il button per avviare la registrazione
 
+        feedback = new JLabel();
+        waiting = new JLabel();
 
         // gestisco ora l'evento legato al button di registrazione al click
         btnRegistration.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                settingEventRegistration(pane,userEntry);
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        settingEventRegistration(pane,userEntry);
+                        btnRegistration.setEnabled(false);  
+                    }     
+                });
+                t.start();
             }
         });
+
         //gestisco l'evento legato al button ma premendo invio
         btnRegistration.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    //settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
-                settingEventRegistration(pane,userEntry);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);    
                 }
             }
         });
@@ -170,13 +217,17 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
             }
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    //settingEventRegistration(pane,userEntry);
+                    btnRegistration.setEnabled(false);
+                    userEntry.setEditable(false);
                 }
 
             }
@@ -184,7 +235,15 @@ public class WindowRegistration {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    settingEventRegistration(pane,userEntry);
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            settingEventRegistration(pane,userEntry);
+                            btnRegistration.setEnabled(false);
+                            userEntry.setEditable(false);  
+                        }     
+                    });
+                    t.start();
                 }
 
             }
@@ -200,12 +259,16 @@ public class WindowRegistration {
                 .addComponent(userLabel) // aggiungo la label
                 .addComponent(userEntry) // aggiungo la textfield
                 .addComponent(btnRegistration) // aggiungo il button
+                .addComponent(feedback)
+                .addComponent(waiting)
         );
         //setto gli oggetti con l'orientamento verticaole
         groupRegistration.setVerticalGroup(groupRegistration.createSequentialGroup()
                 .addComponent(userLabel) // aggiungo la label
                 .addComponent(userEntry) // aggiungo la textfield
                 .addComponent(btnRegistration) //aggiungo il button
+                .addComponent(feedback)
+                .addComponent(waiting)
         );
 
         // gestisco l'evento di chiusura della finestra
@@ -226,10 +289,12 @@ public class WindowRegistration {
      * this method should be invoked from the
      * event dispatch thread.
      */
-    private static void createAndShowGUI() {
+    private void createAndShowGUI() {
 
         //Create and set up the window.
-        JFrame frame = new JFrame("Registrazione - Memory");
+        //JFrame frame = new JFrame("Registrazione - Memory");
+        //this.fr = frame;
+        frame = new JFrame("Registrazione - Memory");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         //Set up the content pane.
         addComponentsToPane(frame);
@@ -244,8 +309,49 @@ public class WindowRegistration {
         frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
     }
 
-    public static void main(String[] args) {
-        /* Use an appropriate Look and Feel */
+    public void notifySubscribe() {
+        feedback.setText("Sei stato iscritto al gioco");
+        waiting.setText("Sto aspettando gli altri giocatori");
+    }
+
+    public static void notifyErrorSubscribe() {
+        int input = JOptionPane.showOptionDialog(null, // la root è il frame
+                                "Iscrizione al gioco non avvenuta",
+                                "Sorry",
+                                JOptionPane.YES_OPTION, // tipo di button dell' alert
+                                JOptionPane.INFORMATION_MESSAGE, // tipo di alert
+                                null,null,null);
+                        if(input == JOptionPane.YES_OPTION)
+                            System.exit(0);
+
+    }
+    public static void notifyGameStart() {
+        feedback.setText("");
+        waiting.setText("Inizio Partita...");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        }
+        frame.setVisible(false);
+    }
+
+    public static void notifyErrorGameStart() {
+        int exit = JOptionPane.showConfirmDialog(null,
+                                    "Non abbiamo trovato altri giocatori.Vuoi uscire?" ,
+                                    "Sorry",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            if (exit == JOptionPane.YES_OPTION)
+                                System.exit(0);
+                            else{
+                                feedback.setText("Non abbiamo trovato altri giocatori!!!");
+                                waiting.setText("Chiudi il programma");
+                            }
+    }
+
+    /*public static void main(String[] args) {
+        
         try {
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -258,7 +364,7 @@ public class WindowRegistration {
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-        /* Turn off metal's use bold fonts */
+        
         UIManager.put("swing.boldMetal", Boolean.FALSE);
 
         //Schedule a job for the event dispatch thread:
@@ -268,6 +374,6 @@ public class WindowRegistration {
                 createAndShowGUI();
             }
         });
-    }
+    }*/  
 
 }
