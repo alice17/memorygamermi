@@ -19,7 +19,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private CardGraphic c1; // primo oggetto carta che mi serve il confronto
     private CardGraphic c2; // secondo oggetto carta che mi serve il confronto
     private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
-    private Score myScore = new Score(); // è l'oggetto che mi tiene aggiornato lo score del player
     private boolean checkCards = false;
     private boolean pair = false;
     private List<CardGraphic> cardLists;
@@ -27,10 +26,10 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     public static Client cl;
     private Deck deck;
     private Player[] players;
-    private Player playerOwn;
     private OnesMove move;
     private boolean turn;
     private final WindowRegistration initialWindow;
+    private static ScoringBoard scoring;
 
 
     private static JLabel waiting;
@@ -135,14 +134,13 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         cl = new Client(userName,this,initialWindow);
         deck = cl.getDeck();
         players = cl.getPlayers();
-        playerOwn = cl.getOwnPlayer();
 
 
         setTitle("Memory"); //setto il titolo della finestra (quello il alto centrale)
         Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
         boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
         JPanel pane = new JPanel(); // creo il panel per la grid
-        final ScoringBoard scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
+        scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
         scoring.buildGridForScore();
         boardLayout.add(scoring, BorderLayout.LINE_START);
 
@@ -243,6 +241,11 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 c2.setEnabled(false);
                 c1.setMatched(true);
                 c2.setMatched(true);
+
+                if(this.isGameWon()){ 
+                    JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+
+                }
             } else {
                 c1.setText(""); 
                 c2.setText(""); 
@@ -290,8 +293,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
                 
 
-                if(this.isGameWon()){ // metodo che mi verifica se tutte le carte sono state effettivamente matchate
-                    JOptionPane.showMessageDialog(this, "Hai vinto!!! " + String.valueOf(myScore.getScore()) +" punti"); // in questo caso eseguo un message dialog (alert) con il punteggio effettuato
+                if(this.isGameWon()){ 
+                    JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
 
                 }
             }
@@ -301,7 +304,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 c1.setImageLogo(); // reimposto l'immagine del logo
                 c2.setImageLogo(); // reimposto l'immagine del logo
             }
-            move = new OnesMove(c1.getId(),c2.getId());
+            move = new OnesMove(c1.getId(),c2.getId(),pair);
+            pair = false;
             cl.notifyMove(move);
             lockBoard();
             c1 = null; // svuoto il primo oggetto carta
@@ -374,6 +378,11 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         for (CardGraphic c : cards) {
             if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
         }
+    }
+
+    public void incPointPlayer(int nodeId,int score) {
+        scoring.setPlayerScore(nodeId,score);
+       
     }
 
 }

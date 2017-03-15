@@ -13,10 +13,10 @@ public class OnesMove implements Cloneable, Serializable {
 
 	public OnesMove() {}
 
-	public OnesMove(int card1Index,int card2Index) {
+	public OnesMove(int card1Index,int card2Index,boolean pair) {
 		this.card1Index = card1Index;
 		this.card2Index = card2Index;
-		//this.pair = pair;
+		this.pair = pair;
 	}
 
 	public boolean getPair() {

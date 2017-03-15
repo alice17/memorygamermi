@@ -206,13 +206,17 @@ public class Client  {
                     // con la vista dei messaggi spediti più recente.
                     processedMsg[m.getOrig()] = m.getId();
                     // Per ora nel gioco se becchi una coppia gioca quello dopo, domani lo implemento.
-                    /*if(m.getPair() == false) {
+                    if(m.getPair() == false) {
                         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-                    }*/
+                    } else {
+                        players[m.getOrig()].incPoints();
+                        board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
+                    }
                     // Incremento l'id del giocatore attuale.
-                    game.update(m);
+                    //game.update(m);
                     //Passo alla board la mossa per aggiornare la ui.
                     board.updateInterface(move);
+
                     System.out.println("The next player is " + game.getCurrentPlayer());
                     //Provo a vedere se è il mio turno.
                     // Tramite game.update ho aggiornato il giocatore attuale.
@@ -244,10 +248,16 @@ public class Client  {
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }
-            //Quando viene notificata la mossa viene ribloccata la board.
+            if (move.getPair() == false) {
+                //Quando viene notificata la mossa viene ribloccata la board.
+                //board.lockBoard();
+                //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
+                game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+            } else {
+                me.incPoints();
+                board.incPointPlayer(nodeId,me.getPoints());
+            }
             board.lockBoard();
-            //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
-            game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
             // Aumento il message counter, questo bisognerebbe cambiarlo per usare un 
             // oggetto condiviso tra la classe client e il MessageBroadcast per tenere
             // sincronizzati i messaggi che arrivano e quelli che vengono spediti.
@@ -292,6 +302,9 @@ public class Client  {
 
     public Player getOwnPlayer() {
         return me;
+    }
+    public int getOwnScore() {
+        return me.getPoints();
     }
 
     //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
