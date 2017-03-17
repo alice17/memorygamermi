@@ -17,7 +17,7 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 	public Partecipant() throws RemoteException {}
 
 	public synchronized void configure(Player[] players, List<Integer> cardVals) throws RemoteException {
-	// chiamata da subscribe per configurare le variabili di partecipant
+	// metodo chiamato da subscribe per configurare le variabili di partecipant
 		this.players = players;
 		this.cardVals = cardVals;
 		gotPartecipants = true;
@@ -28,7 +28,7 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 	public synchronized Player[] getPlayers() {
 		if (!gotPartecipants)
 			try {
-				System.out.println("Partecipants list unavailable: waiting...");
+				System.out.println("Participants list unavailable: waiting...");
 			 	wait();
 				System.out.println("Timeout end or object notified.");
 			} catch (InterruptedException ie) {

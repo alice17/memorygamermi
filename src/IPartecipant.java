@@ -1,3 +1,6 @@
+/*
+Interfaccia remota della classe Partecipant
+*/
 
 package src;
 

@@ -144,7 +144,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         boardLayout.add(scoring, BorderLayout.LINE_START);
 
 
-        cardList = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
+        cards = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
 
         int i = 0; 
         for (int val : cardVals) { 
@@ -160,11 +160,11 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 }
             });
 
-            cardList.add(c); 
+            cards.add(c); 
             i++; 
         }
 
-        this.cards = cardList; // una volta finito referenzio l'oggetto cardList  alla lista globale cards
+        //this.cards = cardList; // una volta finito referenzio l'oggetto cardList  alla lista globale cards
 
         /*
         * Il timer mi permette di avere un margine di secondi per vedere le carte, di default l'ho settato a 750 ma si può variare
@@ -215,7 +215,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     // Metodo utilizzato per aggiornare la ui.Il metodo viene chiamato
     // dal client quando riceve nuovi messaggi.
     // Si potrebbe creare un metodo unico con checkCard()
-    public synchronized void updateInterface(OnesMove move) {
+    public void updateInterface(OnesMove move) {
 
         this.move = move;
         System.out.println("Update interface");
@@ -260,7 +260,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     * doTurn() è il metodo che mi permette di scoprire le carte infatti ha due condizioni: una per scoprire la prima carta, una per scoprire
     * la seconda carta
     */
-    public synchronized void doTurn(){
+    public void doTurn(){
 
     	// se nessuna delle carte è scoperta
         if(c1 == null  && c2 == null){ 
@@ -286,7 +286,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     /*
     * checkCard() è il metodo che controlla il match delle carte
     */
-    public synchronized void checkCards(){
+    public void checkCards(){
         if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
             c1.setEnabled(false); 
             c2.setEnabled(false); 
@@ -311,8 +311,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         pair = false;
         cl.notifyMove(move);
         lockBoard();
-        c1 = null; // svuoto il primo oggetto carta
-        c2 = null; // svuoto il secondo oggetto carta
+        c1 = null; 
+        c2 = null; 
 
     } //--- fine checkCards()
 
@@ -333,7 +333,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     /* ----metodi per la gestione dell'intefaccia-------*/
     private static void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert
         int input = JOptionPane.showOptionDialog(null, // root che apre l'alert (in questo caso non c'è bisogno di specificarne uno)
-                "Are you sure to exit from game?", // il messaggio
+                "Are you sure you want to exit the game?", // il messaggio
                 "Exit", // titolo della finestra alert
                 JOptionPane.YES_NO_OPTION, // tipo di bottoni dell'alert
                 JOptionPane.INFORMATION_MESSAGE, // tipo di messaggio

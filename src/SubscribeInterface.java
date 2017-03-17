@@ -1,3 +1,7 @@
+/* 
+Interfaccia remota della classe Subscribe
+*/
+
 package src;
 
 import java.rmi.Remote;

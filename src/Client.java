@@ -269,20 +269,6 @@ public class Client  {
         return 10L + nodeId * 2;
     }
 
-    /*
-    public synchronized Deck getDeck() {
-        if (deck == null){
-            try {
-            System.out.println("Waiting deck");
-            wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return deck;
-    }
-    */
-
     public List<Integer> getCardVals(){
         return cardVals;
     }
@@ -290,7 +276,7 @@ public class Client  {
     public synchronized Player[] getPlayers() {
         if (players == null) {
             try{
-                System.out.println("Waiting players");
+                System.out.println("Waiting other players");
                 wait();
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
