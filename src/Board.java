@@ -202,128 +202,133 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     } //---- Fine del costruttore
 
 
-        //Thread Client, durerà fino alla fine della partita.
-        public void doClientThread() {
-            Thread t2 = new Thread() {
-                public synchronized void run() {
-                    cl.gameStart();
-                }
-            };
-            t2.start();
-        }
-
-        // Metodo utilizzato per aggiornare la ui.Il metodo viene chiamato
-        // dal client quando riceve nuovi messaggi.
-        // Si potrebbe creare un metodo unico con checkCard()
-        public synchronized void updateInterface(OnesMove move) {
-
-            this.move = move;
-            System.out.println("Update interface");
-            System.out.println(move.getCard1Index());
-            System.out.println(move.getCard2Index());
-            c1 = cards.get(move.getCard1Index());
-            c2 = cards.get(move.getCard2Index());
-            c1.removeImage();
-            c1.setImage();
-            c2.removeImage();
-            c2.setImage();
-
-            // Utilizzato per rallentare l'animazione
-            //Si potrebbe mettere un timer ?
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
+    //creo Thread Client, durerà fino alla fine della partita.
+    public void doClientThread() {
+        Thread t2 = new Thread() {
+            public synchronized void run() {
+                cl.gameStart();
             }
-            if(c1.getValue() == c2.getValue()) {
-                c1.setEnabled(false);
-                c2.setEnabled(false);
-                c1.setMatched(true);
-                c2.setMatched(true);
+        };
+        t2.start();
+    }
 
-                if(this.isGameWon()){ 
-                    JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+    // Metodo utilizzato per aggiornare la ui.Il metodo viene chiamato
+    // dal client quando riceve nuovi messaggi.
+    // Si potrebbe creare un metodo unico con checkCard()
+    public synchronized void updateInterface(OnesMove move) {
 
-                }
-            } else {
-                c1.setText(""); 
-                c2.setText(""); 
-                c1.setImageLogo(); 
-                c2.setImageLogo();
-            }
-            c1 = null;
-            c2 = null;
+        this.move = move;
+        System.out.println("Update interface");
+        System.out.println(move.getCard1Index());
+        System.out.println(move.getCard2Index());
+        c1 = cards.get(move.getCard1Index());
+        c2 = cards.get(move.getCard2Index());
+        c1.removeImage();
+        c1.setImage();
+        c2.removeImage();
+        c2.setImage();
 
+        // Utilizzato per rallentare l'animazione
+        //Si potrebbe mettere un timer ?
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
         }
+        if(c1.getValue() == c2.getValue()) {
+            c1.setEnabled(false);
+            c2.setEnabled(false);
+            c1.setMatched(true);
+            c2.setMatched(true);
+
+            if(this.isGameWon()){ 
+                JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+
+            }
+        } else {
+            c1.setText(""); 
+            c2.setText(""); 
+            c1.setImageLogo(); 
+            c2.setImageLogo();
+        }
+        c1 = null;
+        c2 = null;
+
+    }
 
     /*
     * doTurn() è il metodo che mi permette di scoprire le carte infatti ha due condizioni: una per scoprire la prima carta, una per scoprire
     * la seconda carta
     */
-        public synchronized void doTurn(){
-            if(c1 == null  && c2 == null){ // se nessuna delle carte è scoperta
-                c1 = selectedCard; // imposto la prima carta scoperta come quella selezionata
-                c1.removeImage(); // rimuovo l'immagine del logo
-                c1.setImage(); // imposto l'immagine riferita alla carta
-                //System.out.println(c1.getId()); // TEMPORANEO: stampo l' ID della carta
+    public synchronized void doTurn(){
 
-            }
-            if(c1 != null && c1 != selectedCard && c2 == null){ // se viene selezionata la seconda carta
-                c2 = selectedCard; // imposto la seconda carta come quella selezionata
-                c2.removeImage(); // rimuovo il logo
-                c2.setImage(); // imposto l'immagine riferita alla carta
-                //System.out.println(c2.getId()); // TEMPORANEO: stampo l' ID della carta
-                t.start(); // faccio avviare il timer per la visualizzazione della carta
-            }
-        } //---- fine doTurn()
+    	// se nessuna delle carte è scoperta
+        if(c1 == null  && c2 == null){ 
+            c1 = selectedCard; 
+            c1.removeImage(); // rimuovo l'immagine del logo
+            c1.setImage(); 	// imposto l'immagine riferita alla carta
+            //System.out.println(c1.getId()); // TEMPORANEO: stampo l' ID della carta
+
+        }
+
+		// se viene selezionata la seconda carta
+        if(c1 != null && c1 != selectedCard && c2 == null){ 
+            c2 = selectedCard; 
+            c2.removeImage(); // rimuovo il logo
+            c2.setImage(); // imposto l'immagine riferita alla carta
+            //System.out.println(c2.getId()); // TEMPORANEO: stampo l' ID della carta
+            t.start(); // faccio avviare il timer per la visualizzazione della carta
+        }
+    } //---- fine doTurn()
         
 
 
-        /*
-        * checkCard() è il metodo che controlla il match delle carte
-        */
-        public synchronized void checkCards(){
-            if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
-                c1.setEnabled(false); // disattivo il prima carta
-                c2.setEnabled(false); // disattivo l seconda carta
-                c1.setMatched(true); //  dico che la prima carta è stata matchata
-                c2.setMatched(true); //  dico, di conseguenza che la seconda carta è matchata
-                pair = true;
-                //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
-                
+    /*
+    * checkCard() è il metodo che controlla il match delle carte
+    */
+    public synchronized void checkCards(){
+        if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
+            c1.setEnabled(false); 
+            c2.setEnabled(false); 
+            c1.setMatched(true); 
+            c2.setMatched(true); 
+            pair = true;
+            //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
+            
 
-                if(this.isGameWon()){ 
-                    JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+            if(this.isGameWon()){ 
+                JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
 
-                }
             }
-            else{ // nel caso in cui il matching non ha esito positivo
-                c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
-                c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
-                c1.setImageLogo(); // reimposto l'immagine del logo
-                c2.setImageLogo(); // reimposto l'immagine del logo
-            }
-            move = new OnesMove(c1.getId(),c2.getId(),pair);
-            pair = false;
-            cl.notifyMove(move);
-            lockBoard();
-            c1 = null; // svuoto il primo oggetto carta
-            c2 = null; // svuoto il secondo oggetto carta
+        }
+        else{ // nel caso in cui il matching non ha esito positivo
+            c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
+            c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
+            c1.setImageLogo(); // reimposto l'immagine del logo
+            c2.setImageLogo(); // reimposto l'immagine del logo
+        }
+        move = new OnesMove(c1.getId(),c2.getId(),pair);
+        pair = false;
+        cl.notifyMove(move);
+        lockBoard();
+        c1 = null; // svuoto il primo oggetto carta
+        c2 = null; // svuoto il secondo oggetto carta
 
-        } //--- fine chechCards()
+    } //--- fine checkCards()
 
-        /*
-         * isGameWon() è un metodo che verifica se il gioco è realmente finito (sicuramente migliorabile in modo distribuito).
-         * In poche parole, controlla il valore booleano di ogni carta: se almeno uno è false allora ritorna false, altrimenti il gioco è finito
-         */
-        public boolean isGameWon(){
-            for(CardGraphic c : this.cards){
-                if(c.getMatched() == false){
-                    return false;
-                }
-            }
-            return true;
-        } // --- fine isGameWon()
+    /*
+     * isGameWon() è un metodo che verifica se il gioco è realmente finito (sicuramente migliorabile in modo distribuito).
+     * In poche parole, controlla il valore booleano di ogni carta: se almeno uno è false allora ritorna false, altrimenti il gioco è finito
+     */
+    public boolean isGameWon(){
+        for(CardGraphic c : this.cards){
+            if(c.getMatched() == false) return false;
+        }
+
+        return true;
+    } // --- fine isGameWon()
+
+
 
     /* ----metodi per la gestione dell'intefaccia-------*/
     private static void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert
@@ -338,7 +343,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         }
 
     }
-
 
     private static void setAboutControl(){ // mi visualizza l'alert per le info sull'about
         JOptionPane.showOptionDialog(null,
