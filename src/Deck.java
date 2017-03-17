@@ -36,7 +36,7 @@ public class Deck implements Serializable{
 		 Collections.shuffle(cardVals);
 	}
 
-	public List<Integer> getDeck(){
+	public List<Integer> getCardVals(){
 		return cardVals;
 	}
 	

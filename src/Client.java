@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
+import java.util.List;
 
 
 public class Client  {
@@ -36,7 +36,7 @@ public class Client  {
     private BlockingQueue<GameMessage> buffer;
     private int[] processedMsg;
     private String playerName;
-    private Deck deck;
+    private List<Integer> cardVals;
     private final Board board;
     private OnesMove move;
     public boolean turn;
@@ -44,15 +44,11 @@ public class Client  {
     private final WindowRegistration initialWindow;
 
     public Client (String username,final Board board,final WindowRegistration initialWindow){
-
-         // La board viene passata per riferimento, incredibile ma vero.
-         // Ho cancellato circa 100 righe di codice per questo.
-         this.board = board;
-         this.playerName = username;
-         this.turn = false;
-         this.initialWindow = initialWindow;
-         inizializeGame();
-
+        this.board = board;
+        this.playerName = username;
+        this.turn = false;
+        this.initialWindow = initialWindow;
+        inizializeGame();
     }
 
     private void inizializeGame() {
@@ -135,8 +131,8 @@ public class Client  {
             System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
             playersNo = players.length;
-            deck = partecipant.getDeck();
-            System.out.println("Deck acquired");
+            cardVals = partecipant.getCardVals();
+            System.out.println("Card list acquired");
 
             if( playersNo > 1 ){
 
@@ -146,9 +142,6 @@ public class Client  {
                 for (int i=0; i < playersNo;i++){
                     System.out.println(players[i].getUsername());
                 }
-
-                System.out.println("Deck obtained. Number of cards: " + deck.getnCards());
-
 
                 link = new Link(me, players);
                 nodeId = link.getNodeId();
@@ -176,7 +169,7 @@ public class Client  {
         }
     }
 
-    public synchronized void gameStart(Deck deck) {
+    public synchronized void gameStart() {
 
         //Inizio gioco
         //Il thread looperà dentro a gameStart fino alla fine del gioco.
@@ -276,6 +269,7 @@ public class Client  {
         return 10L + nodeId * 2;
     }
 
+    /*
     public synchronized Deck getDeck() {
         if (deck == null){
             try {
@@ -286,6 +280,11 @@ public class Client  {
             }
         }
         return deck;
+    }
+    */
+
+    public List<Integer> getCardVals(){
+        return cardVals;
     }
 
     public synchronized Player[] getPlayers() {

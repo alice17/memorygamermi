@@ -15,15 +15,14 @@ import java.util.Random;
 
 /**
  * La classe Window Registration permette di inizializzare un'interfaccia grafica di registratione al gioco.
- * Infatti per poi lanciare il client al click di registrazione.
+ * Lancia il client al click di registrazione.
  */
 
 public class WindowRegistration {
     private static boolean RIGHT_TO_LEFT = false; //variabile che mi setta l'orientamento del posizione degli elementi nella finestra
     private static final int SIZE_OF_TEXTFIELD = 10; // variabile che mi gestisce la lunghezza textfield
-    public static  String IMG_PATH = "img/Memory.png"; // stringa per path del logo
+    public static String IMG_PATH = "img/Memory.png"; // stringa per path del logo
     public static Board board;
-    public static Deck deck;
     public static boolean awaitTurn;
     public static JLabel waiting;
     public static JLabel feedback;
@@ -35,8 +34,6 @@ public class WindowRegistration {
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
     */
     public WindowRegistration() {
-
-
 
         try {
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -65,7 +62,7 @@ public class WindowRegistration {
 
     private  void setCloseWindow(final JFrame frame) {
         int input = JOptionPane.showOptionDialog(frame, // la root è il frame
-                "Are you sure to exit from game?",
+                "Are you sure you want to exit the game?",
                 "Exit",
                 JOptionPane.YES_NO_OPTION, // tipo di button dell' alert
                 JOptionPane.INFORMATION_MESSAGE, // tipo di alert
@@ -86,12 +83,10 @@ public class WindowRegistration {
                     JOptionPane.CLOSED_OPTION,
                     JOptionPane.ERROR_MESSAGE, // tipo di messaggio
                     null,null,null);
-
-
-
         }
-        // gestisco il caso in cui nella textfield inserisco uno spazio vuoto (non li vogio avere!)
 
+
+        // gestisco il caso in cui nella textfield inserisco uno spazio vuoto (non li vogio avere!)
         else if(tf.getText().contains(" ") ){
             JOptionPane.showOptionDialog(null,
                     "Not insert \"Blank Spaces\" in the Username",
@@ -100,9 +95,7 @@ public class WindowRegistration {
                     JOptionPane.ERROR_MESSAGE, // tipo di messaggio errore
                     null,null,null);
 
-        }
-        else{
-
+        }else{
             // nel caso un cui è tutto ok, allora lancio il client e gli passo la stringa
             //appena confermato l'username la finestra windowregistration scompare con fr.setVisible()
             // si può anche cambiare.
@@ -324,11 +317,11 @@ public class WindowRegistration {
                                 null,null,null);
                         if(input == JOptionPane.YES_OPTION)
                             System.exit(0);
-
     }
+
     public static void notifyGameStart() {
         feedback.setText("");
-        waiting.setText("Game Start....");
+        waiting.setText("Starting game...");
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ie) {
@@ -339,17 +332,15 @@ public class WindowRegistration {
 
     public static void notifyErrorGameStart() {
         int exit = JOptionPane.showConfirmDialog(null,
-                                    "We not found another players. Do you want to exit?" ,
+                                    "Can't find other players. Do you want to exit?" ,
                                     "Sorry",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.INFORMATION_MESSAGE);
                             if (exit == JOptionPane.YES_OPTION)
                                 System.exit(0);
                             else{
-                                feedback.setText("We not found another players.");
-                                waiting.setText("Exit from the game.");
+                                feedback.setText("Can't find other players.");
+                                waiting.setText("Exit game.");
                             }
     }
-
-
 }

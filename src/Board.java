@@ -21,16 +21,15 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
     private boolean checkCards = false;
     private boolean pair = false;
-    private List<CardGraphic> cardLists;
+    private List<CardGraphic> cardList;
+    private List<Integer> cardVals;
     private boolean retrievePairs;
     public static Client cl;
-    private Deck deck;
     private Player[] players;
     private OnesMove move;
     private boolean turn;
     private final WindowRegistration initialWindow;
     private static ScoringBoard scoring;
-
 
     private static JLabel waiting;
     private static JLabel feedback;
@@ -132,11 +131,11 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         /*------popolo la board-------*/
         initialWindow.notifySubscribe();
         cl = new Client(userName,this,initialWindow);
-        deck = cl.getDeck();
+        cardVals = cl.getCardVals();
         players = cl.getPlayers();
 
 
-        setTitle("Memory"); //setto il titolo della finestra (quello il alto centrale)
+        setTitle("Memory"); 
         Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
         boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
         JPanel pane = new JPanel(); // creo il panel per la grid
@@ -145,14 +144,13 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         boardLayout.add(scoring, BorderLayout.LINE_START);
 
 
-        cardLists = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
-        List<Integer> myDeck = deck.getDeck(); // istanzio un lista per recuperare i valori delle carte dalla classe  Deck
+        cardList = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
 
-        int i = 0; // questo variabile contatore mi permette di aggiugere gli ID univoci alla carte
-        for (int val : myDeck) { // eseguo il foreach
+        int i = 0; 
+        for (int val : cardVals) { 
             final CardGraphic c = new CardGraphic();
             c.setValue(val); // aggiungo il valore della carta
-            c.setId(i); // aggiungo la posizione della carta
+            c.setId(i); 	// aggiungo la posizione della carta
             // setto la gestione degli eventi per ogni carta
             c.addActionListener(new ActionListener() {
                 @Override
@@ -161,11 +159,12 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                     doTurn(); // spiegato più avanti
                 }
             });
-            cardLists.add(c); // aggiungo la carta alla lista
-            i++; // incremento l'ID per la carta successiva
+
+            cardList.add(c); 
+            i++; 
         }
 
-        this.cards = cardLists; // una volta finito referenzio l'oggetto cardList  alla lista globale cards
+        this.cards = cardList; // una volta finito referenzio l'oggetto cardList  alla lista globale cards
 
         /*
         * Il timer mi permette di avere un margine di secondi per vedere le carte, di default l'ho settato a 750 ma si può variare
@@ -207,7 +206,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         public void doClientThread() {
             Thread t2 = new Thread() {
                 public synchronized void run() {
-                    cl.gameStart(deck);
+                    cl.gameStart();
                 }
             };
             t2.start();

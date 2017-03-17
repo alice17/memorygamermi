@@ -1,11 +1,16 @@
-
-
+/*
+Classe Subscribe
+L'oggetto Subscribe è creato e instaziato da Server. Serve per raccogliere i client e passargli l'insieme delle carte mescolate.
+*/
 
 package src;
 
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Subscribe extends UnicastRemoteObject implements SubscribeInterface {
 
@@ -14,7 +19,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 	private int playersMaxNo;
 	private int playersNo = 0;
 	private boolean openSubscribe = true;
-	private Deck deck;
+	private List<Integer> cardVals;		
 	private int nCards;
 
 	public Subscribe(int playersMaxNo) throws RemoteException {
@@ -76,10 +81,9 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 		System.arraycopy(players, 0, realPlayers, 0, playersNo);
 		players = realPlayers;
 		
-		// generate Deck
-		nCards = 20;//4 * playersNo;
-		deck = new Deck(nCards);
-		deck.generateCards();
+		// genera insieme di carte
+		nCards = 20;			//4 * playersNo;
+		generateCards();
 
 		// configure participants
 		for (int i=0 ;i < playersNo;i++) {
@@ -89,8 +93,8 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 			Thread t = new Thread() {
 				public void run() {
 					try {
-						System.out.println("Configuring partecipant " + realPlayers[j].getUsername());
-						p.configure(players, deck);
+						System.out.println("Configuring participant " + realPlayers[j].getUsername());
+						p.configure(players, cardVals);
 						System.out.println("Configuring done.");
 					} catch (RemoteException re) {
 						re.printStackTrace();
@@ -99,5 +103,19 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 			};
 			t.start();
 		}
+	}
+
+
+	private void generateCards(){
+	// genera e mescola il mazzo di carte
+		int i;
+		cardVals = new ArrayList<Integer>();
+		
+		for(i=0; i < (nCards/2) ; i++){
+			cardVals.add(i);
+			cardVals.add(i);
+		}
+		
+		Collections.shuffle(cardVals);
 	}
 }

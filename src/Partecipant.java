@@ -5,23 +5,24 @@ package src;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 
 	private Player[] players;
 	private boolean gotPartecipants = false;
-	private Deck deck;
+	private List<Integer> cardVals;	
 	
 	
 	public Partecipant() throws RemoteException {}
 
-	public synchronized void configure(Player[] players, Deck deck) throws RemoteException {
+	public synchronized void configure(Player[] players, List<Integer> cardVals) throws RemoteException {
 	// chiamata da subscribe per configurare le variabili di partecipant
 		this.players = players;
-		this.deck = deck;
+		this.cardVals = cardVals;
 		gotPartecipants = true;
 		notifyAll();
-		System.out.println("Partecipants list has been received.");
+		System.out.println("Participants and card list has been received.");
 	}
 
 	public synchronized Player[] getPlayers() {
@@ -35,8 +36,8 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 			}
 		return players;
 	}
-	
-	public synchronized Deck getDeck(){
-		return deck;
+
+	public List<Integer> getCardVals() {
+		return cardVals;
 	}
 }
