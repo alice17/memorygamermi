@@ -39,8 +39,8 @@ public class Client  {
     private List<Integer> cardVals;
     private final Board board;
     private OnesMove move;
-    public boolean turn;
-    public boolean enterSync = false;
+    private boolean turn;
+    private boolean enterSync = false;
     private final WindowRegistration initialWindow;
 
     public Client (String username,final Board board,final WindowRegistration initialWindow){
