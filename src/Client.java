@@ -39,14 +39,11 @@ public class Client  {
     private List<Integer> cardVals;
     private final Board board;
     private OnesMove move;
-    private boolean turn;
-    private boolean enterSync = false;
     private final WindowRegistration initialWindow;
 
-    public Client (String username,final Board board,final WindowRegistration initialWindow){
+    public Client (String username, final Board board, final WindowRegistration initialWindow){
         this.board = board;
         this.playerName = username;
-        this.turn = false;
         this.initialWindow = initialWindow;
         inizializeGame();
     }
@@ -59,13 +56,11 @@ public class Client  {
             localHost = InetAddress.getLocalHost();
             System.out.println("Local host is " + localHost);
         } catch (UnknownHostException uh){
+            uh.printStackTrace();
             System.exit(1);
         }
 
-
         String server = "localhost";
-
-
         Random random = new Random();
         int port = random.nextInt(100)+2001;
 
@@ -164,13 +159,12 @@ public class Client  {
             }
         } else {
             initialWindow.notifyErrorSubscribe();
-            System.out.println("Game subscribe unsuccessful");
+            System.out.println("Game subscribe unsuccessful. Exit the game.");
             System.exit(0);
         }
     }
 
     public synchronized void gameStart() {
-
         //Inizio gioco
         //Il thread looperà dentro a gameStart fino alla fine del gioco.
         tryToMyturn();
@@ -182,6 +176,7 @@ public class Client  {
                 boolean repeat = true;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
+
                 if(m != null) {
 
                     System.out.println("Processing message " + m);
@@ -198,7 +193,8 @@ public class Client  {
                     //Per ora non serve a niente, sarò utile coi crash per vedere qual'è il nodo
                     // con la vista dei messaggi spediti più recente.
                     processedMsg[m.getOrig()] = m.getId();
-                    // Per ora nel gioco se becchi una coppia gioca quello dopo, domani lo implemento.
+
+                    // Per ora nel gioco se becchi una coppia gioca quello dopo
                     if(m.getPair() == false) {
                         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                     } else {
@@ -206,19 +202,20 @@ public class Client  {
                         board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
                     }
                     // Incremento l'id del giocatore attuale.
-                    //game.update(m);
                     //Passo alla board la mossa per aggiornare la ui.
                     board.updateInterface(move);
 
                     System.out.println("The next player is " + game.getCurrentPlayer());
+
                     //Provo a vedere se è il mio turno.
-                    // Tramite game.update ho aggiornato il giocatore attuale.
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
                 }
                 //game.setGameEnded(true);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -235,12 +232,14 @@ public class Client  {
             System.out.println("Unlock board.");
             board.unlockBoard();
             System.out.println("I'm trying to do a move");
+
             try{
                 System.out.println("Wait move");
                 wait();
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }
+
             if (move.getPair() == false) {
                 //Quando viene notificata la mossa viene ribloccata la board.
                 //board.lockBoard();
@@ -269,10 +268,6 @@ public class Client  {
         return 10L + nodeId * 2;
     }
 
-    public List<Integer> getCardVals(){
-        return cardVals;
-    }
-
     public synchronized Player[] getPlayers() {
         if (players == null) {
             try{
@@ -285,23 +280,19 @@ public class Client  {
         return players;
     }
 
-    public Player getOwnPlayer() {
-        return me;
-    }
-    public int getOwnScore() {
-        return me.getPoints();
-    }
-
     //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
     //che la deve impacchettare in un messaggio da spedire.
     public synchronized void notifyMove(OnesMove move) {
             this.move = move;
             System.out.println("Notify move");
             notifyAll();
+    }
 
+    public List<Integer> getCardVals(){
+        return cardVals;
     }
-    
-    public synchronized boolean isGameEnded() {
-        return game.isGameEnded();
-    }
+
+    public Player getOwnPlayer() { return me; }
+
+    public int getOwnScore() { return me.getPoints(); }
 }

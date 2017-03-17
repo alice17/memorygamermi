@@ -1,3 +1,8 @@
+/**
+ * La classe Window Registration permette di inizializzare un'interfaccia grafica di registratione al gioco.
+ * Lancia il client al click di registrazione.
+ */
+
 package src;
 
 import javax.imageio.ImageIO;
@@ -11,12 +16,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.Random;
-
-
-/**
- * La classe Window Registration permette di inizializzare un'interfaccia grafica di registratione al gioco.
- * Lancia il client al click di registrazione.
- */
 
 public class WindowRegistration {
     private static boolean RIGHT_TO_LEFT = false; //variabile che mi setta l'orientamento del posizione degli elementi nella finestra
@@ -60,7 +59,7 @@ public class WindowRegistration {
 
     }
 
-    private  void setCloseWindow(final JFrame frame) {
+    private void setCloseWindow(final JFrame frame) {
         int input = JOptionPane.showOptionDialog(frame, // la root è il frame
                 "Are you sure you want to exit the game?",
                 "Exit",
@@ -74,7 +73,7 @@ public class WindowRegistration {
     /*
      * settingEventRegistration è un metodo che gestisce l'evento dell'immissione del nome nel textfied
      */
-    private synchronized void settingEventRegistration(final JFrame fr, JTextField tf){
+    private void settingEventRegistration(final JFrame fr, JTextField tf){
         if(tf.getText() == null || tf.getText().isEmpty()){
             //gestisco il caso in cui non aggiungo nessun nome
             JOptionPane.showOptionDialog(null,
@@ -162,7 +161,6 @@ public class WindowRegistration {
 
         // gestisco ora l'evento legato al button di registrazione al click
         btnRegistration.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 Thread t = new Thread(new Runnable() {
@@ -305,10 +303,10 @@ public class WindowRegistration {
 
     public void notifySubscribe() {
         feedback.setText("Registration Successful");
-        waiting.setText("I'm waiting other players to start the game.");
+        waiting.setText("I'm waiting for other players to start the game.");
     }
 
-    public static void notifyErrorSubscribe() {
+    public void notifyErrorSubscribe() {
         int input = JOptionPane.showOptionDialog(null, // la root è il frame
                                 "Registration not occured",
                                 "Sorry",
@@ -319,7 +317,7 @@ public class WindowRegistration {
                             System.exit(0);
     }
 
-    public static void notifyGameStart() {
+    public void notifyGameStart() {
         feedback.setText("");
         waiting.setText("Starting game...");
         try {
@@ -330,7 +328,7 @@ public class WindowRegistration {
         frame.setVisible(false);
     }
 
-    public static void notifyErrorGameStart() {
+    public void notifyErrorGameStart() {
         int exit = JOptionPane.showConfirmDialog(null,
                                     "Can't find other players. Do you want to exit?" ,
                                     "Sorry",

@@ -130,7 +130,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
         /*------popolo la board-------*/
         initialWindow.notifySubscribe();
-        cl = new Client(userName,this,initialWindow);
+        cl = new Client(userName, this, initialWindow);
         cardVals = cl.getCardVals();
         players = cl.getPlayers();
 
@@ -151,6 +151,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             final CardGraphic c = new CardGraphic();
             c.setValue(val); // aggiungo il valore della carta
             c.setId(i); 	// aggiungo la posizione della carta
+
             // setto la gestione degli eventi per ogni carta
             c.addActionListener(new ActionListener() {
                 @Override
@@ -163,8 +164,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             cards.add(c); 
             i++; 
         }
-
-        //this.cards = cardList; // una volta finito referenzio l'oggetto cardList  alla lista globale cards
 
         /*
         * Il timer mi permette di avere un margine di secondi per vedere le carte, di default l'ho settato a 750 ma si può variare
@@ -296,17 +295,15 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
             
 
-            if(this.isGameWon()){ 
-                JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
-
-            }
-        }
-        else{ // nel caso in cui il matching non ha esito positivo
+            if(this.isGameWon()) JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+            
+        }else{ // nel caso in cui il matching non ha esito positivo
             c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
             c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
             c1.setImageLogo(); // reimposto l'immagine del logo
             c2.setImageLogo(); // reimposto l'immagine del logo
         }
+
         move = new OnesMove(c1.getId(),c2.getId(),pair);
         pair = false;
         cl.notifyMove(move);
@@ -319,19 +316,20 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     /*
      * isGameWon() è un metodo che verifica se il gioco è realmente finito (sicuramente migliorabile in modo distribuito).
      * In poche parole, controlla il valore booleano di ogni carta: se almeno uno è false allora ritorna false, altrimenti il gioco è finito
+     *
+     * il client ha una variabile identica - da togliere??
      */
     public boolean isGameWon(){
         for(CardGraphic c : this.cards){
-            if(c.getMatched() == false) return false;
+            if(c.isMatched() == false) return false;
         }
 
         return true;
     } // --- fine isGameWon()
 
 
-
     /* ----metodi per la gestione dell'intefaccia-------*/
-    private static void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert
+    private void setExitControl(){ // imposta l'uscita dalla finestra visualizzator un alert
         int input = JOptionPane.showOptionDialog(null, // root che apre l'alert (in questo caso non c'è bisogno di specificarne uno)
                 "Are you sure you want to exit the game?", // il messaggio
                 "Exit", // titolo della finestra alert
@@ -344,7 +342,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     }
 
-    private static void setAboutControl(){ // mi visualizza l'alert per le info sull'about
+    private void setAboutControl(){ // mi visualizza l'alert per le info sull'about
         JOptionPane.showOptionDialog(null,
                 "Memory Game was realized by: Salvatore Alescio,\n" +
                         "Alice Valentini, Andrea Zuccarini. For \n" +
@@ -355,7 +353,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 null,null,null);
     }
 
-    private static void setRegoleControl(){ // mi visualizza l'alert per le info sulle regole
+    private void setRegoleControl(){ // mi visualizza l'alert per le info sulle regole
         JOptionPane.showOptionDialog(null,
                 "Memory, noto anche come coppie, è un popolare gioco di carte che richiede concentrazione e memoria.\n" +
                         "Nel gioco, le carte sono inizialmente mescolate e disposte coperte sul tavolo. I giocatori, a turno,\n"+
@@ -379,7 +377,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     /*----metodo che sblocca le carte----*/
     public void unlockBoard(){
         for (CardGraphic c : cards) {
-            if (c.getMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
+            if (c.isMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
         }
     }
 

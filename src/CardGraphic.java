@@ -1,3 +1,7 @@
+/**
+ * Created by salvatorealescio on 05/02/17.
+ */
+
 package src;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -6,13 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * Created by salvatorealescio on 05/02/17.
- */
+
 public class CardGraphic extends JButton implements Serializable{
     private int value;
     private int id;
-
     private boolean matched = false;
 
     public void setImageLogo() {
@@ -24,6 +25,7 @@ public class CardGraphic extends JButton implements Serializable{
             ex.printStackTrace();
         }
     }
+
     public void removeImage(){
         if(this.getIcon() != null){
             this.setIcon(null);
@@ -40,22 +42,10 @@ public class CardGraphic extends JButton implements Serializable{
     }
 
 
-    public void setValue(int value){
-        this.value = value;
-    }
-
+    public void setValue(int value){ this.value = value; }
     public void setId(int id){ this.id = id;}
-
-    public int getId(){
-        return this.id;
-    }
-
+    public int getId(){ return this.id; }
     public int getValue(){ return this.value; }
-
-    public void setMatched(boolean matched){
-        this.matched = matched;
-    }
-    public boolean getMatched(){
-        return this.matched;
-    }
+    public void setMatched(boolean matched){ this.matched = matched; }
+    public boolean isMatched(){ return this.matched; }
 }
