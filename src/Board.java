@@ -213,7 +213,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     // Metodo utilizzato per aggiornare la ui.Il metodo viene chiamato
     // dal client quando riceve nuovi messaggi.
-    // Si potrebbe creare un metodo unico con checkCard()
     public void updateInterface(OnesMove move) {
 
         this.move = move;
@@ -357,7 +356,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         }
     }
 
-    public void incPointPlayer(int nodeId,int score) {
+    public void incPointPlayer(int nodeId, int score) {
         scoring.setPlayerScore(nodeId, score);
     }
 

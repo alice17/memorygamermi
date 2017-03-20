@@ -41,8 +41,6 @@ public class ScoringBoard extends JPanel {
             add(lbScore[i]);
 
         }
-
-
     }
 
 }
