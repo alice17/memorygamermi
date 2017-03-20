@@ -25,10 +25,11 @@ public class ScoringBoard extends JPanel {
 
 
     public void buildGridForScore() {
-        setLayout(new GridLayout(3, 1)); // setto il Layout della board
+        setLayout(new GridLayout(allPlayers.length, 1)); // setto il Layout della board
         setBorder(new EmptyBorder(0, 30, 500, 0));
         createLabelScore();
-        scoring.setCurrentPlayer(0);
+        //scoring.setCurrentPlayer(0); prima c'era scritto cosi
+        //this.setCurrentPlayer(0); --> il colore rosso rimane solo nell'ultimo player
     }
 
     // aggiorna il giocatore corrente colorando la label

@@ -135,7 +135,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         remainedCards = cardVals.size();
 
 
-        setTitle("Memory"); 
+        setTitle("Memory - "+ userName);
         Container boardLayout = this.getContentPane(); // mi prendo la porzione di area della finestra che mi serve
         boardLayout.setLayout(new BorderLayout()); // imposto il layout come BorderLayout
         JPanel pane = new JPanel(); // creo il panel per la grid
@@ -247,7 +247,12 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             
             remainedCards = remainedCards - 2;
 
-            if(remainedCards==0) JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+            if(remainedCards==0){
+                Player playerWin = this.getPlayerWins(players);
+                JOptionPane.showMessageDialog(null, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+
+                                                    ". "+playerWin.getUsername() + "wins.");
+
+            }
 
             if(send){
                 pair = true;
@@ -371,6 +376,17 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     }
 
     public int getRemainedCards(){ return remainedCards; }
+
+    //metodo che mi permette di sapere chi ha vinto (funziona solo con i player che hanno perso, non capisco perchè)
+    public Player getPlayerWins(Player[] players){
+        List<Integer> tmp = new ArrayList<Integer>();
+        for(int i = 0; i<players.length; i++)
+            tmp.add(players[i].getPoints());
+        System.out.println(tmp);
+        int idx = tmp.indexOf(Collections.max(tmp));
+        System.out.println(idx);
+        return players[idx];
+    }
 
 }
 
