@@ -142,7 +142,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
         scoring.buildGridForScore();
         boardLayout.add(scoring, BorderLayout.LINE_START);
-        scoring.setCurrentPlayer(0);    //setto il primo giocatore
 
 
         cards = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate

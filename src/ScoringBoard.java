@@ -28,6 +28,7 @@ public class ScoringBoard extends JPanel {
         setLayout(new GridLayout(3, 1)); // setto il Layout della board
         setBorder(new EmptyBorder(0, 30, 500, 0));
         createLabelScore();
+        scoring.setCurrentPlayer(0);
     }
 
     // aggiorna il giocatore corrente colorando la label
