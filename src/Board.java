@@ -15,14 +15,13 @@ import java.lang.Thread;
 
 public class Board extends JFrame {//l'estensione a JFrame mi permette di creare direttamente una finestra grafica
     private List<CardGraphic> cards; // è la lista di carta che verrà rappresentata nella board
+    private List<Integer> cardVals;
     private CardGraphic selectedCard; // è un oggetto tmp che mi tiene memorizzato la prima carta quando devo ricercare la seconda
     private CardGraphic c1; // primo oggetto carta che mi serve il confronto
     private CardGraphic c2; // secondo oggetto carta che mi serve il confronto
+    private int remainedCards;
     private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
-    private boolean checkCards = false;
     private boolean pair = false;
-    private List<CardGraphic> cardList;
-    private List<Integer> cardVals;
     private boolean retrievePairs;
     public static Client cl;
     private Player[] players;
@@ -133,6 +132,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         cl = new Client(userName, this, initialWindow);
         cardVals = cl.getCardVals();
         players = cl.getPlayers();
+        remainedCards = cardVals.size();
 
 
         setTitle("Memory"); 
@@ -171,7 +171,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         t = new Timer(750, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                checkCards(); // questa è la funzione che controlla il matching delle carte
+                checkCards(true); // questa è la funzione che controlla il matching delle carte
             }
         });
 
@@ -217,9 +217,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     public void updateInterface(OnesMove move) {
 
         this.move = move;
-        System.out.println("Update interface");
-        System.out.println(move.getCard1Index());
-        System.out.println(move.getCard2Index());
+
         c1 = cards.get(move.getCard1Index());
         c2 = cards.get(move.getCard2Index());
         c1.removeImage();
@@ -234,26 +232,50 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         } catch (InterruptedException ie) {
             ie.printStackTrace();
         }
-        if(c1.getValue() == c2.getValue()) {
-            c1.setEnabled(false);
-            c2.setEnabled(false);
-            c1.setMatched(true);
-            c2.setMatched(true);
 
-            if(this.isGameWon()){ 
-                JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
-
-            }
-        } else {
-            c1.setText(""); 
-            c2.setText(""); 
-            c1.setImageLogo(); 
-            c2.setImageLogo();
-        }
-        c1 = null;
-        c2 = null;
-
+        checkCards(false);
     }
+
+    /*
+    * checkCard() è il metodo che controlla il match delle carte
+    */
+    private void checkCards(boolean send){
+        if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
+            c1.setEnabled(false); 
+            c2.setEnabled(false); 
+            c1.setMatched(true); 
+            c2.setMatched(true); 
+            pair = true;
+            
+            remainedCards = remainedCards - 2;
+
+            if(remainedCards==0) JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+            
+        }else{ // nel caso in cui il matching non ha esito positivo
+            c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
+            c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
+            c1.setImageLogo(); // reimposto l'immagine del logo
+            c2.setImageLogo(); // reimposto l'immagine del logo
+        }
+
+        if(send) sendMove();
+
+        c1 = null; 
+        c2 = null; 
+
+    } //--- fine checkCards()
+
+
+	/*
+    * sendMove() notifica la mossa al client
+    */
+    public void sendMove(){
+    	move = new OnesMove(c1.getId(),c2.getId(),pair);
+        pair = false;
+        cl.notifyMove(move);
+        lockBoard();
+    }
+
 
     /*
     * doTurn() è il metodo che mi permette di scoprire le carte infatti ha due condizioni: una per scoprire la prima carta, una per scoprire
@@ -280,52 +302,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         }
     } //---- fine doTurn()
         
-
-
-    /*
-    * checkCard() è il metodo che controlla il match delle carte
-    */
-    public void checkCards(){
-        if(c1.getValue() == c2.getValue()){ // se i valori sono uguali
-            c1.setEnabled(false); 
-            c2.setEnabled(false); 
-            c1.setMatched(true); 
-            c2.setMatched(true); 
-            pair = true;
-            //myScore.updateScore(); // vado ad eseguire l'update dello score riferito al player
-            
-
-            if(this.isGameWon()) JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
-            
-        }else{ // nel caso in cui il matching non ha esito positivo
-            c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
-            c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
-            c1.setImageLogo(); // reimposto l'immagine del logo
-            c2.setImageLogo(); // reimposto l'immagine del logo
-        }
-
-        move = new OnesMove(c1.getId(),c2.getId(),pair);
-        pair = false;
-        cl.notifyMove(move);
-        lockBoard();
-        c1 = null; 
-        c2 = null; 
-
-    } //--- fine checkCards()
-
-    /*
-     * isGameWon() è un metodo che verifica se il gioco è realmente finito (sicuramente migliorabile in modo distribuito).
-     * In poche parole, controlla il valore booleano di ogni carta: se almeno uno è false allora ritorna false, altrimenti il gioco è finito
-     *
-     * il client ha una variabile identica - da togliere??
-     */
-    public boolean isGameWon(){
-        for(CardGraphic c : this.cards){
-            if(c.isMatched() == false) return false;
-        }
-
-        return true;
-    } // --- fine isGameWon()
 
 
     /* ----metodi per la gestione dell'intefaccia-------*/
@@ -382,9 +358,10 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     }
 
     public void incPointPlayer(int nodeId,int score) {
-        scoring.setPlayerScore(nodeId,score);
-       
+        scoring.setPlayerScore(nodeId, score);
     }
+
+    public int getRemainedCards(){ return remainedCards; }
 
 }
 

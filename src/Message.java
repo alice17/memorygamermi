@@ -9,13 +9,8 @@ import java.io.Serializable;
 
 
 public class Message implements Serializable, Cloneable {
-
-
 		private int origId;
 		private int fromId;
-
-
-
 
 		public Message(int origId) {
 			this.origId = origId;

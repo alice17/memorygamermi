@@ -13,7 +13,6 @@ public class Game {
     private int nPlayers;                        // num di giocatori totali (aggiornato)
     private int currentPlayer;                   // id del giocatore di questo turno
     private boolean isGameEnded;
-    private OnesMove myMove;
 
     public Game(int nPlayers) {
     	this.nPlayers = nPlayers;

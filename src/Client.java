@@ -169,7 +169,7 @@ public class Client  {
         //Il thread looperà dentro a gameStart fino alla fine del gioco.
         tryToMyturn();
 
-        while(!game.isGameEnded()) {
+        while(board.getRemainedCards() > 0) {
             try {
                 //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
                 
@@ -194,20 +194,20 @@ public class Client  {
                     // con la vista dei messaggi spediti più recente.
                     processedMsg[m.getOrig()] = m.getId();
 
-                    // Per ora nel gioco se becchi una coppia gioca quello dopo
+                    // analizza la mossa contenuta nel messaggio
                     if(m.getPair() == false) {
+                        // Incremento l'id del giocatore attuale.
                         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                     } else {
                         players[m.getOrig()].incPoints();
                         board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
                     }
-                    // Incremento l'id del giocatore attuale.
+                    
                     //Passo alla board la mossa per aggiornare la ui.
                     board.updateInterface(move);
 
                     System.out.println("The next player is " + game.getCurrentPlayer());
 
-                    //Provo a vedere se è il mio turno.
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
@@ -269,6 +269,7 @@ public class Client  {
     }
 
     public synchronized Player[] getPlayers() {
+    // restituisce la lista di player appena scaduto il timeout
         if (players == null) {
             try{
                 System.out.println("Waiting other players");
