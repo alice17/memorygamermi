@@ -198,6 +198,7 @@ public class Client  {
                     if(m.getPair() == false) {
                         // Incremento l'id del giocatore attuale.
                         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+                        board.setCurrentPlayer( game.getCurrentPlayer() );
                     } else {
                         players[m.getOrig()].incPoints();
                         board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
@@ -212,7 +213,6 @@ public class Client  {
                 } else {
                      System.out.println("Timeout");
                 }
-                //game.setGameEnded(true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -245,6 +245,7 @@ public class Client  {
                 //board.lockBoard();
                 //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
                 game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+                board.setCurrentPlayer( game.getCurrentPlayer() );
             } else {
                 me.incPoints();
                 board.incPointPlayer(nodeId,me.getPoints());

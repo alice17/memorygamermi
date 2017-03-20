@@ -142,6 +142,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         scoring = new ScoringBoard(players); // creo la scoring board ( è un extend di JPanel)
         scoring.buildGridForScore();
         boardLayout.add(scoring, BorderLayout.LINE_START);
+        scoring.setCurrentPlayer(0);    //setto il primo giocatore
 
 
         cards = new ArrayList<CardGraphic>();  // utilizzo un lista di card per aggiugere le card che verranno contrassegnate
@@ -244,20 +245,27 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             c2.setEnabled(false); 
             c1.setMatched(true); 
             c2.setMatched(true); 
-            pair = true;
             
             remainedCards = remainedCards - 2;
 
             if(remainedCards==0) JOptionPane.showMessageDialog(this, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())); 
+
+            if(send){
+                pair = true;
+                sendMove();
+            } 
             
         }else{ // nel caso in cui il matching non ha esito positivo
             c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
             c2.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
             c1.setImageLogo(); // reimposto l'immagine del logo
             c2.setImageLogo(); // reimposto l'immagine del logo
-        }
 
-        if(send) sendMove();
+            if(send){
+                pair = false;
+                sendMove();
+            } 
+        }
 
         c1 = null; 
         c2 = null; 
@@ -270,7 +278,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     */
     public void sendMove(){
     	move = new OnesMove(c1.getId(),c2.getId(),pair);
-        pair = false;
         cl.notifyMove(move);
         lockBoard();
     }
@@ -358,6 +365,10 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     public void incPointPlayer(int nodeId, int score) {
         scoring.setPlayerScore(nodeId, score);
+    }
+
+    public void setCurrentPlayer(int id){
+        scoring.setCurrentPlayer(id);
     }
 
     public int getRemainedCards(){ return remainedCards; }
