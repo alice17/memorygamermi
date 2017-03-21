@@ -247,6 +247,7 @@ public class Client  {
                 game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                 board.setCurrentPlayer( game.getCurrentPlayer() );
             } else {
+                players[nodeId].incPoints();
                 me.incPoints();
                 board.incPointPlayer(nodeId,me.getPoints());
             }
