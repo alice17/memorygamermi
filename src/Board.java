@@ -247,17 +247,22 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             
             remainedCards = remainedCards - 2;
 
-            if(remainedCards==0){
-                Player playerWin = this.getPlayerWins(players);
-                JOptionPane.showMessageDialog(null, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+
-                                                    ". "+playerWin.getUsername() + "wins.");
-
-            }
-
             if(send){
                 pair = true;
                 sendMove();
-            } 
+            }
+            //prima era prima dell'if qui sopra ma cosi non si riusciva ad aggiornare per tempo il punteggio dell'ultima
+            //coppia trovata
+            if(remainedCards==0){
+                List<String> playerWin = this.getPlayerWins(players); // mi piglio i players vincitori
+                String playerWinText = "";
+                for(String text : playerWin){
+                    playerWinText += text+" "; // ad essere sinceri stilisticamente fa un po schifo
+                }
+                JOptionPane.showMessageDialog(null, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+
+                        ". "+playerWinText+ "wins.");
+
+            }
             
         }else{ // nel caso in cui il matching non ha esito positivo
             c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
@@ -377,15 +382,26 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     public int getRemainedCards(){ return remainedCards; }
 
-    //metodo che mi permette di sapere chi ha vinto (funziona solo con i player che hanno perso, non capisco perchè)
-    public Player getPlayerWins(Player[] players){
-        List<Integer> tmp = new ArrayList<Integer>();
+    //metodo che mi permette di sapere chi ha vinto
+    public List<String> getPlayerWins(Player[] players){
+
+        List<Integer> scoreList = new ArrayList<Integer>(); // lista dei punteggi
+        List<String>  returnPlayer = new ArrayList<String>(); // lista dei nomi dei vincitori
+
+        //popola la scoreList
         for(int i = 0; i<players.length; i++)
-            tmp.add(players[i].getPoints());
-        System.out.println(tmp);
-        int idx = tmp.indexOf(Collections.max(tmp));
-        System.out.println(idx);
-        return players[idx];
+            scoreList.add(players[i].getPoints());
+        System.out.println(scoreList);
+
+        int max = Collections.max(scoreList); // cerco il massimo
+
+        //popolo returnPlayer cercando i players che hanno lo stesso score più alto (predisposto per il pareggio)
+        for(int i = 0; i < players.length; i++){
+            if(players[i].getPoints() == max)
+                returnPlayer.add(players[i].getUsername());
+        }
+
+        return returnPlayer;
     }
 
 }
