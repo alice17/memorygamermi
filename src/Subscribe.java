@@ -5,8 +5,8 @@ L'oggetto Subscribe è creato e instaziato da Server. Serve per raccogliere i cl
 
 package src;
 
-
 import java.rmi.RemoteException;
+import java.net.InetAddress;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.ArrayList;
@@ -23,18 +23,19 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 	private int nCards;
 
 	public Subscribe(int playersMaxNo) throws RemoteException {
-
 		this.playersMaxNo = playersMaxNo;
   		players = new Player[playersMaxNo];
   		partecipants = new IPartecipant[playersMaxNo];
 	}
 
-  	public synchronized boolean subscribeAccepted(IPartecipant partecipant, Player player) throws RemoteException {
-  	// funzione chiamata dal client
+  	public synchronized boolean subscribeAccepted(IPartecipant partecipant, String username, InetAddress inetAddr, int port) throws RemoteException {
+  	// metodo chiamato dal client
   		if (playersNo < playersMaxNo &&  openSubscribe) {
-  			System.out.println("New player --> " + player.getUsername());
+  			System.out.println("New player --> " + username);
   			partecipants[playersNo] = partecipant;
-  			players[playersNo] = player;
+
+  			// creo il nuovo player
+  			players[playersNo] = new Player(username, inetAddr, port);
   			playersNo++;
   			
   			if (playersNo==playersMaxNo) {

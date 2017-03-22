@@ -260,7 +260,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                     playerWinText += text+" "; // ad essere sinceri stilisticamente fa un po schifo
                 }
                 JOptionPane.showMessageDialog(null, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+
-                        ". "+playerWinText+ "wins.");
+                        ". "+playerWinText+ "wins!");
 
             }
             

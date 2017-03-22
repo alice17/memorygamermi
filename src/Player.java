@@ -24,6 +24,6 @@ public class Player extends Node {
     public String getUsername(){ return username; }
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
-    public void incPoints() {points++; }
+    public void incPoints(){ points++; }
 
 }

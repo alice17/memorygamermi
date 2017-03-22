@@ -26,7 +26,7 @@ public class Client  {
     public final int PORT = 1099;
     private Game game;
     private Player[] players;
-    private Player me;
+    private Node me;
     private int nodeId;
     private Link link;
     private int playersNo;
@@ -69,8 +69,6 @@ public class Client  {
         else
             System.out.println("Security Manager not starts.");*/
 
-        me = new Player(playerName, localHost, port);
-
         messageBroadcast = null;
         buffer = new LinkedBlockingQueue<GameMessage>();
 
@@ -107,7 +105,7 @@ public class Client  {
             System.out.println("Subscribe service found at address " + url);
 
 
-            result = subscribe.subscribeAccepted(partecipant, me);
+            result = subscribe.subscribeAccepted(partecipant, playerName, localHost, port);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             System.exit(1);
@@ -126,11 +124,11 @@ public class Client  {
             System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
             playersNo = players.length;
-            cardVals = partecipant.getCardVals();
-            System.out.println("Card list acquired");
 
             if( playersNo > 1 ){
 
+                cardVals = partecipant.getCardVals();
+                System.out.println("Card list acquired");
                 initialWindow.notifyGameStart();
                 System.out.println("Players subscribed:");
 
@@ -138,6 +136,7 @@ public class Client  {
                     System.out.println(players[i].getUsername());
                 }
 
+                me = new Node(localHost, port);
                 link = new Link(me, players);
                 nodeId = link.getNodeId();
                 processedMsg = new int[players.length];
@@ -248,8 +247,7 @@ public class Client  {
                 board.setCurrentPlayer( game.getCurrentPlayer() );
             } else {
                 players[nodeId].incPoints();
-                me.incPoints();
-                board.incPointPlayer(nodeId,me.getPoints());
+                board.incPointPlayer(nodeId, players[nodeId].getPoints());
             }
             board.lockBoard();
             // Aumento il message counter, questo bisognerebbe cambiarlo per usare un 
@@ -291,11 +289,13 @@ public class Client  {
             notifyAll();
     }
 
-    public List<Integer> getCardVals(){
-        return cardVals;
+    public List<Integer> getCardVals(){ return cardVals; }
+
+    public int getOwnScore() { 
+        if(players!=null){
+            return players[nodeId].getPoints(); 
+        }else{
+            return 0;
+        }
     }
-
-    public Player getOwnPlayer() { return me; }
-
-    public int getOwnScore() { return me.getPoints(); }
 }
