@@ -380,6 +380,10 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         scoring.setCurrentPlayer(id);
     }
 
+    public void clearOldPlayer(int id) {
+        scoring.clearOldPlayer(id);
+    }
+
     public int getRemainedCards(){ return remainedCards; }
 
     //metodo che mi permette di sapere chi ha vinto

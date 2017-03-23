@@ -34,10 +34,14 @@ public class ScoringBoard extends JPanel {
 
     // aggiorna il giocatore corrente colorando la label
     public void setCurrentPlayer(int id){
-        for(int i=0; i < allPlayers.length; i++){
+        /*for(int i=0; i < allPlayers.length; i++){
             if(i==id) lbScore[id].setForeground(Color.red);
             else lbScore[id].setForeground(Color.black);
-        }
+        }*/
+        lbScore[id].setForeground(Color.red);
+    }
+    public void clearOldPlayer(int id) {
+        lbScore[id].setForeground(Color.black);
     }
 
     public void setPlayerScore(int nodeId, int score){

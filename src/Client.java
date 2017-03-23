@@ -171,7 +171,7 @@ public class Client  {
         while(board.getRemainedCards() > 0) {
             try {
                 //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
-                
+                board.setCurrentPlayer(game.getCurrentPlayer());
                 boolean repeat = true;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
@@ -196,6 +196,7 @@ public class Client  {
                     // analizza la mossa contenuta nel messaggio
                     if(m.getPair() == false) {
                         // Incremento l'id del giocatore attuale.
+                        board.clearOldPlayer(game.getCurrentPlayer());
                         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                         board.setCurrentPlayer( game.getCurrentPlayer() );
                     } else {
@@ -228,6 +229,7 @@ public class Client  {
             // ricevere messaggi, appena il client si riattiva può ritornare in ascolto sul buffer per vedere
             // se ci sono messaggi.Se ce ne sono va ad aggiornare l interfaccia locale.
 
+            board.setCurrentPlayer(game.getCurrentPlayer());
             System.out.println("Unlock board.");
             board.unlockBoard();
             System.out.println("I'm trying to do a move");
@@ -243,6 +245,7 @@ public class Client  {
                 //Quando viene notificata la mossa viene ribloccata la board.
                 //board.lockBoard();
                 //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
+                board.clearOldPlayer(game.getCurrentPlayer());
                 game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                 board.setCurrentPlayer( game.getCurrentPlayer() );
             } else {
