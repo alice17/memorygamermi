@@ -184,7 +184,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
             pane.add(c); // inserisco le card all'interno della gridlayout
         }
-        boardLayout.add(pane,BorderLayout.LINE_END);
+        boardLayout.add(pane,BorderLayout.CENTER);
 
         /*
         * visualizzo la finestra grafica inserendo tutti i parametri che mi servono
@@ -335,7 +335,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     private void setAboutControl(){ // mi visualizza l'alert per le info sull'about
         JOptionPane.showOptionDialog(null,
-                "Memory Game was realized by: Salvatore Alescio,\n" +
+                "Memery Game was realized by: Salvatore Alescio,\n" +
                         "Alice Valentini, Andrea Zuccarini. For \n" +
                         "Distributed Systems' project.",
                 "Exit",
@@ -346,11 +346,12 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     private void setRegoleControl(){ // mi visualizza l'alert per le info sulle regole
         JOptionPane.showOptionDialog(null,
-                "Memory, noto anche come coppie, è un popolare gioco di carte che richiede concentrazione e memoria.\n" +
-                        "Nel gioco, le carte sono inizialmente mescolate e disposte coperte sul tavolo. I giocatori, a turno,\n"+
-                        "scoprono due carte;  se queste formano una \"coppia\", vengono incassate dal giocatore di turno, che può scoprirne altre due;\n" +
-                        "altrimenti, vengono nuovamente coperte e rimesse nella loro posizione originale sul tavolo, e il turno passa al prossimo giocatore.\n"+
-                        "Vince il giocatore che riesce a scoprire più coppie.",
+                "Memory is a card game in which all of the card are laid face down on a surface and two cards\n"+
+                "are flipped face up over each turn. The object of the game is to turn over pairs of matching \n"+
+                "cards. Memory, can be played with any number of players or as solataire.\n"+
+                "It is a particularly good game for young children, though adults may find it challenging and \n"+
+                "stimulating as well. The scheme is often used in quiz shows and can be employed as an educatio-\n" +
+                "nal game.",
                 "Exit",
                 JOptionPane.CLOSED_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
