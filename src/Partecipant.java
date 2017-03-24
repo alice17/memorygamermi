@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
+
 public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 
 	private Player[] players;

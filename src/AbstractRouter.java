@@ -3,7 +3,10 @@
 
 package src;
 
-
+/*
+Classe astratta che recupera il riferimento del vicino destro e definisce il metodo performCallHook
+che viene utilizzato all'interno della classe Router.
+*/
 
 public abstract class AbstractRouter implements Runnable {
 
@@ -21,7 +24,8 @@ public abstract class AbstractRouter implements Runnable {
 		ServiceBulk right = null;
 		boolean success = false;
 
-		right = link.getRight();
+
+		right = link.getRight(); //si recupera il riferimento del vicino destro
 		System.out.println("I got right reference");
 		performCallHook(right);
 		success = true;

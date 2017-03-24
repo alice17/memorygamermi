@@ -3,7 +3,11 @@
 
 package src;
 
+/* 
+Guardare routerfactory, funzionano uguali ma questa si occupa dei messaggi.
+Anche in questa classe andrebbero aggiunti dei nuovi metodi per creare i messaggi di errore e di ACK.
 
+*/
 
 public class MessageFactory {
 

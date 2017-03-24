@@ -8,6 +8,16 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/*
+Ogni player crea una classe node con il proprio indirizzo di rete e la porta.
+La classe node è la classe padre di player.
+Quando successivamente viene creato un oggetto della classe link viene passato
+come parametro un oggetto node invece che player.
+Viene fatto perchè a livello di rete servono solo le info di node e non tutte 
+quelle contenute in player.
+Node e player si potrebbero anche unire, tenendole divise secondo me si fà meno
+fatica nella gestione dei crash nel momento di sostituire il vicino che è andato in crash.
+*/
 
 public class Node implements Serializable, Comparable<Node> {
 
@@ -25,7 +35,6 @@ public class Node implements Serializable, Comparable<Node> {
 	public Node(InetAddress inetAddr, int port) {
 		this.inetAddr = inetAddr;
 		//this.addr = inet2int(inetAddr);
-		//System.out.println(addr);
 		this.port = port;
 	}
 

@@ -1,6 +1,9 @@
 package src;
 
-
+/*
+classe che gestisce i messaggi di gioco, si dovrebbero creare altre due classi simili
+per la gestione dei messaggi di errore (ErrorMessage) e per la gestione degli ACK (ACKMessage)
+*/
 
 public class GameMessage extends Message implements Cloneable {
 

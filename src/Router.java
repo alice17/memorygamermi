@@ -5,6 +5,11 @@ package src;
 
 import java.rmi.RemoteException;
 
+/*
+classe che estende abstarctrouter, incaricata dell'invio dei messaggi di gioco.
+Si dovrebbero creare altre due classi simili, una per l'invio dei mess di errore e una
+per l'invio degli ACK ai vicini per le info sui crash.
+*/
 
 public class Router extends AbstractRouter {
 
@@ -24,6 +29,8 @@ public class Router extends AbstractRouter {
 		super.run();
 	}
 
+	/* Metodo che uitilizza una chiamata rmi, come parametro di ingresso
+	è presente un riferimento al vicino destro di tipo ServiceBulk */
 	@Override
 	protected void performCallHook(ServiceBulk to) {
 		GameMessage cloneMsg = (GameMessage)gameMsg.clone();
@@ -31,7 +38,7 @@ public class Router extends AbstractRouter {
 
 		try {
 			System.out.println("Forward");
-			to.messageBroadcast.forward(cloneMsg);
+			to.messageBroadcast.forward(cloneMsg); //chiamata rmi
 		} catch (RemoteException rE) {
 			rE.printStackTrace();
 			System.out.println("RemoteException");

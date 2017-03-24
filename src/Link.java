@@ -10,6 +10,13 @@ import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*
+Questa è la classe che gestisce i collegamenti con i nodi vicini e recupera le info 
+sul proprio nodo e sui vicini.
+In questa classe andranno aggiunti i metodi per recuperare il riferimento ad un nuovo vicino
+in caso di crash.
+
+*/
 
 public class Link {
 
@@ -28,6 +35,10 @@ public class Link {
 		this.nodes = nodes;
 		configure();
 	}
+
+    //ricerca il proprio id e quello dei vicino all'interno dell'array di node restituito dal server.
+	//Viene ricercato anche il nodo sinistro che non viene utilizzato, si può eliminare il leftid
+	//se decidiamo di rimanere con un anello direzionale.
 
 	private void configure() {
 		for (int i = 0; i < nodes.length; i++) {
@@ -58,6 +69,10 @@ public class Link {
 		return rightId;
 	}
 
+	/* Metodo che recupera il riferimento all'oggetto RemoteBroadcast del nodo vicino destro 
+	tramite il metodo lookupnodeper per potergli inviare i messaggi durante il gioco, successivamente
+	crea un oggetto di tipo ServiceBulk.*/
+
 	public ServiceBulk getRight() {
 
 		rightNode = lookupNode(rightId);
@@ -65,6 +80,8 @@ public class Link {
 
 	}
 
+	/* Metodo che utilizza RMI, restituisce un riferimento di tipo RemoteBroadcast */
+	
 	private RemoteBroadcast lookupNode(int id)  {
 		RemoteBroadcast broadcast = null;
 		String url = "rmi://" + nodes[id].getInetAddress().getCanonicalHostName() + ":"

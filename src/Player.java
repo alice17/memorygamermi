@@ -5,7 +5,10 @@ package src;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-
+/*
+La classe player estende la classe node per aggiungere funzionalità 
+specifiche del giocatore (username,points)
+*/
 
 public class Player extends Node {
     private String username;

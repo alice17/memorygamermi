@@ -13,6 +13,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*
+classe utilizzata per le chiamate remote RMi, implementa la classe remota RemoteBroadcast,
+per questo possono essere chiamati dei metodi in remoto di questa classe.
+Gestisce l'arrivo dei messaggi, li riordina, li può scartare o inserire nel buffer.
+
+*/
+
 public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroadcast {
 
 	private Link link = null;
