@@ -130,8 +130,8 @@ public class Client  {
                 cardVals = partecipant.getCardVals();
                 System.out.println("Card list acquired");
                 initialWindow.notifyGameStart();
-                System.out.println("Players subscribed:");
 
+                System.out.println("Players subscribed:");
                 for (int i=0; i < playersNo;i++){
                     System.out.println(players[i].getUsername());
                 }
@@ -195,17 +195,17 @@ public class Client  {
 
                     // analizza la mossa contenuta nel messaggio
                     if(m.getPair() == false) {
+                        board.updateInterface(move);
+
                         // Incremento l'id del giocatore attuale.
                         board.clearOldPlayer(game.getCurrentPlayer());
                         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
                         board.setCurrentPlayer( game.getCurrentPlayer() );
                     } else {
+                        board.updateInterface(move);
                         players[m.getOrig()].incPoints();
                         board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
                     }
-                    
-                    //Passo alla board la mossa per aggiornare la ui.
-                    board.updateInterface(move);
 
                     System.out.println("The next player is " + game.getCurrentPlayer());
 
@@ -275,7 +275,7 @@ public class Client  {
     // restituisce la lista di player appena scaduto il timeout
         if (players == null) {
             try{
-                System.out.println("Waiting other players");
+                System.out.println("Waiting for other players...");
                 wait();
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
@@ -287,9 +287,9 @@ public class Client  {
     //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
     //che la deve impacchettare in un messaggio da spedire.
     public synchronized void notifyMove(OnesMove move) {
-            this.move = move;
-            System.out.println("Notify move");
-            notifyAll();
+        this.move = move;
+        System.out.println("Notify move");
+        notifyAll();
     }
 
     public List<Integer> getCardVals(){ return cardVals; }
