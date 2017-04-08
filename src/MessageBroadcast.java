@@ -53,6 +53,8 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 	}
 
 	public void send(GameMessage msg) {
+		// serve un modo per sapere se il messaggio viene inviato o no
+		
 		Router r = rmaker.newRouter(msg);
 		new Thread(r).start();
 	}

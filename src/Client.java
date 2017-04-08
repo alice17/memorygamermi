@@ -30,6 +30,7 @@ public class Client  {
     private int nodeId;
     private Link link;
     private int playersNo;
+    private int activePlayersNo;    // numero di giocatori attivi
     private MessageBroadcast messageBroadcast;
     private MessageFactory mmaker;
     private RouterFactory rmaker;
@@ -124,6 +125,7 @@ public class Client  {
             System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
             playersNo = players.length;
+            activePlayersNo = playersNo;
 
             if( playersNo > 1 ){
 
@@ -267,6 +269,12 @@ public class Client  {
             messageBroadcast.send(mmaker.newGameMessage(move));
 
             // se il messaggio non riesco a spedirlo riconfiguro i collegamenti
+            // activePlayersNo = activePlayersNo - 1;
+            // if(activePlayersNo > 1){
+            //      link = new Link(me, players);
+            // }else{
+            //  finisci il gioco
+            // }
 
 
             System.out.println("Message counter factory " + mmaker.getMessageCounter());

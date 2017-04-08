@@ -31,7 +31,7 @@ public class Router extends AbstractRouter {
 
 	/* Metodo che utilizza una chiamata rmi, come parametro di ingresso
 	è presente un riferimento al vicino destro di tipo ServiceBulk 
-	chiamata da messageBroadcast */
+	chiamata da messageBroadcast per inviare un messaggio */
 	@Override
 	protected void performCallHook(ServiceBulk to) {
 		GameMessage cloneMsg = (GameMessage)gameMsg.clone();
@@ -43,10 +43,10 @@ public class Router extends AbstractRouter {
 		} catch (RemoteException rE) {
 			rE.printStackTrace();
 			System.out.println("RemoteException");
-		}catch (NullPointerException np){
+		} /*catch (NullPointerException np){
 			// destinatario irraggiungibile
 			
 			System.out.println("Can't forward the message.");
-		}
+		}*/
 	}
 }

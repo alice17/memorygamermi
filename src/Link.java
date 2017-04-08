@@ -41,13 +41,22 @@ public class Link {
 	//se decidiamo di rimanere con un anello direzionale.
 
 	private void configure() {
+		int j;
+
 		for (int i = 0; i < nodes.length; i++) {
 			if (me.compareTo(nodes[i]) == 0 ) {
 				myId = i;
-				leftId = backward(i, nodes.length);
+				leftId = backward(i, nodes.length);	//da togliere?
 
-				// da cambiare per la fault tolerance
-				rightId = (i + 1) % nodes.length;
+				j=1;
+
+				// prende il prossimo nodo attivo
+				do{
+					rightId = (i + j) % nodes.length;
+
+					j=j+1;
+				}while ( nodes[rightId].isActive()==false );
+				
 			}
 		}
 	}

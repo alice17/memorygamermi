@@ -44,7 +44,7 @@ public class Node implements Serializable, Comparable<Node> {
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
 	public boolean isActive(){ return active; }
-	public boolean setActive( boolean active ) { this.active = active; }
+	public void setActive( boolean active ) { this.active = active; }
 
 	public int compareTo(Node player) {
 		if (port < player.port)

@@ -22,14 +22,19 @@ public abstract class AbstractRouter implements Runnable {
 	public void run()  {
 
 		ServiceBulk right = null;
-		boolean success = false;
-
+		boolean success = true;
 
 		right = link.getRight(); //si recupera il riferimento del vicino destro
 		System.out.println("I got right reference");
-		performCallHook(right);
-		success = true;
-		
+
+		try{
+			performCallHook(right);	// fuzione di router
+		}catch (NullPointerException np) {
+		// destinatario non raggiungibile
+
+			System.out.println("Can't forward the message.");
+			success = false;
+		}
 	}
 
 	protected abstract void performCallHook(ServiceBulk to); 
