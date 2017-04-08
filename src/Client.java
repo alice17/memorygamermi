@@ -195,7 +195,10 @@ public class Client  {
 
                     // analizza la mossa contenuta nel messaggio
                     if(m.getPair() == false) {
-                        board.updateInterface(move);
+
+                        // se il giocatore ha effettuato la mossa
+                        if(move.getCard1Index()>0 && move.getCard2Index()>0)
+                            board.updateInterface(move);
 
                         // Incremento l'id del giocatore attuale.
                         board.clearOldPlayer(game.getCurrentPlayer());

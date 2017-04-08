@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.lang.Thread;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * La classe Board permette di istanziare la board con le carte per eseguire il gioco del memory
@@ -20,7 +22,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private CardGraphic c1; // primo oggetto carta che mi serve il confronto
     private CardGraphic c2; // secondo oggetto carta che mi serve il confronto
     private int remainedCards;
-    private Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
+    private javax.swing.Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
     private boolean pair = false;
     private boolean retrievePairs;
     public static Client cl;
@@ -29,6 +31,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private boolean turn;
     private final WindowRegistration initialWindow;
     private static ScoringBoard scoring;
+    private java.util.Timer timerMove;    // timer della mossa
 
     private static JLabel waiting;
     private static JLabel feedback;
@@ -168,7 +171,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         /*
         * Il timer mi permette di avere un margine di secondi per vedere le carte, di default l'ho settato a 750 ma si può variare
         */
-        t = new Timer(750, new ActionListener() {
+        t = new javax.swing.Timer(750, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 checkCards(true); // questa è la funzione che controlla il matching delle carte
@@ -249,8 +252,11 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
             if(send){
                 pair = true;
+                timerMove.cancel();
+                timerMove.purge();
                 sendMove();
             }
+
             //prima era prima dell'if qui sopra ma cosi non si riusciva ad aggiornare per tempo il punteggio dell'ultima
             //coppia trovata
             if(remainedCards==0){
@@ -272,6 +278,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
             if(send){
                 pair = false;
+                timerMove.cancel();
+                timerMove.purge();
                 sendMove();
             } 
         }
@@ -371,6 +379,22 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         for (CardGraphic c : cards) {
             if (c.isMatched()==false) c.setEnabled(true); // abilita tutti i bottoni delle carte
         }
+
+        timerMove = new java.util.Timer();
+        pair = false;
+
+        // "sega" il giocatore dopo 30 secondi
+        timerMove.schedule( new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Timer expired. Move forwarded.");
+                c1 = new CardGraphic();
+                c2 = new CardGraphic();
+                c1.setId(-1);
+                c2.setId(-1);
+                sendMove();
+            }
+        } , 30000);
     }
 
     public void incPointPlayer(int nodeId, int score) {

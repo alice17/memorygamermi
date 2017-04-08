@@ -123,8 +123,4 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 			msgCounterLock.unlock();
 		}
 	}
-
-	
-	
-
 }
