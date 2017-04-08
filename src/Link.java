@@ -23,7 +23,7 @@ public class Link {
 	private Node[] nodes;
 	private int myId = 0;
 	private int rightId = 0;
-	private int leftId = 0;
+	private int leftId = 0;		// da togliere?
 	private Node me;
 	private Lock lock = null;
 	private RemoteBroadcast rightNode = null;

@@ -30,7 +30,8 @@ public class Router extends AbstractRouter {
 	}
 
 	/* Metodo che utilizza una chiamata rmi, come parametro di ingresso
-	è presente un riferimento al vicino destro di tipo ServiceBulk */
+	è presente un riferimento al vicino destro di tipo ServiceBulk 
+	chiamata da messageBroadcast */
 	@Override
 	protected void performCallHook(ServiceBulk to) {
 		GameMessage cloneMsg = (GameMessage)gameMsg.clone();

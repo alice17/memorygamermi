@@ -25,6 +25,7 @@ public class Node implements Serializable, Comparable<Node> {
 	private int port;
 	//private int addr;
 	private int id;
+	private boolean active = true;	// indica se il nodo è attivo o no
 
 
 
@@ -38,21 +39,12 @@ public class Node implements Serializable, Comparable<Node> {
 		this.port = port;
 	}
 
-	public InetAddress getInetAddress() {
-		return inetAddr;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
+	public InetAddress getInetAddress() { return inetAddr; }
+	public int getPort() { return port; } 
+	public int getId() { return id; }
+	public void setId(int id) { this.id = id; }
+	public boolean isActive(){ return active; }
+	public boolean setActive( boolean active ) { this.active = active; }
 
 	public int compareTo(Node player) {
 		if (port < player.port)

@@ -265,6 +265,10 @@ public class Client  {
 
             //spedisco il messaggio sulla classe remota del mio vicino destro tramite RMI.
             messageBroadcast.send(mmaker.newGameMessage(move));
+
+            // se il messaggio non riesco a spedirlo riconfiguro i collegamenti
+
+
             System.out.println("Message counter factory " + mmaker.getMessageCounter());
             System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
 
