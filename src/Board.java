@@ -383,7 +383,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         timerMove = new java.util.Timer();
         pair = false;
 
-        // "sega" il giocatore dopo 30 secondi
+        // "sega" il giocatore dopo 30 secondi inviando una carta con id negativi
         timerMove.schedule( new TimerTask() {
             @Override
             public void run() {
@@ -393,6 +393,8 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 c1.setId(-1);
                 c2.setId(-1);
                 sendMove();
+                c1 = null;
+                c2 = null;
             }
         } , 30000);
     }

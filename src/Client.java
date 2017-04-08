@@ -215,6 +215,8 @@ public class Client  {
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
+
+                     //qua si potrebbe inviare l'aya - se il nodo è irraggiungibile allora bisogna cambiare vicino
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

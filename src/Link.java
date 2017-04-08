@@ -45,6 +45,8 @@ public class Link {
 			if (me.compareTo(nodes[i]) == 0 ) {
 				myId = i;
 				leftId = backward(i, nodes.length);
+
+				// da cambiare per la fault tolerance
 				rightId = (i + 1) % nodes.length;
 			}
 		}

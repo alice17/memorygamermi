@@ -29,7 +29,7 @@ public class Router extends AbstractRouter {
 		super.run();
 	}
 
-	/* Metodo che uitilizza una chiamata rmi, come parametro di ingresso
+	/* Metodo che utilizza una chiamata rmi, come parametro di ingresso
 	è presente un riferimento al vicino destro di tipo ServiceBulk */
 	@Override
 	protected void performCallHook(ServiceBulk to) {
@@ -42,6 +42,10 @@ public class Router extends AbstractRouter {
 		} catch (RemoteException rE) {
 			rE.printStackTrace();
 			System.out.println("RemoteException");
+		}catch (NullPointerException np){
+			// destinatario irraggiungibile
+			
+			System.out.println("Can't forward the message.");
 		}
 	}
 }
