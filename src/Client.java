@@ -270,6 +270,7 @@ public class Client  {
 
             // se il messaggio non riesco a spedirlo riconfiguro i collegamenti
             // activePlayersNo = activePlayersNo - 1;
+            // metto active = false al player[]
             // if(activePlayersNo > 1){
             //      link = new Link(me, players);
             // }else{

@@ -20,6 +20,8 @@ public abstract class AbstractRouter implements Runnable {
 	}
 
 	public void run()  {
+		//viene lanciato con un thread a parte da messageBroadcast
+		// da catchare l'errore
 
 		ServiceBulk right = null;
 		boolean success = true;
