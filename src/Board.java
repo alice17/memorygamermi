@@ -435,6 +435,27 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         return returnPlayer;
     }
 
+    public int updateAnyCrash(Node[] nodes,int myId) {
+        
+
+        boolean crash = true;
+        int i = (myId + 1) % nodes.length;
+        while(crash) {
+            if (!nodes[i].getActive()) {
+                scoring.setPlayerCrashed(i);
+                i = (i + 1) % nodes.length;
+            } else {
+                crash = false;
+            }
+        }
+        // Ritorna il prox giocatore attivo
+        return  i;
+    }
+
+    public void updateCrash(int id) {
+        scoring.setPlayerCrashed(id);
+    }
+
 }
 
 

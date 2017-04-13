@@ -23,9 +23,6 @@ public class GameMessage extends Message implements Cloneable {
 	}
 
 	
-	/*public String getOrig() {
-		return super.getOrig(); 
-	}*/
 
 	public String toString() {
 		return "#" + id + ", created by " + getOrig() + ", received from "
@@ -44,6 +41,14 @@ public class GameMessage extends Message implements Cloneable {
 
 	public OnesMove getMove() {
 		return this.move;
+	}
+
+	public int[] getProcessedMessage() {
+		return processedMessage;
+	}
+
+	public void setProcessedMsgElement(int id,int value) {
+		processedMessage[id] = value;
 	}
 
 

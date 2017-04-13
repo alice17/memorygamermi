@@ -60,6 +60,14 @@ public class Node implements Serializable, Comparable<Node> {
 		return inetAddr.getHostAddress() + ":" + port;
 	}
 
+	public void setNodeCrashed() {
+		active = false;
+	}
+
+	public boolean getActive() {
+		return active;
+	}
+
 	/*private int inet2int(InetAddress inetAddr) {
         byte[] bytes = inetAddr.getAddress();
         int value = 0;

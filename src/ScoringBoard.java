@@ -53,4 +53,8 @@ public class ScoringBoard extends JPanel {
         }
     }
 
+    public void setPlayerCrashed(int nodeId) {
+        lbScore[nodeId].setText(allPlayers[nodeId].getUsername() + ": " + "PLAYER OUT !!!!");
+    }
+
 }

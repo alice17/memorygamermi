@@ -12,6 +12,7 @@ Le classi che si andranno a creare, ErrorMessage e ACKMessage devono ereditare a
 */
 
 public class Message implements Serializable, Cloneable {
+	
 		private int origId;
 		private int fromId;
 
@@ -39,4 +40,5 @@ public class Message implements Serializable, Cloneable {
 		public String toString() {
 			return "received from " + fromId + ", created by " + origId;
 		}
+		
 }

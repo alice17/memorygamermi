@@ -20,7 +20,7 @@ in caso di crash.
 
 public class Link {
 
-	private Node[] nodes;
+	public Node[] nodes;
 	private int myId = 0;
 	private int rightId = 0;
 	private int leftId = 0;		// da togliere?
@@ -80,8 +80,16 @@ public class Link {
 		return rightId;
 	}
 
+	public Node[] getNodes() {
+		return nodes;
+	}
+
+	public void incRightId() {
+		rightId = (rightId +1) % nodes.length;
+	}
+
 	/* Metodo che recupera il riferimento all'oggetto RemoteBroadcast del nodo vicino destro 
-	tramite il metodo lookupnodeper per potergli inviare i messaggi durante il gioco, successivamente
+	tramite il metodo lookupnode per per potergli inviare i messaggi durante il gioco, successivamente
 	crea un oggetto di tipo ServiceBulk.*/
 
 	public ServiceBulk getRight() {
@@ -104,10 +112,13 @@ public class Link {
 			success = true;
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed");
+			nodes[id].setNodeCrashed();
 		} catch (NotBoundException e) {
 			System.out.println("Notbound");
+			nodes[id].setNodeCrashed();
 		} catch (RemoteException e) {
 			System.out.println("Remote");
+			nodes[id].setNodeCrashed();
 		}
 		return broadcast;
 	}

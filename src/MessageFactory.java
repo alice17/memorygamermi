@@ -27,7 +27,10 @@ public class MessageFactory {
 	}
 
 	public GameMessage newGameMessage(OnesMove move) {
-		processedMessage[myId] = messageCounter++;
+		processedMessage[myId] = ++messageCounter;
+		for (int i=0;i< processedMessage.length;i++) {
+			System.out.println("Node " + i + " " + processedMessage[i]);
+		}
 		return new GameMessage(myId, messageCounter, processedMessage,move);
 	}
 	public int getMessageCounter() {

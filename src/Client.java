@@ -195,25 +195,48 @@ public class Client  {
                     // con la vista dei messaggi spediti più recente.
                     processedMsg[m.getOrig()] = m.getId();
 
-                    // analizza la mossa contenuta nel messaggio
-                    if(m.getPair() == false) {
+                    System.out.println("Message from Node " + m.getFrom());
 
-                        // se il giocatore ha effettuato la mossa
-                        if(move.getCard1Index()>0 && move.getCard2Index()>0)
-                            board.updateInterface(move);
+                    
+                    //confronto dei due processedMessage
+                    int[] processedMessageUpdate = m.getProcessedMessage();
 
-                        // Incremento l'id del giocatore attuale.
-                        board.clearOldPlayer(game.getCurrentPlayer());
-                        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-                        board.setCurrentPlayer( game.getCurrentPlayer() );
-                    } else {
-                        board.updateInterface(move);
-                        players[m.getOrig()].incPoints();
-                        board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
+                    for (int i = 0;i<processedMsg.length;i++) {
+                        System.out.println("ProcessedMsg " + i + "--> " + processedMsg[i]);
+                        System.out.println("ProcessedMsgUpdate " + i + "--> " + processedMessageUpdate[i]);
                     }
+                    for(int i=m.getOrig();i<processedMsg.length;i++) {
+                        if (processedMessageUpdate[i] == -1) {
+
+                            if (link.nodes[i].getActive()) {
+                                link.nodes[i].setNodeCrashed();
+                                board.updateCrash(i);
+                                processedMsg[i] = -1;
+
+                            }
+
+                        } else if (i == m.getOrig()) {
+
+                            if(m.getPair() == false) {
+                                // se il giocatore ha effettuato la mossa
+                                if(move.getCard1Index()>0 && move.getCard2Index()>0)
+                                        board.updateInterface(move);
+                            } else {
+                                board.updateInterface(move);
+                                players[m.getOrig()].incPoints();
+                                board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
+                            }
+                            
+                        }
+                    }
+                    if(m.getPair() == false) {
+                        retrieveNextPlayer();
+                    }
+                    
 
                     System.out.println("The next player is " + game.getCurrentPlayer());
 
+                    // analizza la mossa contenuta nel messaggio
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
@@ -240,6 +263,7 @@ public class Client  {
             System.out.println("Unlock board.");
             board.unlockBoard();
             System.out.println("I'm trying to do a move");
+            int nextPlayer = 0;
 
             try{
                 System.out.println("Wait move");
@@ -248,13 +272,18 @@ public class Client  {
                 ie.printStackTrace();
             }
 
+            //spedisco il messaggio sulla classe remota del mio vicino destro tramite RMI.
+            messageBroadcast.send(mmaker.newGameMessage(move));
+
+            //mi calcola il prox giocatore anche senza crash
+            nextPlayer = board.updateAnyCrash(link.getNodes(),link.getNodeId());
+
+
             if (move.getPair() == false) {
-                //Quando viene notificata la mossa viene ribloccata la board.
-                //board.lockBoard();
                 //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
                 board.clearOldPlayer(game.getCurrentPlayer());
-                game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-                board.setCurrentPlayer( game.getCurrentPlayer() );
+                game.setCurrentPlayer(nextPlayer);
+                board.setCurrentPlayer(game.getCurrentPlayer());
             } else {
                 players[nodeId].incPoints();
                 board.incPointPlayer(nodeId, players[nodeId].getPoints());
@@ -264,20 +293,6 @@ public class Client  {
             // oggetto condiviso tra la classe client e il MessageBroadcast per tenere
             // sincronizzati i messaggi che arrivano e quelli che vengono spediti.
             messageBroadcast.incMessageCounter();
-
-            //spedisco il messaggio sulla classe remota del mio vicino destro tramite RMI.
-            messageBroadcast.send(mmaker.newGameMessage(move));
-
-            // se il messaggio non riesco a spedirlo riconfiguro i collegamenti
-            // activePlayersNo = activePlayersNo - 1;
-            // metto active = false al player[]
-            // if(activePlayersNo > 1){
-            //      link = new Link(me, players);
-            // }else{
-            //  finisci il gioco
-            // }
-
-
             System.out.println("Message counter factory " + mmaker.getMessageCounter());
             System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
 
@@ -318,5 +333,18 @@ public class Client  {
         }else{
             return 0;
         }
+    }
+
+    public void retrieveNextPlayer() {
+
+        //va avanti fino a quando trova il primo nodo attivo
+        while(!link.nodes[((game.getCurrentPlayer()+1) % players.length)].getActive()) {
+                                        board.clearOldPlayer(game.getCurrentPlayer());
+                                        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+                                }
+        board.clearOldPlayer(game.getCurrentPlayer());
+        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+        board.setCurrentPlayer( game.getCurrentPlayer() );
+
     }
 }

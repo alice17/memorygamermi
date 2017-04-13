@@ -24,6 +24,7 @@ public class Router extends AbstractRouter {
 
 	}
 
+
 	@Override
 	public void run() {
 		super.run();
@@ -34,11 +35,11 @@ public class Router extends AbstractRouter {
 	chiamata da messageBroadcast per inviare un messaggio */
 	@Override
 	protected void performCallHook(ServiceBulk to) {
+		
 		GameMessage cloneMsg = (GameMessage)gameMsg.clone();
 		cloneMsg.setFrom(link.getNodeId());
 
 		try {
-			System.out.println("Forward");
 			to.messageBroadcast.forward(cloneMsg); //chiamata rmi
 		} catch (RemoteException rE) {
 			rE.printStackTrace();
