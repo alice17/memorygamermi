@@ -37,9 +37,12 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 	private TreeMap<Integer, GameMessage> pendingMessage;
 	private ReentrantLock msgCounterLock;
 
-	public MessageBroadcast(BlockingQueue<GameMessage> buffer) throws RemoteException {
+	public Client clientBoard;
+
+	public MessageBroadcast(BlockingQueue<GameMessage> buffer,final Client clientBoard) throws RemoteException {
 		this.buffer = buffer;
 		this.messageCounter = 0;
+		this.clientBoard = clientBoard;
 		pendingMessage = new TreeMap<Integer,GameMessage>();
 		msgCounterLock = new ReentrantLock();
 
@@ -56,18 +59,38 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 	public void send(GameMessage msg) {
 		// serve un modo per sapere se il messaggio viene inviato o no
 		
+		//quando r.run termina ho sia il processedMsg che i Nodes aggiornati
 		Router r = rmaker.newRouter(msg);
 		r.run();
+		Node[] provNodes = link.getNodes();
+            for (int i=0;i<provNodes.length;i++) {
+                System.out.println("Node " + i + " " + provNodes[i].getActive());
+            }
 	}
 
 	public synchronized void forward(GameMessage msg) throws RemoteException {
 		
 		if (enqueue(msg)) {
 			
-			Router router = rmaker.newRouter(msg);
-			router.run();
+			Router routerForward = rmaker.newRouter(msg);
+			routerForward.runForward();
+			int nextActivePlayer;
+			nextActivePlayer = clientBoard.board.updateAnyCrash(link.getNodes(),link.getNodeId());
 		} else {
 			System.out.println("Message discarded. " + msg.toString());
+			System.out.println("Checking new nodes crashed");
+			int[] processedMessageUpdate = msg.getProcessedMessage();
+			for(int i=0;i<processedMessageUpdate.length;i++) {
+
+				if (processedMessageUpdate[i] == -1) {
+					if (link.nodes[i].getActive()) {
+
+						link.nodes[i].setNodeCrashed();
+                        clientBoard.board.updateCrash(i);
+                        clientBoard.processedMsg[i] = -1;
+                    }
+                }
+            }
 		}	
 	}
 

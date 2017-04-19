@@ -50,4 +50,14 @@ public class Router extends AbstractRouter {
 			System.out.println("Can't forward the message.");
 		}*/
 	}
+
+	@Override
+	public void runForward() {
+		super.runForward();
+	}
+
+	@Override
+	protected void updateCrashBoard(int nodeCrashed) {
+
+	}
 }

@@ -31,14 +31,14 @@ public class Client  {
     private Link link;
     private int playersNo;
     private int activePlayersNo;    // numero di giocatori attivi
-    private MessageBroadcast messageBroadcast;
+    public static MessageBroadcast messageBroadcast;
     private MessageFactory mmaker;
     private RouterFactory rmaker;
     private BlockingQueue<GameMessage> buffer;
-    private int[] processedMsg;
+    public int[] processedMsg;
     private String playerName;
     private List<Integer> cardVals;
-    private final Board board;
+    public final Board board;
     private OnesMove move;
     private final WindowRegistration initialWindow;
 
@@ -83,7 +83,7 @@ public class Client  {
             	LocateRegistry.getRegistry(port);
             }
         */
-            messageBroadcast = new MessageBroadcast (buffer);
+            messageBroadcast = new MessageBroadcast (buffer,this);
             String serviceURL = "rmi://" + localHost.getCanonicalHostName() + ":" + port + "/Broadcast";
             System.out.println("Registering message broadcast service at " + serviceURL);
             Naming.rebind(serviceURL,messageBroadcast);
@@ -166,6 +166,7 @@ public class Client  {
     }
 
     public synchronized void gameStart() {
+
         //Inizio gioco
         //Il thread looperà dentro a gameStart fino alla fine del gioco.
         tryToMyturn();
@@ -205,7 +206,8 @@ public class Client  {
                         System.out.println("ProcessedMsg " + i + "--> " + processedMsg[i]);
                         System.out.println("ProcessedMsgUpdate " + i + "--> " + processedMessageUpdate[i]);
                     }
-                    for(int i=m.getOrig();i<processedMsg.length;i++) {
+                    
+                    for(int i=m.getOrig();i % processedMsg.length != nodeId;i++) {
                         if (processedMessageUpdate[i] == -1) {
 
                             if (link.nodes[i].getActive()) {
@@ -241,8 +243,10 @@ public class Client  {
                 } else {
                      System.out.println("Timeout");
 
-                     //qua si potrebbe inviare l'aya - se il nodo è irraggiungibile allora bisogna cambiare vicino
                 }
+                //int nothing = 0;
+                //nothing = board.updateAnyCrash(link.getNodes(),link.getNodeId());
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -277,6 +281,11 @@ public class Client  {
 
             //mi calcola il prox giocatore anche senza crash
             nextPlayer = board.updateAnyCrash(link.getNodes(),link.getNodeId());
+
+            Node[] provNodes = link.getNodes();
+            for (int i=0;i<provNodes.length;i++) {
+                System.out.println("Node " + i + " " + provNodes[i].getActive());
+            }
 
 
             if (move.getPair() == false) {
@@ -346,5 +355,8 @@ public class Client  {
         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
         board.setCurrentPlayer( game.getCurrentPlayer() );
 
+    }
+    public int getNodeId() {
+        return nodeId;
     }
 }
