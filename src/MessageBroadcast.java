@@ -73,7 +73,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 		if (enqueue(msg)) {
 			
 			Router routerForward = rmaker.newRouter(msg);
-			routerForward.runForward();
+			routerForward.run();
 			int nextActivePlayer;
 			nextActivePlayer = clientBoard.board.updateAnyCrash(link.getNodes(),link.getNodeId());
 		} else {

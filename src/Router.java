@@ -51,13 +51,4 @@ public class Router extends AbstractRouter {
 		}*/
 	}
 
-	@Override
-	public void runForward() {
-		super.runForward();
-	}
-
-	@Override
-	protected void updateCrashBoard(int nodeCrashed) {
-
-	}
 }
