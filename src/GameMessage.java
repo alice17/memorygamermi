@@ -9,17 +9,32 @@ public class GameMessage extends Message implements Cloneable {
 
 	private int id;
 	private OnesMove move;
-	private int[] processedMessage;
+	private int nodeCrashedId;
 
-	public GameMessage(int origId, int id,int[] processedMessage,OnesMove move) {
-		super(origId);
+	
+	// Metodo che inizializza un GameMessage classico
+
+	public GameMessage(int origId, int id,OnesMove move) {
+		super(origId,id);
 		this.id = id;
-		this.processedMessage = processedMessage;
 		this.move = move;
+		this.nodeCrashedId = -1;
+
 	}
 
+
+	//Metodo che inizializza un GameMessage utilizzato per informare
+	//la rete del crash di un dato nodo.
+
+	public GameMessage(int origId, int id,int nodeCrashedId) {
+		super(origId,id);
+		this.id = id;
+		this.nodeCrashedId = nodeCrashedId;
+		this.move = null;
+	} 
+
 	public int getId() {
-		return id;
+		return super.getId();
 	}
 
 	
@@ -30,7 +45,13 @@ public class GameMessage extends Message implements Cloneable {
 	}
 
 	public Object clone() {
-		GameMessage m = new GameMessage(getOrig(),id,processedMessage.clone(),move);
+
+		GameMessage m;
+		if (nodeCrashedId == -1) {
+			m = new GameMessage(getOrig(),id,move);
+		} else {
+			m = new GameMessage(getOrig(),id,nodeCrashedId);
+		}
 		m.setFrom(getFrom());
 		return m;
 	}
@@ -43,12 +64,8 @@ public class GameMessage extends Message implements Cloneable {
 		return this.move;
 	}
 
-	public int[] getProcessedMessage() {
-		return processedMessage;
-	}
-
-	public void setProcessedMsgElement(int id,int value) {
-		processedMessage[id] = value;
+	public int getNodeCrashed() {
+		return nodeCrashedId;
 	}
 
 

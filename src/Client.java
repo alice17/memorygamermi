@@ -141,10 +141,8 @@ public class Client  {
                 me = new Node(localHost, port);
                 link = new Link(me, players);
                 nodeId = link.getNodeId();
-                processedMsg = new int[players.length];
-                Arrays.fill(processedMsg, 0);
                 rmaker = new RouterFactory(link);
-                mmaker = new MessageFactory(nodeId,processedMsg);
+                mmaker = new MessageFactory(nodeId);
                 messageBroadcast.configure(link,rmaker,mmaker);
 
                 System.out.println("My id is " + nodeId + " and my name is " + players[nodeId].getUsername());
@@ -182,71 +180,40 @@ public class Client  {
                 if(m != null) {
 
                     System.out.println("Processing message " + m);
-                    //Incremento messageCounter
-                    // Per ora ho creato due messagecounter, uno in Messagefactory(questo) e uno in MessageBroadcast.
-                    // Sincronizzati alla grezza.
-                    // In Uno vecchio usa un oggetto condiviso tra il client e l'interfaccia remota
-                    // più o meno come la callback usando i lock, sarebbe utilissimo.mistero.Da provare.
-                    mmaker.incMessageCounter();
-                    System.out.println("Message counter factory " + mmaker.getMessageCounter());
                     // recupero la mossa dal messaggio che mi è arrivato
                     move = m.getMove();
-                    //Questo array tiene conto dell'ultimo messaggio processato per ogni nodo
-                    //Per ora non serve a niente, sarò utile coi crash per vedere qual'è il nodo
-                    // con la vista dei messaggi spediti più recente.
-                    processedMsg[m.getOrig()] = m.getId();
 
                     System.out.println("Message from Node " + m.getFrom());
 
-                    
-                    //confronto dei due processedMessage
-                    int[] processedMessageUpdate = m.getProcessedMessage();
+                    // Controlla se è un messaggio di crash oppure di gioco
+                    System.out.println(m.getNodeCrashed());
+                    if(m.getNodeCrashed() != -1) {
 
-                    for (int i = 0;i<processedMsg.length;i++) {
-                        System.out.println("ProcessedMsg " + i + "--> " + processedMsg[i]);
-                        System.out.println("ProcessedMsgUpdate " + i + "--> " + processedMessageUpdate[i]);
-                    }
-                    
-                    for(int i=m.getOrig();i % processedMsg.length != nodeId;i++) {
-                        if (processedMessageUpdate[i] == -1) {
+                        System.out.println("Crash Message");
+                        link.nodes[m.getNodeCrashed()].setNodeCrashed();
+                        board.updateCrash(m.getNodeCrashed());
+                        retrieveNextPlayer();
 
-                            if (link.nodes[i].getActive()) {
-                                link.nodes[i].setNodeCrashed();
-                                board.updateCrash(i);
-                                processedMsg[i] = -1;
+                    } else {
 
-                            }
-
-                        } else if (i == m.getOrig()) {
-
-                            if(m.getPair() == false) {
+                        if(m.getPair() == false) {
                                 // se il giocatore ha effettuato la mossa
                                 if(move.getCard1Index()>0 && move.getCard2Index()>0)
                                         board.updateInterface(move);
-                            } else {
-                                board.updateInterface(move);
-                                players[m.getOrig()].incPoints();
-                                board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
-                            }
-                            
+                                retrieveNextPlayer();
+                        } else {
+
+                            board.updateInterface(move);
+                            players[m.getOrig()].incPoints();
+                            board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
                         }
                     }
-                    if(m.getPair() == false) {
-                        retrieveNextPlayer();
-                    }
-                    
-
                     System.out.println("The next player is " + game.getCurrentPlayer());
-
-                    // analizza la mossa contenuta nel messaggio
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
 
                 }
-                //int nothing = 0;
-                //nothing = board.updateAnyCrash(link.getNodes(),link.getNodeId());
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -277,33 +244,71 @@ public class Client  {
             }
 
             //spedisco il messaggio sulla classe remota del mio vicino destro tramite RMI.
-            messageBroadcast.send(mmaker.newGameMessage(move));
+            
+            boolean[] nodesCrashed = new boolean[players.length];
+            Arrays.fill(nodesCrashed, false);
+            boolean anyCrash = false;
+            messageBroadcast.incMessageCounter();
+            int messageCounter = messageBroadcast.retrieveMsgCounter();
+            boolean sendOk = false;
+
+            while(link.checkAliveNode() == false) {
+
+                anyCrash = true;
+                nodesCrashed[link.getRightId()] = true;
+                System.out.println("Finding a new neighbour");
+                link.incRightId();
+                if (link.getRightId() == link.getNodeId()) {
+                    System.out.println("Unico giocatore, partita conclusa");
+                    System.exit(0);
+                    //si deve sostituire con una chiamada gameEnd alla board.
+                }
+            }
+
+            while (sendOk == false) {
+
+                //non fà il controllo sul send ma prima
+                messageBroadcast.send(mmaker.newGameMessage(move,messageCounter));
+                sendOk = true; 
+            }
+
 
             //mi calcola il prox giocatore anche senza crash
             nextPlayer = board.updateAnyCrash(link.getNodes(),link.getNodeId());
 
-            Node[] provNodes = link.getNodes();
-            for (int i=0;i<provNodes.length;i++) {
-                System.out.println("Node " + i + " " + provNodes[i].getActive());
-            }
-
 
             if (move.getPair() == false) {
-                //Incremento il prossimo giocatore che deve giocare.In locale lo faccio qua.
+
+                //Incremento il prossimo giocatore che deve giocare.
                 board.clearOldPlayer(game.getCurrentPlayer());
                 game.setCurrentPlayer(nextPlayer);
                 board.setCurrentPlayer(game.getCurrentPlayer());
+
             } else {
                 players[nodeId].incPoints();
                 board.incPointPlayer(nodeId, players[nodeId].getPoints());
             }
             board.lockBoard();
-            // Aumento il message counter, questo bisognerebbe cambiarlo per usare un 
-            // oggetto condiviso tra la classe client e il MessageBroadcast per tenere
-            // sincronizzati i messaggi che arrivano e quelli che vengono spediti.
-            messageBroadcast.incMessageCounter();
-            System.out.println("Message counter factory " + mmaker.getMessageCounter());
+            
+            
             System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
+
+            //Spedisce CrashMessage se sono stati rilevati crash
+
+            if (anyCrash) {
+
+                for(int i=0;i<nodesCrashed.length;i++) {
+                    if (nodesCrashed[i] == true) {
+
+                        System.out.println("Sending a CrashMessage within the network for node " + i);
+                        messageBroadcast.incMessageCounter();
+                        int messageCounterCrash = messageBroadcast.retrieveMsgCounter();
+
+                        //Invio msg di crash senza gestione dell'errore
+                        messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash));
+                    }
+                }
+            }
 
         }
 

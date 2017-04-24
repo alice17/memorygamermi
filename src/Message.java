@@ -15,10 +15,15 @@ public class Message implements Serializable, Cloneable {
 	
 		private int origId;
 		private int fromId;
+		private int messageId;
 
-		public Message(int origId) {
+
+		// Utilizzato per creare un GameMessage 
+
+		public Message(int origId,int messageId) {
 			this.origId = origId;
 			this.fromId = origId;
+			this.messageId = messageId;
 		}
 
 		public int getOrig() {
@@ -33,12 +38,16 @@ public class Message implements Serializable, Cloneable {
 			return fromId;
 		}
 		public Object clone() {
-			Message m = new Message(origId);
+			Message m = new Message(origId,messageId);
 			m.setFrom(fromId);
 			return m;
 		}
 		public String toString() {
 			return "received from " + fromId + ", created by " + origId;
+		}
+
+		public int getId() {
+			return messageId;
 		}
 		
 }

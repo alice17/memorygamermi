@@ -105,11 +105,9 @@ public class Link {
 		RemoteBroadcast broadcast = null;
 		String url = "rmi://" + nodes[id].getInetAddress().getCanonicalHostName() + ":"
 					+ nodes[id].getPort() + "/Broadcast";
-		boolean success = false;
 		try {
 			System.out.println("looking up " + url);
 			broadcast = (RemoteBroadcast)Naming.lookup(url);
-			success = true;
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed");
 			nodes[id].setNodeCrashed();
@@ -122,5 +120,32 @@ public class Link {
 		}
 		return broadcast;
 	}
+
+	public boolean checkAliveNode() {
+
+		int id = getRightId();
+		boolean success = true;
+		RemoteBroadcast broadcast = null;
+		String url = "rmi://" + nodes[id].getInetAddress().getCanonicalHostName() + ":"
+					+ nodes[id].getPort() + "/Broadcast";
+		try {
+			System.out.println("looking up " + url);
+			broadcast = (RemoteBroadcast)Naming.lookup(url);
+		} catch (MalformedURLException e) {
+			System.out.println("Malformed");
+			nodes[id].setNodeCrashed();
+			success = false;
+		} catch (NotBoundException e) {
+			System.out.println("Notbound");
+			nodes[id].setNodeCrashed();
+			success = false;
+		} catch (RemoteException e) {
+			System.out.println("Remote");
+			nodes[id].setNodeCrashed();
+			success = false;
+		}
+		return success;
+	}
+
 
 }

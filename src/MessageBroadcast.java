@@ -56,50 +56,65 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 	}
 
 
-	public void send(GameMessage msg) {
-		// serve un modo per sapere se il messaggio viene inviato o no
+	public synchronized void send(GameMessage msg) {
 		
-		//quando r.run termina ho sia il processedMsg che i Nodes aggiornati
-		Router r = rmaker.newRouter(msg);
-		r.run();
-		Node[] provNodes = link.getNodes();
-            for (int i=0;i<provNodes.length;i++) {
-                System.out.println("Node " + i + " " + provNodes[i].getActive());
-            }
+			//quando r.run termina ho il link.Node[] aggiornato
+			Router r = rmaker.newRouter(msg);
+			new Thread(r).start();
+		
 	}
 
-	public synchronized void forward(GameMessage msg) throws RemoteException {
+	public synchronized void forward(GameMessage msg) throws  RemoteException {
 		
 		if (enqueue(msg)) {
 			
-			Router routerForward = rmaker.newRouter(msg);
-			routerForward.run();
-			int nextActivePlayer;
-			nextActivePlayer = clientBoard.board.updateAnyCrash(link.getNodes(),link.getNodeId());
-		} else {
-			System.out.println("Message discarded. " + msg.toString());
-			System.out.println("Checking new nodes crashed");
-			int[] processedMessageUpdate = msg.getProcessedMessage();
-			for(int i=0;i<processedMessageUpdate.length;i++) {
+			boolean anyCrash = false;
+			boolean[] nodesCrashed = new boolean[link.getNodes().length];
+            Arrays.fill(nodesCrashed, false);
+			
+			while(link.checkAliveNode() == false) {
 
-				if (processedMessageUpdate[i] == -1) {
-					if (link.nodes[i].getActive()) {
+                anyCrash = true;
+                nodesCrashed[link.getRightId()] = true;
+                System.out.println("Finding a new neighbour");
+                link.incRightId();
+                if (link.getRightId() == link.getNodeId()) {
+                    System.out.println("Unico giocatore, partita conclusa");
+                    System.exit(0);
+                    //si deve sostituire con una chiamada gameEnd alla board.
+                }
+            }
 
-						link.nodes[i].setNodeCrashed();
+            
+            //Router routerForward = rmaker.newRouter(msg);
+            //routerForward.run();
+            send(msg);
+
+            if (anyCrash) {
+
+                for(int i=0;i<nodesCrashed.length;i++) {
+                    if (nodesCrashed[i] == true) {
+
+                        System.out.println("Sending a CrashMessage within the network for node " + i);
+                        incMessageCounter();
+                        //int messageCounterCrash = retrieveMsgCounter();
+
+                        //Invio msg di crash senza gestione dell'errore
+                        send(mmaker.newCrashMessage(i,messageCounter));
+                        System.out.println("Update Board crash");
                         clientBoard.board.updateCrash(i);
-                        clientBoard.processedMsg[i] = -1;
                     }
                 }
             }
-		}	
+		} else {
+			System.out.println("Message discarded. " + msg.toString());
+			}	
 	}
 
 	private synchronized boolean enqueue(GameMessage msg) {
 		boolean doForward = false;
 		
-		System.out.println("Msg broadcast counter before -> " + messageCounter);
 		if (msg.getOrig() != link.getNodeId()) {
-			//try {
 				if((msg.getId() > messageCounter) && (pendingMessage.containsKey(msg.getId()) == false)) {
 					if(msg.getId() == messageCounter + 1) {
 						try {
@@ -117,7 +132,6 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 							msgCounterLock.unlock();
 						}
 
-						System.out.println("Message counter -> " + messageCounter);
 						while(pendingMessage.containsKey(messageCounter + 1)) {
 							GameMessage pendMessage = pendingMessage.remove(messageCounter + 1);
 							try {
@@ -138,7 +152,6 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 					}
 					doForward = true;
 				} 
-			//} catch (InterruptedException ie) {}
 		}
 		return doForward;
 	}
@@ -149,5 +162,52 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 		} finally {
 			msgCounterLock.unlock();
 		}
+	}
+
+	/*public boolean sendError(GameMessage msg) {
+
+		CrashRouter rError = rmaker.newCrashRouter(msg);
+		return rError.routerRun();
+	}*/
+
+
+	/*public synchronized void forwardError(GameMessage msg) throws RemoteException {
+
+		if (enqueue(msg)) {
+			
+			CrashRouter routerForwardError = rmaker.newCrashRouter(msg);
+			boolean[] nodesCrashed = new boolean[link.getNodes().length];
+            Arrays.fill(nodesCrashed, false);
+            boolean anyCrash = false;
+			while(routerForwardError.routerRun() == false) {
+				anyCrash = true;
+                nodesCrashed[link.getRightId()] = true;
+                System.out.println("Finding a new neighbour");
+                link.incRightId();
+                if (link.getRightId() == link.getNodeId()) {
+                    System.out.println("Unico giocatore, partita conclusa");
+                    System.exit(0);
+                    
+                }
+
+			}
+			//int nextActivePlayer;
+			//nextActivePlayer = clientBoard.board.updateAnyCrash(link.getNodes(),link.getNodeId());
+			} else {
+			System.out.println("Message discarded. " + msg.toString());
+		}
+	}*/
+
+	public int retrieveMsgCounter() {
+		return messageCounter;
+	}
+
+	public synchronized void sendAYA() {
+
+
+			System.out.println("I'm alive");
+		/*} catch(RemoteException re) {
+			re.printStackTrace();
+		}*/
 	}
 }

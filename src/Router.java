@@ -25,16 +25,25 @@ public class Router extends AbstractRouter {
 	}
 
 
+	/*@Override
+	public boolean routerRun() {
+		return super.routerRun();
+	}*/
+
 	@Override
 	public void run() {
 		super.run();
 	}
 
+	/*public void routerRun() {
+		super.routerRun();
+	}*/
+
 	/* Metodo che utilizza una chiamata rmi, come parametro di ingresso
 	è presente un riferimento al vicino destro di tipo ServiceBulk 
 	chiamata da messageBroadcast per inviare un messaggio */
 	@Override
-	protected void performCallHook(ServiceBulk to) {
+	protected synchronized void performCallHook(ServiceBulk to) {
 		
 		GameMessage cloneMsg = (GameMessage)gameMsg.clone();
 		cloneMsg.setFrom(link.getNodeId());

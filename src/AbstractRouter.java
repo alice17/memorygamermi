@@ -11,26 +11,36 @@ che viene utilizzato all'interno della classe Router.
 public abstract class AbstractRouter implements Runnable {
 
 	protected Link link;
-	protected GameMessage msg;
+	protected GameMessage gameMsg;
+	protected Message crashMsg;
 
-	public AbstractRouter(Link link, GameMessage msg) {
+
+	// Metodo utilizzato per creare un AbstractRouter che gestisce un GameMessage
+
+	public AbstractRouter(Link link, GameMessage gameMsg) {
 		this.link = link;
-		this.msg = msg;
+		this.gameMsg = gameMsg;
+		this.crashMsg = null;
 		
 	}
 
-	public void run()  {
+	// Metodo utilizzato per creare un AbstractRouter che gestisce un CrashMessage
+
+	public AbstractRouter(Link link, Message crashMsg) {
+		this.link = link;
+		this.crashMsg = crashMsg;
+		this.gameMsg = null;
+	}
+
+	/*public boolean routerRun()  {
 
 		boolean success = false;
 
-		while (success == false) {
-
-			
 			try{
 				ServiceBulk right = null;
-				// Se non viene trovato il riferimento si imposta active false nel node
+				// Se non viene trovato il riferimento si imposta active = false nel node
 				right = link.getRight(); //si recupera il riferimento del vicino destro
-				performCallHook(right);	// fuzione di router
+				performCallHook(right);	// funzione di router
 				System.out.println("I got right reference");
 				success = true;
 			}catch (NullPointerException np) {
@@ -38,17 +48,35 @@ public abstract class AbstractRouter implements Runnable {
 				// destinatario non raggiungibile
 
 				System.out.println("Can't forward the message to neighbour.");
-				System.out.println("Finding a new neighbour");
-				msg.setProcessedMsgElement(link.getRightId(),-1);
-				link.incRightId();
-				if (link.getRightId() == link.getNodeId()) {
-					System.out.println("Unico giocatore, partita conclusa");
-					System.exit(0);
-				} 
+				//gameMsg.incCrash();
+				
 			}
-		}
+			return success;
+	}*/
+
+	public void run() {
+
+
+			try{
+				ServiceBulk right = null;
+				// Se non viene trovato il riferimento si imposta active = false nel node
+				right = link.getRight(); //si recupera il riferimento del vicino destro
+				performCallHook(right);	// funzione di router
+				System.out.println("I got right reference");
+
+			}catch (NullPointerException np) {
+			
+				// destinatario non raggiungibile
+				System.out.println("Can't forward the message to neighbour.");
+				
+			}
 	}
 
+
+
+	/*public void run() {
+
+	}*/
 
 	protected abstract void performCallHook(ServiceBulk to); 
 	

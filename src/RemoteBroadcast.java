@@ -15,4 +15,6 @@ public interface RemoteBroadcast extends Remote {
 
 	public void forward(GameMessage msg) throws RemoteException;	
 
+	public void sendAYA() throws RemoteException;
+
 }
