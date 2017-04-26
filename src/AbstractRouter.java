@@ -32,27 +32,6 @@ public abstract class AbstractRouter implements Runnable {
 		this.gameMsg = null;
 	}
 
-	/*public boolean routerRun()  {
-
-		boolean success = false;
-
-			try{
-				ServiceBulk right = null;
-				// Se non viene trovato il riferimento si imposta active = false nel node
-				right = link.getRight(); //si recupera il riferimento del vicino destro
-				performCallHook(right);	// funzione di router
-				System.out.println("I got right reference");
-				success = true;
-			}catch (NullPointerException np) {
-			
-				// destinatario non raggiungibile
-
-				System.out.println("Can't forward the message to neighbour.");
-				//gameMsg.incCrash();
-				
-			}
-			return success;
-	}*/
 
 	public void run() {
 
@@ -71,12 +50,6 @@ public abstract class AbstractRouter implements Runnable {
 				
 			}
 	}
-
-
-
-	/*public void run() {
-
-	}*/
 
 	protected abstract void performCallHook(ServiceBulk to); 
 	

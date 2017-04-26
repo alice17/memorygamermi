@@ -171,6 +171,7 @@ public class Client  {
 
         while(board.getRemainedCards() > 0) {
             try {
+
                 //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
                 board.setCurrentPlayer(game.getCurrentPlayer());
                 boolean repeat = true;
@@ -192,7 +193,7 @@ public class Client  {
                         System.out.println("Crash Message");
                         link.nodes[m.getNodeCrashed()].setNodeCrashed();
                         board.updateCrash(m.getNodeCrashed());
-                        retrieveNextPlayer();
+                        retrieveNextPlayerCrash();
 
                     } else {
 
@@ -251,10 +252,12 @@ public class Client  {
             messageBroadcast.incMessageCounter();
             int messageCounter = messageBroadcast.retrieveMsgCounter();
             boolean sendOk = false;
+            int howManyCrash = 0;
 
             while(link.checkAliveNode() == false) {
 
                 anyCrash = true;
+                howManyCrash = howManyCrash + 1;
                 nodesCrashed[link.getRightId()] = true;
                 System.out.println("Finding a new neighbour");
                 link.incRightId();
@@ -268,7 +271,7 @@ public class Client  {
             while (sendOk == false) {
 
                 //non fà il controllo sul send ma prima
-                messageBroadcast.send(mmaker.newGameMessage(move,messageCounter));
+                messageBroadcast.send(mmaker.newGameMessage(move,messageCounter,howManyCrash));
                 sendOk = true; 
             }
 
@@ -300,12 +303,12 @@ public class Client  {
                 for(int i=0;i<nodesCrashed.length;i++) {
                     if (nodesCrashed[i] == true) {
 
-                        System.out.println("Sending a CrashMessage within the network for node " + i);
                         messageBroadcast.incMessageCounter();
                         int messageCounterCrash = messageBroadcast.retrieveMsgCounter();
+                        System.out.println("Sending a CrashMessage id " + messageCounterCrash);
 
                         //Invio msg di crash senza gestione dell'errore
-                        messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash));
+                        messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash,0));
                     }
                 }
             }
@@ -359,6 +362,16 @@ public class Client  {
         board.clearOldPlayer(game.getCurrentPlayer());
         game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
         board.setCurrentPlayer( game.getCurrentPlayer() );
+
+    }
+    public void retrieveNextPlayerCrash() {
+
+        if(link.nodes[game.getCurrentPlayer()].getActive()) {
+        	System.out.println("Player active");
+        } else {
+        	retrieveNextPlayer();
+        }
+        
 
     }
     public int getNodeId() {

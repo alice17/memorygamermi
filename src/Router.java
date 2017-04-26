@@ -25,19 +25,10 @@ public class Router extends AbstractRouter {
 	}
 
 
-	/*@Override
-	public boolean routerRun() {
-		return super.routerRun();
-	}*/
-
 	@Override
 	public void run() {
 		super.run();
 	}
-
-	/*public void routerRun() {
-		super.routerRun();
-	}*/
 
 	/* Metodo che utilizza una chiamata rmi, come parametro di ingresso
 	è presente un riferimento al vicino destro di tipo ServiceBulk 

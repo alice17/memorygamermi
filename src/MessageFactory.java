@@ -21,13 +21,13 @@ public class MessageFactory {
 		
 	}
 
-	public GameMessage newGameMessage(OnesMove move,int messageCounter) {
+	public GameMessage newGameMessage(OnesMove move,int messageCounter,int howManyCrash) {
 		
 		
-		return new GameMessage(myId,messageCounter,move);
+		return new GameMessage(myId,messageCounter,move,howManyCrash);
 	}
-	public GameMessage newCrashMessage(int nodeCrashedId,int messageCounter) {
+	public GameMessage newCrashMessage(int nodeCrashedId,int messageCounter,int howManyCrash) {
 		
-		return new GameMessage(myId,messageCounter,nodeCrashedId);
+		return new GameMessage(myId,messageCounter,nodeCrashedId,howManyCrash);
 	}
 }
