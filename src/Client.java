@@ -213,6 +213,7 @@ public class Client  {
                     tryToMyturn();
                 } else {
                      System.out.println("Timeout");
+                     messageBroadcast.sendAYA();
 
                 }
             } catch (InterruptedException e) {
@@ -271,6 +272,7 @@ public class Client  {
             while (sendOk == false) {
 
                 //non fà il controllo sul send ma prima
+                System.out.println("Im sending a message with id " + messageCounter );
                 messageBroadcast.send(mmaker.newGameMessage(move,messageCounter,howManyCrash));
                 sendOk = true; 
             }
@@ -300,15 +302,15 @@ public class Client  {
 
             if (anyCrash) {
 
+                howManyCrash = howManyCrash + 1;
                 for(int i=0;i<nodesCrashed.length;i++) {
                     if (nodesCrashed[i] == true) {
 
                         messageBroadcast.incMessageCounter();
                         int messageCounterCrash = messageBroadcast.retrieveMsgCounter();
                         System.out.println("Sending a CrashMessage id " + messageCounterCrash);
-
                         //Invio msg di crash senza gestione dell'errore
-                        messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash,0));
+                        messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash,howManyCrash));
                     }
                 }
             }

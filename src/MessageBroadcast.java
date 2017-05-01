@@ -64,6 +64,11 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 		
 	}
 
+	public synchronized void sendAYA() {
+		AYARouter r = rmaker.newAYARouter();
+		new Thread(r).start();
+	}
+
 	public synchronized void forward(GameMessage msg) throws  RemoteException {
 		
 		if (enqueue(msg)) {
@@ -91,6 +96,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
             
             //Router routerForward = rmaker.newRouter(msg);
             //routerForward.run();
+            //spedisco il messaggio arrivato dal nodo precedente
             send(msg);
 
             if (anyCrash) {
@@ -98,19 +104,28 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
            		// 1 per il gamemessage del nodo
            		// 1 per il valore successivo al messagecounter
             	int nextIdMsg = initialMsgCrash + messageCounter + 1 ;
-            	System.out.println(initialMsgCrash);
+            	
 
                 for(int i=0;i<nodesCrashed.length;i++) {
 
                     if (nodesCrashed[i] == true) {
 
+                        
                         System.out.println("Sending a CrashMessage id "+ nextIdMsg +" for node " + i);
-                        //incMessageCounter();
-
+            
                         //Invio msg di crash senza gestione dell'errore
                         GameMessage msgProv = mmaker.newCrashMessage(i,nextIdMsg,0);
+
+                        if (initialMsgCrash == 0) {
+							incMessageCounter();
+
+						} else {
+							pendingMessage.put(nextIdMsg,(GameMessage)msgProv.clone());
+						}
+
+                     
+            
                         send(msgProv);
-                        pendingMessage.put(nextIdMsg,(GameMessage)msgProv.clone());
                         nextIdMsg = nextIdMsg + 1;
                         System.out.println("Update Board crash");
                         clientBoard.board.updateCrash(i);
@@ -123,7 +138,11 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 	}
 
 	private synchronized boolean enqueue(GameMessage msg) {
+
 		boolean doForward = false;
+		System.out.println("initialMsgCrash -> " + msg.getHowManyCrash());
+        System.out.println("messagecounter-> " + messageCounter);
+        System.out.println("MsgId -> " + msg.getId());
 		
 		if (msg.getOrig() != link.getNodeId()) {
 				if((msg.getId() > messageCounter) && (pendingMessage.containsKey(msg.getId()) == false)) {
@@ -180,12 +199,10 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 		return messageCounter;
 	}
 
-	public synchronized void sendAYA() {
+	public synchronized void checkNode() {
 
 
-			System.out.println("I'm alive");
-		/*} catch(RemoteException re) {
-			re.printStackTrace();
-		}*/
+		System.out.println("My neighbor is alive");
+		
 	}
 }

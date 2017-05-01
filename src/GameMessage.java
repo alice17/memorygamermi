@@ -56,6 +56,7 @@ public class GameMessage extends Message implements Cloneable {
 			m = new GameMessage(getOrig(),id,nodeCrashedId,howManyCrash);
 		}
 		m.setFrom(getFrom());
+	
 		return m;
 	}
 

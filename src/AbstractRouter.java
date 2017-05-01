@@ -32,6 +32,12 @@ public abstract class AbstractRouter implements Runnable {
 		this.gameMsg = null;
 	}
 
+	//Metodo utilizzato per creare un Abstract Router che gestisce un AYA request
+	
+	public AbstractRouter(Link link) {
+		this.link = link;
+	}
+
 
 	public void run() {
 

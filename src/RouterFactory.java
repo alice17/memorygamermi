@@ -31,11 +31,7 @@ public class RouterFactory {
 		return new Router(link, gameMsg, this);
 	}
 
-	/*public CrashRouter newCrashRouter(Message crashMsg) {
-		return new CrashRouter(link,crashMsg,this);
-	}*/
-
-	/*public AYARouter newAYARouter(AYAMessage ayaMsg) {
-		return new AYARouter(link,ayaMsg,this);
-	}*/
+	public AYARouter newAYARouter() {
+		return new AYARouter(link,this);
+	}
 }
