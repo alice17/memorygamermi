@@ -29,6 +29,7 @@ public class Link {
 	private RemoteBroadcast rightNode = null;
 
 
+
 	public Link(Node me, Node[] nodes) {
 		this.lock = new ReentrantLock();
 		this.me = me;
@@ -78,6 +79,10 @@ public class Link {
 	}
 	public int getRightId() {
 		return rightId;
+	}
+
+	public void setRightId(int id) {
+		rightId = id;
 	}
 
 	public Node[] getNodes() {
@@ -147,5 +152,32 @@ public class Link {
 		return success;
 	}
 
+	public boolean checkAYANode(int rightId,int playerId) {
+
+		//boolean success = checkAliveNode() 
+		//checkAliveNode
+		//int id = getRightId();
+		boolean success = true;
+		RemoteBroadcast broadcast = null;
+		String url = "rmi://" + nodes[rightId].getInetAddress().getCanonicalHostName() + ":"
+					+ nodes[rightId].getPort() + "/Broadcast";
+		try {
+			System.out.println("looking up " + url);
+			broadcast = (RemoteBroadcast)Naming.lookup(url);
+		} catch (MalformedURLException e) {
+			System.out.println("Malformed");
+			//nodes[id].setNodeCrashed();
+			success = false;
+		} catch (NotBoundException e) {
+			System.out.println("Notbound");
+			//nodes[id].setNodeCrashed();
+			success = false;
+		} catch (RemoteException e) {
+			System.out.println("Remote");
+			//nodes[id].setNodeCrashed();
+			success = false;
+		}
+		return success;
+	}
 
 }

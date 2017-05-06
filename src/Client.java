@@ -175,6 +175,7 @@ public class Client  {
                 //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
                 board.setCurrentPlayer(game.getCurrentPlayer());
                 boolean repeat = true;
+                int nextPlayer = 0;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);
 
@@ -212,8 +213,76 @@ public class Client  {
                     System.out.println("The next player is " + game.getCurrentPlayer());
                     tryToMyturn();
                 } else {
-                     System.out.println("Timeout");
-                     messageBroadcast.sendAYA();
+                    System.out.println("Timeout");
+                    int playeId = game.getCurrentPlayer();
+                    int rightId = link.getRightId();
+                    while(!link.checkAYANode(rightId,playeId)) {
+                        if (rightId == playeId) {
+
+                            System.out.println("Current Player has crashed.Sending crash Msg");
+                            link.nodes[rightId].setNodeCrashed();
+                            link.setRightId(rightId + 1);
+                            boolean[] nodesCrashed = new boolean[players.length];
+                            Arrays.fill(nodesCrashed, false);
+                            boolean anyCrash = false;
+                            messageBroadcast.incMessageCounter();
+                            int messageCounter = messageBroadcast.retrieveMsgCounter();
+                            boolean sendOk = false;
+                            int howManyCrash = 0;
+
+                            while(link.checkAliveNode() == false) {
+
+                                anyCrash = true;
+                                howManyCrash = howManyCrash + 1;
+                                nodesCrashed[link.getRightId()] = true;
+                                System.out.println("Finding a new neighbour");
+                                link.incRightId();
+                                if (link.getRightId() == link.getNodeId()) {
+                                    System.out.println("Unico giocatore, partita conclusa");
+                                    System.exit(0);
+                                    //si deve sostituire con una chiamada gameEnd alla board.
+                                }
+                            }
+                            while (sendOk == false) {
+
+                                //non fà il controllo sul send ma prima
+                                System.out.println("Im sending a crash message with id " + messageCounter );
+                                board.updateCrash(rightId);
+                                board.clearOldPlayer(game.getCurrentPlayer());
+                                game.setCurrentPlayer(link.getRightId());
+                                board.setCurrentPlayer(game.getCurrentPlayer());
+                                messageBroadcast.send(mmaker.newCrashMessage(rightId,messageCounter,howManyCrash));
+                                sendOk = true; 
+                            }
+                            //mi calcola il prox giocatore anche senza crash
+                            //nextPlayer = board.updateAnyCrash(link.getNodes(),link.getNodeId());
+                            System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
+
+                            //Spedisce CrashMessage se sono stati rilevati crash
+
+                            if (anyCrash) {
+
+                                howManyCrash = howManyCrash + 1;
+                                for(int i=0;i<nodesCrashed.length;i++) {
+                                    if (nodesCrashed[i] == true) {
+
+                                        messageBroadcast.incMessageCounter();
+                                        int messageCounterCrash = messageBroadcast.retrieveMsgCounter();
+                                        System.out.println("Sending a CrashMessage id " + messageCounterCrash);
+                                        //Invio msg di crash senza gestione dell'errore
+                                        board.updateCrash(i);
+                                        //board.clearOldPlayer(game.getCurrentPlayer());
+                                        //game.setCurrentPlayer((game.getCurrentPlayer()+1) % pla);
+                                        //board.setCurrentPlayer( game.getCurrentPlayer() );
+                                        messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash,howManyCrash));
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                     	rightId = (rightId + 1) % players.length;
+                    }
+                    //messageBroadcast.sendAYA();
 
                 }
             } catch (InterruptedException e) {
