@@ -154,9 +154,7 @@ public class Link {
 
 	public boolean checkAYANode(int rightId,int playerId) {
 
-		//boolean success = checkAliveNode() 
-		//checkAliveNode
-		//int id = getRightId();
+		
 		boolean success = true;
 		RemoteBroadcast broadcast = null;
 		String url = "rmi://" + nodes[rightId].getInetAddress().getCanonicalHostName() + ":"
@@ -166,15 +164,12 @@ public class Link {
 			broadcast = (RemoteBroadcast)Naming.lookup(url);
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed");
-			//nodes[id].setNodeCrashed();
 			success = false;
 		} catch (NotBoundException e) {
 			System.out.println("Notbound");
-			//nodes[id].setNodeCrashed();
 			success = false;
 		} catch (RemoteException e) {
 			System.out.println("Remote");
-			//nodes[id].setNodeCrashed();
 			success = false;
 		}
 		return success;

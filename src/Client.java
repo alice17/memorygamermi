@@ -41,6 +41,7 @@ public class Client  {
     public final Board board;
     private OnesMove move;
     private final WindowRegistration initialWindow;
+    private int rightId;
 
     public Client (String username, final Board board, final WindowRegistration initialWindow){
         this.board = board;
@@ -215,13 +216,13 @@ public class Client  {
                 } else {
                     System.out.println("Timeout");
                     int playeId = game.getCurrentPlayer();
-                    int rightId = link.getRightId();
+                    rightId = link.getRightId();
                     while(!link.checkAYANode(rightId,playeId)) {
                         if (rightId == playeId) {
 
                             System.out.println("Current Player has crashed.Sending crash Msg");
                             link.nodes[rightId].setNodeCrashed();
-                            link.setRightId(rightId + 1);
+                            link.setRightId((rightId + 1) % players.length);
                             boolean[] nodesCrashed = new boolean[players.length];
                             Arrays.fill(nodesCrashed, false);
                             boolean anyCrash = false;
@@ -230,6 +231,8 @@ public class Client  {
                             boolean sendOk = false;
                             int howManyCrash = 0;
 
+                            checkLastNode();
+
                             while(link.checkAliveNode() == false) {
 
                                 anyCrash = true;
@@ -237,11 +240,8 @@ public class Client  {
                                 nodesCrashed[link.getRightId()] = true;
                                 System.out.println("Finding a new neighbour");
                                 link.incRightId();
-                                if (link.getRightId() == link.getNodeId()) {
-                                    System.out.println("Unico giocatore, partita conclusa");
-                                    System.exit(0);
-                                    //si deve sostituire con una chiamada gameEnd alla board.
-                                }
+                                checkLastNode();
+                               
                             }
                             while (sendOk == false) {
 
@@ -254,8 +254,6 @@ public class Client  {
                                 messageBroadcast.send(mmaker.newCrashMessage(rightId,messageCounter,howManyCrash));
                                 sendOk = true; 
                             }
-                            //mi calcola il prox giocatore anche senza crash
-                            //nextPlayer = board.updateAnyCrash(link.getNodes(),link.getNodeId());
                             System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
 
                             //Spedisce CrashMessage se sono stati rilevati crash
@@ -282,7 +280,6 @@ public class Client  {
                         }
                      	rightId = (rightId + 1) % players.length;
                     }
-                    //messageBroadcast.sendAYA();
 
                 }
             } catch (InterruptedException e) {
@@ -447,5 +444,16 @@ public class Client  {
     }
     public int getNodeId() {
         return nodeId;
+    }
+    private void checkLastNode() {
+
+    	if (link.getRightId() == link.getNodeId()) {
+
+    		board.updateCrash(rightId);
+    		board.clearOldPlayer(game.getCurrentPlayer());
+    		board.setCurrentPlayer(nodeId);
+    		System.out.println("Unico giocatore, partita conclusa");
+    		board.alertLastPlayer();
+        }
     }
 }

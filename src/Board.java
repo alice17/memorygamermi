@@ -265,9 +265,16 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 for(String text : playerWin){
                     playerWinText += text+" "; // ad essere sinceri stilisticamente fa un po schifo
                 }
-                JOptionPane.showMessageDialog(null, "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+
-                        ". "+playerWinText+ "wins!");
-
+                int input = JOptionPane.showOptionDialog(null,
+                 "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+". "+playerWinText+ "wins!",
+                 "Game Ended",
+                 JOptionPane.DEFAULT_OPTION,
+                 JOptionPane.INFORMATION_MESSAGE,
+                 null,null,null);
+                if(input == JOptionPane.OK_OPTION) { // se viene clickato il bottone SI faccio un exit(0) brutale!
+                    System.exit(0);
+                }
+                
             }
             
         }else{ // nel caso in cui il matching non ha esito positivo
@@ -454,6 +461,20 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     public void updateCrash(int id) {
         scoring.setPlayerCrashed(id);
+    }
+
+    public void alertLastPlayer(){ 
+
+        int input = JOptionPane.showOptionDialog(null,
+        "Unico giocatore rimasto.Vittoria",
+        "Player Win",
+        JOptionPane.DEFAULT_OPTION,
+        JOptionPane.INFORMATION_MESSAGE,
+        null,null,null);
+        if(input == JOptionPane.OK_OPTION) {
+            System.exit(0);
+        }
+
     }
 
 }
