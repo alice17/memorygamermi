@@ -1,7 +1,4 @@
-
-
 package src;
-
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -15,7 +12,6 @@ Questa è la classe che gestisce i collegamenti con i nodi vicini e recupera le 
 sul proprio nodo e sui vicini.
 In questa classe andranno aggiunti i metodi per recuperare il riferimento ad un nuovo vicino
 in caso di crash.
-
 */
 
 public class Link {
@@ -38,8 +34,6 @@ public class Link {
 	}
 
     //ricerca il proprio id e quello dei vicino all'interno dell'array di node restituito dal server.
-	//Viene ricercato anche il nodo sinistro che non viene utilizzato, si può eliminare il leftid
-	//se decidiamo di rimanere con un anello direzionale.
 
 	private void configure() {
 		int j;
@@ -47,7 +41,7 @@ public class Link {
 		for (int i = 0; i < nodes.length; i++) {
 			if (me.compareTo(nodes[i]) == 0 ) {
 				myId = i;
-				leftId = backward(i, nodes.length);	//da togliere?
+				//leftId = backward(i, nodes.length);	
 
 				j=1;
 
@@ -104,7 +98,7 @@ public class Link {
 
 	}
 
-	/* Metodo che utilizza RMI, restituisce un riferimento di tipo RemoteBroadcast */
+	//Metodo che utilizza RMI, restituisce un riferimento di tipo RemoteBroadcast 
 	
 	private RemoteBroadcast lookupNode(int id)  {
 		RemoteBroadcast broadcast = null;
@@ -126,6 +120,7 @@ public class Link {
 		return broadcast;
 	}
 
+	//Metodo che controlla i nodi attivi, differente da lookupnode
 	public boolean checkAliveNode() {
 
 		int id = getRightId();
@@ -152,6 +147,7 @@ public class Link {
 		return success;
 	}
 
+	//Metodo che controlla i nodi durante un controllo AYA
 	public boolean checkAYANode(int rightId,int playerId) {
 
 		

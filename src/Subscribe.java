@@ -1,8 +1,3 @@
-/*
-Classe Subscribe
-L'oggetto Subscribe è creato e instaziato da Server. Serve per raccogliere i client e passargli l'insieme delle carte mescolate.
-*/
-
 package src;
 
 import java.rmi.RemoteException;
@@ -11,6 +6,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+
+/*
+Classe Subscribe, creata ed istanziata dal server
+Serve per raccogliere i client e passargli l'insieme delle carte mescolate.
+*/
 
 public class Subscribe extends UnicastRemoteObject implements SubscribeInterface {
 

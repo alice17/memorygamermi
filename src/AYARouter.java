@@ -1,16 +1,19 @@
-
 package src;
-
 
 import java.rmi.RemoteException;
 
+/*
+Classe AYARouter utilizzata per creare il router che gestisce la 
+*/
 
 
 public class AYARouter extends AbstractRouter {
 
 	private RouterFactory rmaker;
 
+	// Metodo per la creazione di un istanza AYARouter
 	public AYARouter(Link link,RouterFactory rmaker) {
+
 		super(link);
 		this.rmaker = rmaker;
 	}
@@ -20,6 +23,7 @@ public class AYARouter extends AbstractRouter {
 		super.run();
 	}
 
+	//Metodo che esegue una chiamata remota RMI sul nodo vicino
 	@Override
 	protected synchronized void performCallHook(ServiceBulk to) {
 

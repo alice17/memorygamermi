@@ -1,8 +1,3 @@
-/**
- * La classe Window Registration permette di inizializzare un'interfaccia grafica di registratione al gioco.
- * Lancia il client al click di registrazione.
- */
-
 package src;
 
 import javax.imageio.ImageIO;
@@ -17,6 +12,11 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.util.Random;
 
+/**
+ * La classe Window Registration permette di inizializzare un'interfaccia grafica di registratione al gioco.
+ * Lancia il client al click di registrazione.
+ */
+
 public class WindowRegistration {
     private static boolean RIGHT_TO_LEFT = false; //variabile che mi setta l'orientamento del posizione degli elementi nella finestra
     private static final int SIZE_OF_TEXTFIELD = 10; // variabile che mi gestisce la lunghezza textfield
@@ -27,12 +27,13 @@ public class WindowRegistration {
     public static JLabel feedback;
     public static JFrame frame;
     public static JButton btnRegistration;
+    public static String serverAddr;
 
 
     /*
     * setCloseWindow è un metodo che gestisce la chiusura della finestra
     */
-    public WindowRegistration() {
+    public WindowRegistration(String serverAddr) {
 
         try {
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -48,6 +49,7 @@ public class WindowRegistration {
         }
         
         UIManager.put("swing.boldMetal", Boolean.FALSE);
+        this.serverAddr = serverAddr;
 
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.
@@ -104,7 +106,7 @@ public class WindowRegistration {
             String userName = tf.getText();
             //fr.setVisible(false);
             board = new Board(this);
-            board.init(userName);
+            board.init(userName,serverAddr);
             //board.doClientThread();
         }
     }

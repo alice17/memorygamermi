@@ -1,12 +1,12 @@
-/* 
-Interfaccia remota della classe Subscribe
-*/
-
 package src;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.InetAddress;
+
+/* 
+Interfaccia remota della classe Subscribe
+*/
 
 public interface SubscribeInterface extends Remote {
       

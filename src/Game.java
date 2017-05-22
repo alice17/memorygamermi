@@ -1,13 +1,10 @@
-/*	Classe game
-	Contiene variabili di gioco
-	Locale in ogni client
-*/
-
 package src;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import static java.lang.Thread.sleep;
+
+/*Classe Game utilizzata per la gestione della partita*/
 
 public class Game {
     private int nPlayers;                        // num di giocatori totali (aggiornato)

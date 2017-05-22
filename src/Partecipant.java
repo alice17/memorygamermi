@@ -1,5 +1,3 @@
-
-
 package src;
 
 
@@ -7,7 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-
+/*Classe Partecipant utilizzata per notificare le info di gioco a tutti i giocatori*/
 public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 
 	private Player[] players;
@@ -18,6 +16,7 @@ public class Partecipant extends UnicastRemoteObject implements IPartecipant {
 	public Partecipant() throws RemoteException {}
 
 	public synchronized void configure(Player[] players, List<Integer> cardVals) throws RemoteException {
+
 	// metodo chiamato da subscribe per configurare le variabili di partecipant
 		this.players = players;
 		this.cardVals = cardVals;

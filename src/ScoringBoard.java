@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Collections;
 import javax.swing.border.EmptyBorder;
 
-/**
- * 
+/*
+Classe ScoringBoard
  */
 public class ScoringBoard extends JPanel {
     private String username;
@@ -28,8 +28,7 @@ public class ScoringBoard extends JPanel {
         setLayout(new GridLayout(allPlayers.length, 1)); // setto il Layout della board
         setBorder(new EmptyBorder(0, 15, 500, 15));
         createLabelScore();
-        //scoring.setCurrentPlayer(0); prima c'era scritto cosi
-        //this.setCurrentPlayer(0); --> il colore rosso rimane solo nell'ultimo player
+     
     }
 
     // aggiorna il giocatore corrente colorando la label

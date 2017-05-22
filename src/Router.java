@@ -1,14 +1,9 @@
-
-
 package src;
-
 
 import java.rmi.RemoteException;
 
 /*
-classe che estende abstarctrouter, incaricata dell'invio dei messaggi di gioco.
-Si dovrebbero creare altre due classi simili, una per l'invio dei mess di errore e una
-per l'invio degli ACK ai vicini per le info sui crash.
+classe che estende abstractrouter, incaricata dell'invio dei messaggi di gioco.
 */
 
 public class Router extends AbstractRouter {
@@ -18,6 +13,7 @@ public class Router extends AbstractRouter {
 
 
 	public Router(Link link, GameMessage gameMsg, RouterFactory rmaker) {
+
 		super(link,gameMsg);
 		this.gameMsg = gameMsg;
 		this.rmaker = rmaker;
@@ -45,11 +41,7 @@ public class Router extends AbstractRouter {
 		} catch (RemoteException rE) {
 			rE.printStackTrace();
 			System.out.println("RemoteException");
-		} /*catch (NullPointerException np){
-			// destinatario irraggiungibile
-			
-			System.out.println("Can't forward the message.");
-		}*/
+		} 
 	}
 
 }

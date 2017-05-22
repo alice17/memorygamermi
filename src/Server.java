@@ -1,7 +1,4 @@
-
-
 package src;
-
 
 import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
@@ -12,7 +9,9 @@ import java.util.LinkedList;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 
-
+/*Classe server, si occupa della gestione dell'iscrizione al gioco
+Scaduto un certo timeout spedisce a tutti i player iscritti correttamente
+tutte le info di gioco*/
 public class Server {
 
     public static final int PORT = 1099;

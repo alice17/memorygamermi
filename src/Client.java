@@ -1,4 +1,3 @@
-
 package src;
 
 import java.net.InetAddress;
@@ -20,6 +19,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.List;
 
+/*Classe Client*/
 
 public class Client  {
 
@@ -42,11 +42,13 @@ public class Client  {
     private OnesMove move;
     private final WindowRegistration initialWindow;
     private int rightId;
+    public String serverAddr;
 
-    public Client (String username, final Board board, final WindowRegistration initialWindow){
+    public Client (String username, final Board board, final WindowRegistration initialWindow,String serverAddr){
         this.board = board;
         this.playerName = username;
         this.initialWindow = initialWindow;
+        this.serverAddr = serverAddr;
         inizializeGame();
     }
 
@@ -62,7 +64,11 @@ public class Client  {
             System.exit(1);
         }
 
-        String server = "localhost";
+        //String server = "localhost";
+        //String server = "130.136.4.133";
+        String server = serverAddr;
+
+        // Viene settata una porta a cui connettersi
         Random random = new Random();
         int port = random.nextInt(100)+2001;
 
@@ -76,6 +82,7 @@ public class Client  {
 
 
         try {
+            // Ogni client crea il proprio registro RMI
             LocateRegistry.createRegistry(port);
         /*
         	try{
@@ -84,6 +91,7 @@ public class Client  {
             	LocateRegistry.getRegistry(port);
             }
         */
+            // Registrazione del classe Remote MessageBroadcast sul registro RMI
             messageBroadcast = new MessageBroadcast (buffer,this);
             String serviceURL = "rmi://" + localHost.getCanonicalHostName() + ":" + port + "/Broadcast";
             System.out.println("Registering message broadcast service at " + serviceURL);
@@ -189,7 +197,6 @@ public class Client  {
                     System.out.println("Message from Node " + m.getFrom());
 
                     // Controlla se è un messaggio di crash oppure di gioco
-                    System.out.println(m.getNodeCrashed());
                     if(m.getNodeCrashed() != -1) {
 
                         System.out.println("Crash Message");
@@ -199,6 +206,7 @@ public class Client  {
 
                     } else {
 
+                        System.out.println("Game Message");
                         if(m.getPair() == false) {
                                 // se il giocatore ha effettuato la mossa
                                 if(move.getCard1Index()>0 && move.getCard2Index()>0)
@@ -214,9 +222,12 @@ public class Client  {
                     System.out.println("The next player is " + game.getCurrentPlayer());
                     tryToMyturn();
                 } else {
+
+                    //Timeout -> Avvio controllo AYA sui nodi vicini
                     System.out.println("Timeout");
                     int playeId = game.getCurrentPlayer();
                     rightId = link.getRightId();
+
                     while(!link.checkAYANode(rightId,playeId)) {
                         if (rightId == playeId) {
 
@@ -269,9 +280,6 @@ public class Client  {
                                         System.out.println("Sending a CrashMessage id " + messageCounterCrash);
                                         //Invio msg di crash senza gestione dell'errore
                                         board.updateCrash(i);
-                                        //board.clearOldPlayer(game.getCurrentPlayer());
-                                        //game.setCurrentPlayer((game.getCurrentPlayer()+1) % pla);
-                                        //board.setCurrentPlayer( game.getCurrentPlayer() );
                                         messageBroadcast.send(mmaker.newCrashMessage(i,messageCounterCrash,howManyCrash));
                                     }
                                 }
@@ -293,7 +301,6 @@ public class Client  {
         while (game.getCurrentPlayer() == nodeId) {
 
             //Quando è il mio turno sblocco la board e rimango in attesa della mossa
-            //Direi che questo wait() sia quasi obbligatorio se lo vogliamo strutturare così.
             //L oggetto Client si blocca un attimo ma la classe remota RMI MessageBroadcast può ancora
             // ricevere messaggi, appena il client si riattiva può ritornare in ascolto sul buffer per vedere
             // se ci sono messaggi.Se ce ne sono va ad aggiornare l interfaccia locale.
@@ -321,6 +328,7 @@ public class Client  {
             boolean sendOk = false;
             int howManyCrash = 0;
 
+            //Recupera il prossimo nodo attivo
             while(link.checkAliveNode() == false) {
 
                 anyCrash = true;
@@ -385,12 +393,14 @@ public class Client  {
 
     }
 
+    //Metodo che restituisce un tot di secondi in base all'id del nodo
     private long getWaitSeconds() {
         return 10L + nodeId * 2;
     }
 
+    // Metodo che restituisce la lista dei player appena scade il timeout del server
     public synchronized Player[] getPlayers() {
-    // restituisce la lista di player appena scaduto il timeout
+    
         if (players == null) {
             try{
                 System.out.println("Waiting for other players...");
@@ -405,14 +415,18 @@ public class Client  {
     //Quando il giocatore ha fatto la sua mossa, la board lo notifica al client
     //che la deve impacchettare in un messaggio da spedire.
     public synchronized void notifyMove(OnesMove move) {
+
         this.move = move;
         System.out.println("Notify move");
         notifyAll();
     }
 
+    //Metodo che recupera i valori delle carte
     public List<Integer> getCardVals(){ return cardVals; }
 
+    //Metodo che recupera il proprio punteggio
     public int getOwnScore() { 
+
         if(players!=null){
             return players[nodeId].getPoints(); 
         }else{
@@ -420,6 +434,7 @@ public class Client  {
         }
     }
 
+    // Metodo che recupera il prossimo giocatore
     public void retrieveNextPlayer() {
 
         //va avanti fino a quando trova il primo nodo attivo
@@ -432,6 +447,8 @@ public class Client  {
         board.setCurrentPlayer( game.getCurrentPlayer() );
 
     }
+
+    //Metodo che recupera il prossimo giocatore in crash
     public void retrieveNextPlayerCrash() {
 
         if(link.nodes[game.getCurrentPlayer()].getActive()) {
@@ -439,12 +456,15 @@ public class Client  {
         } else {
         	retrieveNextPlayer();
         }
-        
-
     }
+
+    //Ritorno l'id del nodo
     public int getNodeId() {
+
         return nodeId;
     }
+
+    //Metodo che controlla i nodi vicini
     private void checkLastNode() {
 
     	if (link.getRightId() == link.getNodeId()) {

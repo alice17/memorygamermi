@@ -1,7 +1,4 @@
-
-
 package src;
-
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -14,10 +11,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
-classe utilizzata per le chiamate remote RMi, implementa la classe remota RemoteBroadcast,
+Classe utilizzata per le chiamate remote RMi, implementa la classe remota RemoteBroadcast,
 per questo possono essere chiamati dei metodi in remoto di questa classe.
 Gestisce l'arrivo dei messaggi, li riordina, li può scartare o inserire nel buffer.
-
 */
 
 public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroadcast {
@@ -55,7 +51,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 			this.mmaker = mmaker;
 	}
 
-
+	//Invio di un messaggio sulla rete
 	public synchronized void send(GameMessage msg) {
 		
 			//quando r.run termina ho il link.Node[] aggiornato
@@ -63,12 +59,14 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 			new Thread(r).start();
 		
 	}
-
+	// Avvio controllo AYA
 	public synchronized void sendAYA() {
+
 		AYARouter r = rmaker.newAYARouter();
 		new Thread(r).start();
 	}
 
+	// Inoltro del messaggio al vicino destro se questo è necessario
 	public synchronized void forward(GameMessage msg) throws  RemoteException {
 		
 		if (enqueue(msg)) {
@@ -89,13 +87,12 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
                 if (link.getRightId() == link.getNodeId()) {
                     System.out.println("Unico giocatore, partita conclusa");
                     System.exit(0);
-                    //si deve sostituire con una chiamada gameEnd alla board.
+                    
                 }
             }
 
             
-            //Router routerForward = rmaker.newRouter(msg);
-            //routerForward.run();
+  
             //spedisco il messaggio arrivato dal nodo precedente
             send(msg);
 
@@ -137,6 +134,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 			}	
 	}
 
+	// Metodo che inserisce i messaggi nella coda se devono essere processati
 	private synchronized boolean enqueue(GameMessage msg) {
 
 		boolean doForward = false;
@@ -154,13 +152,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 							System.out.println("Error! Can't put message in the queue.");
 						}
 
-						msgCounterLock.lock();
-
-						try {
-							messageCounter++;
-						} finally {
-							msgCounterLock.unlock();
-						}
+						incMessageCounter();
 
 						while(pendingMessage.containsKey(messageCounter + 1)) {
 							GameMessage pendMessage = pendingMessage.remove(messageCounter + 1);
@@ -170,12 +162,7 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 								System.out.println("error!");
 							}
 
-							msgCounterLock.lock();
-							try {
-								messageCounter++;
-							} finally {
-								msgCounterLock.unlock();
-							}
+							incMessageCounter();
 						}
 					} else {
 						pendingMessage.put(msg.getId(),(GameMessage)msg.clone());
@@ -185,6 +172,12 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 		}
 		return doForward;
 	}
+
+	/*
+	Metodo che incrementa il msgcounter,viene utilizzato un lock per accedere alla variabile
+	in mutua esclusione
+	*/
+
 	public void incMessageCounter() {
 		msgCounterLock.lock();
 		try {
@@ -199,10 +192,9 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 		return messageCounter;
 	}
 
+	//Metodo utilizzato dal controllo AYA sul vicino
 	public synchronized void checkNode() {
 
-
 		System.out.println("My neighbor is alive");
-		
 	}
 }

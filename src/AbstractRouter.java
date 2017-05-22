@@ -1,6 +1,3 @@
-
-
-
 package src;
 
 /*
@@ -16,8 +13,8 @@ public abstract class AbstractRouter implements Runnable {
 
 
 	// Metodo utilizzato per creare un AbstractRouter che gestisce un GameMessage
-
 	public AbstractRouter(Link link, GameMessage gameMsg) {
+
 		this.link = link;
 		this.gameMsg = gameMsg;
 		this.crashMsg = null;
@@ -25,20 +22,21 @@ public abstract class AbstractRouter implements Runnable {
 	}
 
 	// Metodo utilizzato per creare un AbstractRouter che gestisce un CrashMessage
-
 	public AbstractRouter(Link link, Message crashMsg) {
+
 		this.link = link;
 		this.crashMsg = crashMsg;
 		this.gameMsg = null;
 	}
 
-	//Metodo utilizzato per creare un Abstract Router che gestisce un AYA request
 	
+	//Metodo utilizzato per creare un Abstract Router che gestisce un AYA request
 	public AbstractRouter(Link link) {
+
 		this.link = link;
 	}
 
-
+	//Metodo Runnable
 	public void run() {
 
 

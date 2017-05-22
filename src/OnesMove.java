@@ -1,9 +1,9 @@
-
-
 package src;
 
 import java.io.Serializable;
 
+/* Classe OneMove che rappresenta la mossa effettuata, le due carte scelte e se queste
+formano una coppia */
 
 public class OnesMove implements Cloneable, Serializable {
 

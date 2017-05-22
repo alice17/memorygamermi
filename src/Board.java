@@ -1,4 +1,5 @@
 package src;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -36,13 +37,16 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private static JLabel waiting;
     private static JLabel feedback;
 
+    public static String serverAddr;
+
     public Board(final WindowRegistration initialWindow) {
         this.initialWindow = initialWindow;
     }
 
-    public void init(String userName) {
+    public void init(String userName,String serverAddr) {
 
         this.turn = false;
+        this.serverAddr = serverAddr;
 
         //gestisco l'evento alla chiusura della finstra board (simbolo in alto a sinistra)
         addWindowListener(new WindowAdapter() {
@@ -132,7 +136,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
         /*------popolo la board-------*/
         initialWindow.notifySubscribe();
-        cl = new Client(userName, this, initialWindow);
+        cl = new Client(userName, this, initialWindow, serverAddr);
         cardVals = cl.getCardVals();
         players = cl.getPlayers();
         remainedCards = cardVals.size();
@@ -459,10 +463,12 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         return  i;
     }
 
+    // Metodo che aggiorna l'interfaccia grafica di un nodo che ha crashato
     public void updateCrash(int id) {
         scoring.setPlayerCrashed(id);
     }
 
+    //Alert grafico nel caso ci sia rimasto un unico giocatore
     public void alertLastPlayer(){ 
 
         int input = JOptionPane.showOptionDialog(null,

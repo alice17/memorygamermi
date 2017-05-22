@@ -1,14 +1,10 @@
-
-
 package src;
-
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /*
 Classe che definisce i metodi che possono essere chiamati attraverso chiamate RMI.
-
 */
 
 public interface RemoteBroadcast extends Remote {

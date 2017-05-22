@@ -16,6 +16,7 @@ public class GameMessage extends Message implements Cloneable {
 	// Metodo che inizializza un GameMessage classico
 
 	public GameMessage(int origId, int id,OnesMove move,int howManyCrash) {
+
 		super(origId,id);
 		this.id = id;
 		this.move = move;
@@ -37,16 +38,19 @@ public class GameMessage extends Message implements Cloneable {
 	} 
 
 	public int getId() {
+
 		return super.getId();
 	}
 
 	
 
 	public String toString() {
+
 		return "#" + id + ", created by " + getOrig() + ", received from "
 				+ getFrom();
 	}
 
+	//Metodo utilizzato per clonare un istanza della classe
 	public Object clone() {
 
 		GameMessage m;

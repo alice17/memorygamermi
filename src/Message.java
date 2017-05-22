@@ -1,8 +1,4 @@
-
-
-
 package src;
-
 
 import java.io.Serializable;
 
@@ -18,7 +14,7 @@ public class Message implements Serializable, Cloneable {
 		private int messageId;
 
 
-		// Utilizzato per creare un GameMessage 
+		// Metodo utilizzato per creare un GameMessage 
 
 		public Message(int origId,int messageId) {
 			this.origId = origId;

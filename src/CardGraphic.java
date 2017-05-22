@@ -1,8 +1,5 @@
-/**
- * Created by salvatorealescio on 05/02/17.
- */
-
 package src;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -10,7 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-
+/*Classe CardGraphic, gestisce le carte a livello grafico, 
+carica le varie immagini rappresentare su di esse*/
 public class CardGraphic extends JButton implements Serializable{
     private int value;
     private int id;

@@ -2,7 +2,6 @@ package src;
 
 /*
 Classe che contiene un oggetto MessageBroadcast per chiamare metodi remoti e l'id del nodo.
-
 */
 
 public class ServiceBulk {
