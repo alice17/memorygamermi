@@ -24,7 +24,6 @@ import java.util.List;
 public class Client  {
 
     public final int PORT = 1099;
-    private Game game;
     private Player[] players;
     private Node me;
     private int nodeId;
@@ -42,9 +41,13 @@ public class Client  {
     private OnesMove move;
     private final WindowRegistration initialWindow;
     private int rightId;
+
     public String serverAddr;
+    public int currentPlayer;
+    public boolean isGameEnded;
 
     public Client (String username, final Board board, final WindowRegistration initialWindow,String serverAddr){
+
         this.board = board;
         this.playerName = username;
         this.initialWindow = initialWindow;
@@ -64,8 +67,7 @@ public class Client  {
             System.exit(1);
         }
 
-        //String server = "localhost";
-        //String server = "130.136.4.133";
+    
         String server = serverAddr;
 
         // Viene settata una porta a cui connettersi
@@ -158,7 +160,8 @@ public class Client  {
                 System.out.println("My left neighbour is " + players[link.getLeftId()].getUsername());
                 System.out.println("My right neighbour is " + players[link.getRightId()].getUsername());
 
-                game = new Game(playersNo);
+                currentPlayer = 0;
+                isGameEnded = false;
 
             }else{
                 initialWindow.notifyErrorGameStart();
@@ -182,7 +185,7 @@ public class Client  {
             try {
 
                 //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
-                board.setCurrentPlayer(game.getCurrentPlayer());
+                board.setCurrentPlayer(currentPlayer);
                 boolean repeat = true;
                 int nextPlayer = 0;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
@@ -219,13 +222,14 @@ public class Client  {
                             board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
                         }
                     }
-                    System.out.println("The next player is " + game.getCurrentPlayer());
+                    //System.out.println("The next player is " + game.getCurrentPlayer());
+                    System.out.println("The next player is " + currentPlayer);
                     tryToMyturn();
                 } else {
 
                     //Timeout -> Avvio controllo AYA sui nodi vicini
                     System.out.println("Timeout");
-                    int playeId = game.getCurrentPlayer();
+                    int playeId = currentPlayer;
                     rightId = link.getRightId();
 
                     while(!link.checkAYANode(rightId,playeId)) {
@@ -259,13 +263,14 @@ public class Client  {
                                 //non fà il controllo sul send ma prima
                                 System.out.println("Im sending a crash message with id " + messageCounter );
                                 board.updateCrash(rightId);
-                                board.clearOldPlayer(game.getCurrentPlayer());
-                                game.setCurrentPlayer(link.getRightId());
-                                board.setCurrentPlayer(game.getCurrentPlayer());
+                                board.clearOldPlayer(currentPlayer);
+                                setCurrentPlayer(link.getRightId());
+                                board.setCurrentPlayer(currentPlayer);
                                 messageBroadcast.send(mmaker.newCrashMessage(rightId,messageCounter,howManyCrash));
                                 sendOk = true; 
                             }
-                            System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
+                            
+                            System.out.println("Next Player is " + players[currentPlayer].getUsername() + " id " + currentPlayer);
 
                             //Spedisce CrashMessage se sono stati rilevati crash
 
@@ -298,14 +303,14 @@ public class Client  {
 
     private synchronized void tryToMyturn() {
 
-        while (game.getCurrentPlayer() == nodeId) {
+        while (currentPlayer == nodeId) {
 
             //Quando è il mio turno sblocco la board e rimango in attesa della mossa
             //L oggetto Client si blocca un attimo ma la classe remota RMI MessageBroadcast può ancora
             // ricevere messaggi, appena il client si riattiva può ritornare in ascolto sul buffer per vedere
             // se ci sono messaggi.Se ce ne sono va ad aggiornare l interfaccia locale.
 
-            board.setCurrentPlayer(game.getCurrentPlayer());
+            board.setCurrentPlayer(currentPlayer);
             System.out.println("Unlock board.");
             board.unlockBoard();
             System.out.println("I'm trying to do a move");
@@ -359,9 +364,9 @@ public class Client  {
             if (move.getPair() == false) {
 
                 //Incremento il prossimo giocatore che deve giocare.
-                board.clearOldPlayer(game.getCurrentPlayer());
-                game.setCurrentPlayer(nextPlayer);
-                board.setCurrentPlayer(game.getCurrentPlayer());
+                board.clearOldPlayer(currentPlayer);
+                setCurrentPlayer(nextPlayer);
+                board.setCurrentPlayer(currentPlayer);
 
             } else {
                 players[nodeId].incPoints();
@@ -370,7 +375,7 @@ public class Client  {
             board.lockBoard();
             
             
-            System.out.println("Next Player is " + players[game.getCurrentPlayer()].getUsername() + " id " + game.getCurrentPlayer());
+            System.out.println("Next Player is " + players[currentPlayer].getUsername() + " id " + currentPlayer);
 
             //Spedisce CrashMessage se sono stati rilevati crash
 
@@ -438,23 +443,24 @@ public class Client  {
     public void retrieveNextPlayer() {
 
         //va avanti fino a quando trova il primo nodo attivo
-        while(!link.nodes[((game.getCurrentPlayer()+1) % players.length)].getActive()) {
-                                        board.clearOldPlayer(game.getCurrentPlayer());
-                                        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
+        
+        while(!link.nodes[((currentPlayer + 1) % players.length)].getActive()) {
+                                        board.clearOldPlayer(currentPlayer);
+                                        setCurrentPlayer((currentPlayer + 1) % players.length);
                                 }
-        board.clearOldPlayer(game.getCurrentPlayer());
-        game.setCurrentPlayer((game.getCurrentPlayer()+1) % players.length);
-        board.setCurrentPlayer( game.getCurrentPlayer() );
+        board.clearOldPlayer(currentPlayer);
+        setCurrentPlayer((currentPlayer + 1) % players.length);
+        board.setCurrentPlayer(currentPlayer);
 
     }
 
     //Metodo che recupera il prossimo giocatore in crash
     public void retrieveNextPlayerCrash() {
 
-        if(link.nodes[game.getCurrentPlayer()].getActive()) {
-        	System.out.println("Player active");
+        if(link.nodes[currentPlayer].getActive()) {
+            System.out.println("Player active");
         } else {
-        	retrieveNextPlayer();
+            retrieveNextPlayer();
         }
     }
 
@@ -470,10 +476,14 @@ public class Client  {
     	if (link.getRightId() == link.getNodeId()) {
 
     		board.updateCrash(rightId);
-    		board.clearOldPlayer(game.getCurrentPlayer());
-    		board.setCurrentPlayer(nodeId);
+            board.clearOldPlayer(currentPlayer);
+            board.setCurrentPlayer(nodeId);
     		System.out.println("Unico giocatore, partita conclusa");
     		board.alertLastPlayer();
         }
+    }
+
+    private void setCurrentPlayer(int playerId) {
+        currentPlayer = playerId;
     }
 }
