@@ -1,4 +1,4 @@
-//package src;
+package src;
 
 /*
 Questa classe è utilizzata per creare (crea solo, non si occupa dell'invio dei msg) vari tipi di Router incaricati di 
