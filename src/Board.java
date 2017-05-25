@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.lang.Thread;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -25,18 +24,12 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     private int remainedCards;
     private javax.swing.Timer t; // è un timer che mi rende visibile la coppia di carte matchate (vale nel sia caso in cui il match abbia esito positivo che negativo
     private boolean pair = false;
-    private boolean retrievePairs;
     public static Client cl;
     private Player[] players;
     private OnesMove move;
-    private boolean turn;
     private final WindowRegistration initialWindow;
     private static ScoringBoard scoring;
     private java.util.Timer timerMove;    // timer della mossa
-
-    private static JLabel waiting;
-    private static JLabel feedback;
-
     public static String serverAddr;
 
     public Board(final WindowRegistration initialWindow) {
@@ -45,7 +38,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
 
     public void init(String userName,String serverAddr) {
 
-        this.turn = false;
         this.serverAddr = serverAddr;
 
         //gestisco l'evento alla chiusura della finstra board (simbolo in alto a sinistra)
@@ -185,7 +177,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         t.setRepeats(false);
 
         /*--- posiziono le carte nella board----*/
-        //Container pane = this.getContentPane(); // mi prendo l'area del Jframe dove dovrò far visualizzare le carte
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
         for (CardGraphic c : cards) { // posiziono le carte (per ID crescenti) all'interno della grid
             c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
@@ -232,7 +223,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         c2.setImage();
 
         // Utilizzato per rallentare l'animazione
-        //Si potrebbe mettere un timer ?
         try {
             Thread.sleep(3000);
         } catch (InterruptedException ie) {
@@ -322,7 +312,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             c1 = selectedCard; 
             c1.removeImage(); // rimuovo l'immagine del logo
             c1.setImage(); 	// imposto l'immagine riferita alla carta
-            //System.out.println(c1.getId()); // TEMPORANEO: stampo l' ID della carta
 
         }
 
@@ -331,7 +320,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             c2 = selectedCard; 
             c2.removeImage(); // rimuovo il logo
             c2.setImage(); // imposto l'immagine riferita alla carta
-            //System.out.println(c2.getId()); // TEMPORANEO: stampo l' ID della carta
             t.start(); // faccio avviare il timer per la visualizzazione della carta
         }
     } //---- fine doTurn()

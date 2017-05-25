@@ -1,11 +1,11 @@
 package src;
 
+
+//import java.rmi.registry.Registry;
+//import java.rmi.RMISecurityManager;
 import java.rmi.Naming;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
-import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
-import java.util.LinkedList;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 

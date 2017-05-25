@@ -1,22 +1,19 @@
 package src;
 
+//import java.rmi.RMISecurityManager;
+//import java.rmi.registry.Registry;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.List;
 
 /*Classe Client*/
@@ -186,7 +183,6 @@ public class Client  {
 
                 //Eseguo quando non è il mio turno,sto in ascolto di messaggi sul buffer. 
                 board.setCurrentPlayer(currentPlayer);
-                boolean repeat = true;
                 int nextPlayer = 0;
                 System.out.println("Waiting up to " + getWaitSeconds() + " seconds for a message..");
                 GameMessage m = buffer.poll(getWaitSeconds(), TimeUnit.SECONDS);

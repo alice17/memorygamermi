@@ -3,10 +3,8 @@ package src;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,18 +19,10 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
 	private Link link = null;
 	private RouterFactory rmaker;
 	private MessageFactory mmaker;
-
-	private Lock viewsLock;
-	private Lock configLock;
-	private Lock msgLock;
-
 	private BlockingQueue<GameMessage> buffer;
-
 	private int messageCounter;
-	private int[] processedMessage;
 	private TreeMap<Integer, GameMessage> pendingMessage;
 	private ReentrantLock msgCounterLock;
-
 	public Client clientBoard;
 
 	public MessageBroadcast(BlockingQueue<GameMessage> buffer,final Client clientBoard) throws RemoteException {

@@ -56,13 +56,13 @@ public class Link {
 		}
 	}
 
-	private int backward(int i, int length) {
+	/*private int backward(int i, int length) {
 		if (i - 1 < 0) {
 			return length - 1 ;
 		} else {
 			return i - 1;
 		}
-	}
+	}*/
 
 	public int getNodeId() {
 		return myId;

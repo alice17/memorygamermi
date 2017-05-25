@@ -8,9 +8,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URI;
-import java.util.Random;
 
 /**
  * La classe Window Registration permette di inizializzare un'interfaccia grafica di registratione al gioco.
@@ -104,10 +101,8 @@ public class WindowRegistration {
             //Questo thread direi che lo possa chiamare direttamente la board anche senza bloccare la grafica.
             //Non dovrebbe cambiare tanto, si può provare
             String userName = tf.getText();
-            //fr.setVisible(false);
             board = new Board(this);
             board.init(userName,serverAddr);
-            //board.doClientThread();
         }
     }
 
@@ -190,7 +185,6 @@ public class WindowRegistration {
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                     userEntry.setEditable(false);
                 }
@@ -211,7 +205,6 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                     userEntry.setEditable(false);
                 }
@@ -219,7 +212,6 @@ public class WindowRegistration {
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                     userEntry.setEditable(false);
                 }
@@ -286,15 +278,12 @@ public class WindowRegistration {
     private void createAndShowGUI() {
 
         //Create and set up the window.
-        //JFrame frame = new JFrame("Registrazione - Memory");
-        //this.fr = frame;
         frame = new JFrame("Registration - Memory");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         //Set up the content pane.
         addComponentsToPane(frame);
 
-        //Use the content pane's default BorderLayout. No need for
-        //setLayout(new BorderLayout());
+        //Use the content pane's default BorderLayout. 
         //Display the window.
         frame.setSize(new Dimension(275,275));
         frame.setResizable(false);
