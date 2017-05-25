@@ -26,7 +26,6 @@ public class Client  {
     private int nodeId;
     private Link link;
     private int playersNo;
-    private int activePlayersNo;    // numero di giocatori attivi
     public static MessageBroadcast messageBroadcast;
     private MessageFactory mmaker;
     private RouterFactory rmaker;
@@ -133,7 +132,6 @@ public class Client  {
             System.out.println("You have been added to player list.");
             players = partecipant.getPlayers();
             playersNo = players.length;
-            activePlayersNo = playersNo;
 
             if( playersNo > 1 ){
 
@@ -218,7 +216,7 @@ public class Client  {
                             board.incPointPlayer(m.getOrig(),players[m.getOrig()].getPoints());
                         }
                     }
-                    //System.out.println("The next player is " + game.getCurrentPlayer());
+                    board.checkRemainCards();
                     System.out.println("The next player is " + currentPlayer);
                     tryToMyturn();
                 } else {
@@ -368,6 +366,7 @@ public class Client  {
                 players[nodeId].incPoints();
                 board.incPointPlayer(nodeId, players[nodeId].getPoints());
             }
+            board.checkRemainCards();
             board.lockBoard();
             
             

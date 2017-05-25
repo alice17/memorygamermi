@@ -21,13 +21,13 @@ public class Link {
 	private int rightId = 0;
 	private int leftId = 0;		// da togliere?
 	private Node me;
-	private Lock lock = null;
+	//private Lock lock = null;
 	private RemoteBroadcast rightNode = null;
 
 
 
 	public Link(Node me, Node[] nodes) {
-		this.lock = new ReentrantLock();
+		//this.lock = new ReentrantLock();
 		this.me = me;
 		this.nodes = nodes;
 		configure();

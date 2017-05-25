@@ -1,4 +1,4 @@
-package src;
+//package src;
 
 import java.rmi.RemoteException;
 
@@ -9,14 +9,12 @@ classe che estende abstractrouter, incaricata dell'invio dei messaggi di gioco.
 public class Router extends AbstractRouter {
 
 	private GameMessage gameMsg;
-	private RouterFactory rmaker;
 
 
 	public Router(Link link, GameMessage gameMsg, RouterFactory rmaker) {
 
 		super(link,gameMsg);
 		this.gameMsg = gameMsg;
-		this.rmaker = rmaker;
 
 	}
 

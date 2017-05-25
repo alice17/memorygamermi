@@ -250,26 +250,6 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
                 timerMove.purge();
                 sendMove();
             }
-
-            //prima era prima dell'if qui sopra ma cosi non si riusciva ad aggiornare per tempo il punteggio dell'ultima
-            //coppia trovata
-            if(remainedCards==0){
-                List<String> playerWin = this.getPlayerWins(players); // mi piglio i players vincitori
-                String playerWinText = "";
-                for(String text : playerWin){
-                    playerWinText += text+" "; // ad essere sinceri stilisticamente fa un po schifo
-                }
-                int input = JOptionPane.showOptionDialog(null,
-                 "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+". "+playerWinText+ "wins!",
-                 "Game Ended",
-                 JOptionPane.DEFAULT_OPTION,
-                 JOptionPane.INFORMATION_MESSAGE,
-                 null,null,null);
-                if(input == JOptionPane.OK_OPTION) { // se viene clickato il bottone SI faccio un exit(0) brutale!
-                    System.exit(0);
-                }
-                
-            }
             
         }else{ // nel caso in cui il matching non ha esito positivo
             c1.setText(""); // non faccio visualizzare nulla alla prima carta (metodo ereditato da JButton)
@@ -434,6 +414,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         return returnPlayer;
     }
 
+    //Metodo che setta graficamente i player trovati inattivi
     public int updateAnyCrash(Node[] nodes,int myId) {
         
 
@@ -469,6 +450,27 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
             System.exit(0);
         }
 
+    }
+
+    public void checkRemainCards() {
+
+        if(remainedCards==0){
+                List<String> playerWin = this.getPlayerWins(players); // mi piglio i players vincitori
+                String playerWinText = "";
+                for(String text : playerWin){
+                    playerWinText += text+" "; // ad essere sinceri stilisticamente fa un po schifo
+                }
+                int input = JOptionPane.showOptionDialog(null,
+                 "Game Ended -> Your Score is " + String.valueOf(cl.getOwnScore())+". "+playerWinText+ "wins!",
+                 "Game Ended",
+                 JOptionPane.DEFAULT_OPTION,
+                 JOptionPane.INFORMATION_MESSAGE,
+                 null,null,null);
+                if(input == JOptionPane.OK_OPTION) { // se viene clickato il bottone SI faccio un exit(0) brutale!
+                    System.exit(0);
+                }
+                
+            }
     }
 
 }

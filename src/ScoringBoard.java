@@ -1,4 +1,4 @@
-package src;
+//package src;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 Classe ScoringBoard
  */
 public class ScoringBoard extends JPanel {
-    private String username;
+    
     private Player[] allPlayers;
     private JLabel[] lbScore ;
 

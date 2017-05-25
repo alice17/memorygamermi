@@ -11,7 +11,6 @@ public class MainP {
 
 	public static void main(String[] args) {
 
-        
         String serverAddr;
         /* Se l'indirizzo del server in formato ipv4 e' stato inserito da riga di comando */
         /* L'indirizzo inserito viene letto come una stringa*/
