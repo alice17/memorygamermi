@@ -40,7 +40,6 @@ public class Server {
 		        System.out.println("Connection established.");
 
 
-				/* forse il thread non è necessario - da controllare */
 		        Thread t = new Thread() {
 		            public void run() {
 		                try {

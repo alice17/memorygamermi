@@ -3,19 +3,18 @@ package src;
 import java.rmi.RemoteException;
 
 /*
-Classe AYARouter utilizzata per creare il router che gestisce la 
+Classe AYARouter utilizzata per creare il router che gestisce il controllo AYA
 */
 
 
 public class AYARouter extends AbstractRouter {
 
-	//private RouterFactory rmaker;
+	
 
 	// Metodo per la creazione di un istanza AYARouter
 	public AYARouter(Link link,RouterFactory rmaker) {
 
 		super(link);
-		//this.rmaker = rmaker;
 	}
 
 	@Override

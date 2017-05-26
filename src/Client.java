@@ -112,7 +112,6 @@ public class Client  {
             SubscribeInterface subscribe = (SubscribeInterface) Naming.lookup(url);
             System.out.println("Subscribe service found at address " + url);
 
-
             result = subscribe.subscribeAccepted(partecipant, playerName, localHost, port);
         } catch (MalformedURLException e) {
             e.printStackTrace();

@@ -10,8 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 /*
 Questa è la classe che gestisce i collegamenti con i nodi vicini e recupera le info 
 sul proprio nodo e sui vicini.
-In questa classe andranno aggiunti i metodi per recuperare il riferimento ad un nuovo vicino
-in caso di crash.
 */
 
 public class Link {
@@ -19,15 +17,13 @@ public class Link {
 	public Node[] nodes;
 	private int myId = 0;
 	private int rightId = 0;
-	private int leftId = 0;		// da togliere?
+	private int leftId = 0;		
 	private Node me;
-	//private Lock lock = null;
 	private RemoteBroadcast rightNode = null;
 
 
 
 	public Link(Node me, Node[] nodes) {
-		//this.lock = new ReentrantLock();
 		this.me = me;
 		this.nodes = nodes;
 		configure();
@@ -40,9 +36,7 @@ public class Link {
 
 		for (int i = 0; i < nodes.length; i++) {
 			if (me.compareTo(nodes[i]) == 0 ) {
-				myId = i;
-				//leftId = backward(i, nodes.length);	
-
+				myId = i;	
 				j=1;
 
 				// prende il prossimo nodo attivo
@@ -55,14 +49,6 @@ public class Link {
 			}
 		}
 	}
-
-	/*private int backward(int i, int length) {
-		if (i - 1 < 0) {
-			return length - 1 ;
-		} else {
-			return i - 1;
-		}
-	}*/
 
 	public int getNodeId() {
 		return myId;
@@ -88,7 +74,7 @@ public class Link {
 	}
 
 	/* Metodo che recupera il riferimento all'oggetto RemoteBroadcast del nodo vicino destro 
-	tramite il metodo lookupnode per per potergli inviare i messaggi durante il gioco, successivamente
+	tramite il metodo lookupnode per poi potergli inviare i messaggi durante il gioco, successivamente
 	crea un oggetto di tipo ServiceBulk.*/
 
 	public ServiceBulk getRight() {

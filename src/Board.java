@@ -95,10 +95,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         });
 
 
-        /*
-        Poichè il menu delle impostazioni è molto scarno in quanto c'è solo l'item "esci" se avete delle altre features
-        che si possono implementare ditemelo pure
-         */
+        
 
         menuImpostazioni.add(esci); // infine aggiungo l'item esci all'interno del menù delle impostazioni
         setJMenuBar(menuBar); // infine attacco la menubar all'interno della finestra
@@ -165,7 +162,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         }
 
         /*
-        * Il timer mi permette di avere un margine di secondi per vedere le carte, di default l'ho settato a 750 ma si può variare
+        * Il timer mi permette di avere un margine di secondi per vedere le carte, di default e' settato a 750 ma si può variare
         */
         t = new javax.swing.Timer(750, new ActionListener() {
             @Override
@@ -179,7 +176,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         /*--- posiziono le carte nella board----*/
         pane.setLayout(new GridLayout(4, 5)); // creo un grid layout
         for (CardGraphic c : cards) { // posiziono le carte (per ID crescenti) all'interno della grid
-            c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte sia coperte quindi fingo il retro della carta mettendo in tette lo stesso logo
+            c.setImageLogo(); // in fase di inizializzazione della board vogliamo che tutte le carte siano coperte
             pane.add(c); // inserisco le card all'interno della gridlayout
         }
         boardLayout.add(pane,BorderLayout.CENTER);
@@ -187,7 +184,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
         /*
         * visualizzo la finestra grafica inserendo tutti i parametri che mi servono
         */
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // questo metodo setta l'impostazione di default alla chiusura della finestra. impostando la flag DO_NOTHING_ON_CLOSE, non si aggiuge nessun comportamento di default, ma lo gestiamo noi con il metodo setExitControl
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // questo metodo setta l'impostazione di default alla chiusura della finestra.
         setSize(new Dimension(700,675)); // setta la dimensione della finestra (possiamo anche cambiarla)
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); // queste due righe mi permettono di centrare la finestra rispetto allao schermo in modo assoluto
@@ -455,7 +452,7 @@ public class Board extends JFrame {//l'estensione a JFrame mi permette di creare
     public void checkRemainCards() {
 
         if(remainedCards==0){
-                List<String> playerWin = this.getPlayerWins(players); // mi piglio i players vincitori
+                List<String> playerWin = this.getPlayerWins(players); // players vincitori
                 String playerWinText = "";
                 for(String text : playerWin){
                     playerWinText += text+" "; // ad essere sinceri stilisticamente fa un po schifo

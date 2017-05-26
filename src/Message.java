@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 /*
 Classe che crea un oggetto generale di tipo messagge, la classe GameMessage eredita da questa classe.
-Le classi che si andranno a creare, ErrorMessage e ACKMessage devono ereditare anch'esse da questa.
 */
 
 public class Message implements Serializable, Cloneable {

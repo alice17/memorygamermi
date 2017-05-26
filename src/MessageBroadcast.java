@@ -88,7 +88,6 @@ public class MessageBroadcast extends UnicastRemoteObject implements RemoteBroad
             if (anyCrash) {
 
            		// 1 per il gamemessage del nodo
-           		// 1 per il valore successivo al messagecounter
             	int nextIdMsg = initialMsgCrash + messageCounter + 1 ;
             	
 

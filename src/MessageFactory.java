@@ -2,7 +2,7 @@ package src;
 
 /* 
 
-Guardare routerfactory, funzionano uguali ma questa si occupa dei messaggi.
+Classe MessageFactory, si comporta come la classe RouterFactory ma con i messaggi.
 
 */
 

@@ -83,7 +83,7 @@ public class Subscribe extends UnicastRemoteObject implements SubscribeInterface
 		players = realPlayers;
 		
 		// genera insieme di carte
-		nCards = 20;			//4 * playersNo;
+		nCards = 20;  //4 * playersNo;
 		generateCards();
 
 		// configure participants

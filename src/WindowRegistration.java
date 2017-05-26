@@ -33,7 +33,6 @@ public class WindowRegistration {
     public WindowRegistration(String serverAddr) {
 
         try {
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (UnsupportedLookAndFeelException ex) {
             ex.printStackTrace();
@@ -66,7 +65,7 @@ public class WindowRegistration {
                 JOptionPane.INFORMATION_MESSAGE, // tipo di alert
                 null,null,null);
         if( input == JOptionPane.YES_OPTION)
-            System.exit(0); // se clicko Si mi esce dal gioco (ovviamente da sistemare)
+            System.exit(0); // se clicko Si mi esce dal gioco
     }
 
     /*
@@ -84,7 +83,7 @@ public class WindowRegistration {
         }
 
 
-        // gestisco il caso in cui nella textfield inserisco uno spazio vuoto (non li vogio avere!)
+        // gestisco il caso in cui nella textfield inserisco uno spazio vuoto, nom li voglio avere
         else if(tf.getText().contains(" ") ){
             JOptionPane.showOptionDialog(null,
                     "Not insert \"Blank Spaces\" in the Username",
@@ -96,10 +95,7 @@ public class WindowRegistration {
         }else{
             // nel caso un cui è tutto ok, allora lancio il client e gli passo la stringa
             //appena confermato l'username la finestra windowregistration scompare con fr.setVisible()
-            // si può anche cambiare.
             //Come ultima cosa crea una board e avvia il thread doClientThread che durerà fino alla fine.
-            //Questo thread direi che lo possa chiamare direttamente la board anche senza bloccare la grafica.
-            //Non dovrebbe cambiare tanto, si può provare
             String userName = tf.getText();
             board = new Board(this);
             board.init(userName,serverAddr);
@@ -176,7 +172,6 @@ public class WindowRegistration {
             @Override
             public void keyTyped(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    //settingEventRegistration(pane,userEntry);
                     btnRegistration.setEnabled(false);
                     userEntry.setEditable(false);
                 }
