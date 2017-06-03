@@ -224,8 +224,10 @@ public class Client  {
                     System.out.println("Timeout");
                     int playeId = currentPlayer;
                     rightId = link.getRightId();
+                    boolean currentPlayerFirst = true;
+                    int rightIdSave = rightId;
 
-                    while(!link.checkAYANode(rightId,playeId)) {
+                    while(!link.checkAYANode(rightId)) {
                         if (rightId == playeId) {
 
                             System.out.println("Current Player has crashed.Sending crash Msg");
@@ -234,8 +236,8 @@ public class Client  {
                             boolean[] nodesCrashed = new boolean[players.length];
                             Arrays.fill(nodesCrashed, false);
                             boolean anyCrash = false;
-                            messageBroadcast.incMessageCounter();
-                            int messageCounter = messageBroadcast.retrieveMsgCounter();
+                            //messageBroadcast.incMessageCounter();
+                            int messageCounter=messageBroadcast.retrieveMsgCounter();
                             boolean sendOk = false;
                             int howManyCrash = 0;
 
@@ -251,9 +253,37 @@ public class Client  {
                                 checkLastNode();
                                
                             }
+
+                            //invio dei crash dei nodi precedenti al giocatore attuale
+                            if (currentPlayerFirst == false) {
+
+                                System.out.println("Sono crashati nodi precedenti al current player");
+                                System.out.println("RightidSave ->" + rightIdSave);
+                                System.out.println("Playeid ->" + playeId);
+                                while(((rightIdSave+1) % players.length) <= playeId) {
+
+                                    link.nodes[rightIdSave].setNodeCrashed();
+                                    howManyCrash = howManyCrash + 1;
+                                    //nodesCrashed[i] = true;
+                                    System.out.println("Node before current player");
+
+                                    messageBroadcast.incMessageCounter();
+                                    messageCounter = messageBroadcast.retrieveMsgCounter();
+
+                                    board.updateCrash(rightIdSave);
+                                    messageBroadcast.send(mmaker.newCrashMessage(rightIdSave,messageCounter,howManyCrash));
+
+                                    rightIdSave = rightIdSave + 1;
+                                } 
+                            }
+                            
+
+                            //Invio del crash del giocatore attuale
                             while (sendOk == false) {
 
                                 //non fà il controllo sul send ma prima
+                                messageBroadcast.incMessageCounter();
+                                messageCounter = messageBroadcast.retrieveMsgCounter();
                                 System.out.println("Im sending a crash message with id " + messageCounter );
                                 board.updateCrash(rightId);
                                 board.clearOldPlayer(currentPlayer);
@@ -265,10 +295,11 @@ public class Client  {
                             
                             System.out.println("Next Player is " + players[currentPlayer].getUsername() + " id " + currentPlayer);
 
-                            //Spedisce CrashMessage se sono stati rilevati crash
+                            //Spedisce CrashMessage se sono stati rilevati crash dopo il giocatore attuale
 
                             if (anyCrash) {
-
+                                //forse da sistemare
+                                //provare a fare crashare 2 giocatori dopo quello attuale
                                 howManyCrash = howManyCrash + 1;
                                 for(int i=0;i<nodesCrashed.length;i++) {
                                     if (nodesCrashed[i] == true) {
@@ -283,6 +314,8 @@ public class Client  {
                                 }
                             }
                             break;
+                        } else {
+                            currentPlayerFirst = false;
                         }
                      	rightId = (rightId + 1) % players.length;
                     }

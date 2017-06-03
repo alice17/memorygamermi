@@ -134,7 +134,7 @@ public class Link {
 	}
 
 	//Metodo che controlla i nodi durante un controllo AYA
-	public boolean checkAYANode(int rightId,int playerId) {
+	public boolean checkAYANode(int rightId) {
 
 		
 		boolean success = true;
